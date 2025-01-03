@@ -11,7 +11,7 @@ interface LayoutProviderProps {
   children: React.ReactNode;
 }
 
-const LayoutProvider: React.FC<LayoutProviderProps> = ({ children }) => {
+export default function LayoutProvider({ children }: LayoutProviderProps) {
   const pathname = usePathname();
 
   // 检查当前路径是否需要布局
@@ -22,6 +22,4 @@ const LayoutProvider: React.FC<LayoutProviderProps> = ({ children }) => {
   }
 
   return <BasicLayout>{children}</BasicLayout>;
-};
-
-export default LayoutProvider; 
+} 

@@ -1,72 +1,60 @@
 'use client';
 
 import React from 'react';
-import { Card, Row, Col, Statistic } from 'antd';
+import dynamic from 'next/dynamic';
+import { Row, Col } from 'antd';
 import {
   UserOutlined,
-  ReadOutlined,
-  LikeOutlined,
+  FileTextOutlined,
+  TagOutlined,
   CommentOutlined,
 } from '@ant-design/icons';
 
+const StatisticCard = dynamic(() => import('@/components/Dashboard/StatisticCard'), {
+  ssr: false,
+});
+
+const LunarCalendar = dynamic(() => import('@/components/Calendar/LunarCalendar'), {
+  ssr: false,
+});
+
 export default function DashboardPage() {
+  const statistics = [
+    {
+      title: '用户总数',
+      value: 1234,
+      prefix: <UserOutlined />,
+    },
+    {
+      title: '文章总数',
+      value: 56,
+      prefix: <FileTextOutlined />,
+    },
+    {
+      title: '标签总数',
+      value: 18,
+      prefix: <TagOutlined />,
+    },
+    {
+      title: '评论总数',
+      value: 289,
+      prefix: <CommentOutlined />,
+    },
+  ];
+
   return (
-    <div>
-      <h1 className="mb-6">仪表盘</h1>
-      
+    <div className="p-6">
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="总用户数"
-              value={1128}
-              prefix={<UserOutlined />}
-              valueStyle={{ color: '#1677ff' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="文章数量"
-              value={93}
-              prefix={<ReadOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="总点赞数"
-              value={2802}
-              prefix={<LikeOutlined />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title="总评论数"
-              value={1257}
-              prefix={<CommentOutlined />}
-              valueStyle={{ color: '#ff4d4f' }}
-            />
-          </Card>
-        </Col>
+        {statistics.map((stat, index) => (
+          <Col key={index} xs={24} sm={12} md={6}>
+            <StatisticCard {...stat} />
+          </Col>
+        ))}
       </Row>
 
-      <Row gutter={[16, 16]} className="mt-6">
-        <Col xs={24} md={12}>
-          <Card title="最近活动">
-            <p>暂无数据</p>
-          </Card>
-        </Col>
-        <Col xs={24} md={12}>
-          <Card title="系统公告">
-            <p>暂无数据</p>
-          </Card>
+      <Row className="mt-6">
+        <Col xs={24}>
+          <LunarCalendar />
         </Col>
       </Row>
     </div>

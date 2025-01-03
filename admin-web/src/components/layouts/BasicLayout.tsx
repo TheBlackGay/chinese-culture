@@ -1,18 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Layout, Menu, Button, theme, Dropdown, MenuProps } from 'antd';
+import { Layout, Menu, Button, Dropdown } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UserOutlined,
   DashboardOutlined,
-  ReadOutlined,
+  FileTextOutlined,
   SettingOutlined,
-  LogoutOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import type { MenuProps } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
@@ -20,153 +19,99 @@ interface BasicLayoutProps {
   children: React.ReactNode;
 }
 
-const menuItems = [
-  {
-    key: '/dashboard',
-    icon: <DashboardOutlined />,
-    label: '仪表盘',
-  },
-  {
-    key: '/content',
-    icon: <ReadOutlined />,
-    label: '内容管理',
-    children: [
-      {
-        key: '/content/articles',
-        label: '文章管理',
-      },
-      {
-        key: '/content/categories',
-        label: '分类管理',
-      },
-      {
-        key: '/content/tags',
-        label: '标签管理',
-      },
-    ],
-  },
-  {
-    key: '/settings',
-    icon: <SettingOutlined />,
-    label: '系统设置',
-    children: [
-      {
-        key: '/settings/users',
-        label: '用户管理',
-      },
-      {
-        key: '/settings/roles',
-        label: '角色管理',
-      },
-      {
-        key: '/settings/permissions',
-        label: '权限管理',
-      },
-    ],
-  },
-];
-
-const userMenuItems: MenuProps['items'] = [
-  {
-    key: 'profile',
-    icon: <UserOutlined />,
-    label: '个人信息',
-  },
-  {
-    key: 'settings',
-    icon: <SettingOutlined />,
-    label: '个人设置',
-  },
-  {
-    type: 'divider',
-  },
-  {
-    key: 'logout',
-    icon: <LogoutOutlined />,
-    label: '退出登录',
-    danger: true,
-  },
-];
-
-const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
+export default function BasicLayout({ children }: BasicLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
 
-  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+  const menuItems: MenuProps['items'] = [
+    {
+      key: '/dashboard',
+      icon: <DashboardOutlined />,
+      label: '仪表盘',
+    },
+    {
+      key: '/content',
+      icon: <FileTextOutlined />,
+      label: '内容管理',
+      children: [
+        {
+          key: '/content/articles',
+          label: '文章管理',
+        },
+        {
+          key: '/content/categories',
+          label: '分类管理',
+        },
+        {
+          key: '/content/tags',
+          label: '标签管理',
+        },
+      ],
+    },
+    {
+      key: '/settings',
+      icon: <SettingOutlined />,
+      label: '系统设置',
+    },
+  ];
+
+  const userMenuItems: MenuProps['items'] = [
+    {
+      key: 'profile',
+      label: '个人信息',
+    },
+    {
+      key: 'logout',
+      label: '退出登录',
+    },
+  ];
+
+  const handleMenuClick = ({ key }: { key: string }) => {
     router.push(key);
   };
 
-  const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
-    switch (key) {
-      case 'profile':
-        router.push('/profile');
-        break;
-      case 'settings':
-        router.push('/settings/profile');
-        break;
-      case 'logout':
-        // TODO: 实现登出逻辑
-        router.push('/login');
-        break;
+  const handleUserMenuClick = ({ key }: { key: string }) => {
+    if (key === 'logout') {
+      // 处理退出登录
+      console.log('logout');
+    } else if (key === 'profile') {
+      router.push('/profile');
     }
   };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical p-4">
-          <Link href="/" className="text-white text-xl font-bold">
-            {collapsed ? 'CC' : '中国文化'}
-          </Link>
+        <div className="p-4 text-white text-xl font-bold">
+          {collapsed ? '文化' : '中国文化'}
         </div>
         <Menu
           theme="dark"
           mode="inline"
           selectedKeys={[pathname]}
+          defaultOpenKeys={['/content']}
           items={menuItems}
           onClick={handleMenuClick}
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          <div className="flex justify-between items-center px-4">
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-            />
-            <div className="flex items-center">
-              <Dropdown
-                menu={{
-                  items: userMenuItems,
-                  onClick: handleUserMenuClick,
-                }}
-                placement="bottomRight"
-              >
-                <Button type="text" icon={<UserOutlined />}>
-                  管理员
-                </Button>
-              </Dropdown>
-            </div>
-          </div>
+        <Header className="bg-white px-4 flex justify-between items-center">
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+          />
+          <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }}>
+            <Button type="text" icon={<UserOutlined />}>
+              管理员
+            </Button>
+          </Dropdown>
         </Header>
-        <Content
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
+        <Content className="m-6 min-h-[280px] bg-white">
           {children}
         </Content>
       </Layout>
     </Layout>
   );
-};
-
-export default BasicLayout; 
+} 

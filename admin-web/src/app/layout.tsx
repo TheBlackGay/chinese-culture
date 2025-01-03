@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ConfigProvider } from "antd";
-import zhCN from "antd/locale/zh_CN";
-import LayoutProvider from "@/components/layouts/LayoutProvider";
-import ClientProvider from "@/components/providers/ClientProvider";
 import "./globals.css";
+import AntdProvider from "@/components/providers/AntdProvider";
+import LayoutProvider from "@/components/layouts/LayoutProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,7 +11,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "中国文化管理系统",
-  description: "中国文化管理系统 - 后台管理",
+  description: "中国文化管理系统 - 传承文明，弘扬文化",
 };
 
 export default function RootLayout({
@@ -24,19 +22,11 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className={`${inter.className} antialiased`}>
-        <ClientProvider>
-          <ConfigProvider
-            locale={zhCN}
-            theme={{
-              token: {
-                colorPrimary: "#1677ff",
-                borderRadius: 4,
-              },
-            }}
-          >
-            <LayoutProvider>{children}</LayoutProvider>
-          </ConfigProvider>
-        </ClientProvider>
+        <AntdProvider>
+          <LayoutProvider>
+            {children}
+          </LayoutProvider>
+        </AntdProvider>
       </body>
     </html>
   );

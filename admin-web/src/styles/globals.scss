@@ -85,4 +85,27 @@ body {
 .fade-exit-active {
   opacity: 0;
   transition: opacity 200ms ease-in;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.calendar-card {
+  .ant-picker-calendar {
+    .ant-picker-cell {
+      .ant-picker-cell-inner {
+        height: 100px;
+      }
+    }
+  }
+
+  .ant-badge {
+    display: block;
+    margin: 2px 0;
+    
+    .ant-badge-status-text {
+      font-size: 12px;
+    }
+  }
 } 
