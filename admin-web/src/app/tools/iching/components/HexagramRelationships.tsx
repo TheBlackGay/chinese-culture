@@ -1,119 +1,122 @@
 'use client';
 
 import React from 'react';
-import { Card, Space, Typography } from 'antd';
 import styled from 'styled-components';
+import { Card, Tabs, Typography, Space } from 'antd';
 import { Hexagram } from '../types';
-import HexagramDisplay from './HexagramDisplay';
-import { getHexagramRelationships } from '../utils/hexagram';
-import { BASE_HEXAGRAMS } from '../data/base';
+import { HexagramDetail } from './HexagramDetail';
 
 const { Title, Text } = Typography;
 
-const RelationshipContainer = styled.div`
+const Container = styled.div`
   margin: 20px 0;
 `;
 
 const RelationshipCard = styled(Card)`
-  margin: 16px 0;
-  transition: all 0.3s ease;
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const RelationshipRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 16px;
+  margin-bottom: 16px;
   border-radius: 8px;
-  background: #f5f5f5;
-  margin: 8px 0;
-  transition: all 0.3s ease;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  &:hover {
-    background: #f0f0f0;
-    transform: translateX(4px);
+  .ant-card-head {
+    border-bottom: 2px solid #f0f0f0;
   }
 `;
 
-const RelationshipInfo = styled.div`
-  flex: 1;
+const Description = styled.div`
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border-left: 4px solid #1890ff;
 `;
 
-const HexagramInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-`;
-
-interface HexagramRelationshipsProps {
+interface Props {
   hexagram: Hexagram;
+  relationships: {
+    opposite?: Hexagram;
+    complementary?: Hexagram;
+    mutual?: Hexagram;
+    nuclear?: Hexagram;
+  };
 }
 
-const HexagramRelationships: React.FC<HexagramRelationshipsProps> = ({
-  hexagram,
-}) => {
-  const relationships = getHexagramRelationships(hexagram.key);
-  const relatedHexagrams = {
-    opposite: BASE_HEXAGRAMS[relationships.opposite],
-    inverse: BASE_HEXAGRAMS[relationships.inverse],
-    mutual: BASE_HEXAGRAMS[relationships.mutual],
-    nuclear: BASE_HEXAGRAMS[relationships.nuclear],
-  };
-
-  const relationshipDescriptions = {
-    opposite: '对宫卦是阴阳完全相反的卦。代表事物的对立面，可以帮助我们从相反的角度理解事物。',
-    inverse: '综卦是将上下卦互换位置得到的卦。表示事物的另一种可能性或发展方向。',
-    mutual: '互卦是由第二、三、四爻和第三、四、五爻组成的卦。反映事物的内在联系和变化趋势。',
-    nuclear: '核卦是去掉初爻和上爻后的六爻。表示事物的核心本质和基本趋势。',
-  };
+export const HexagramRelationships: React.FC<Props> = ({ hexagram, relationships }) => {
+  const items = [
+    {
+      key: '1',
+      label: '对卦关系',
+      children: relationships.opposite ? (
+        <>
+          <Description>
+            <Text>对卦是指上下卦完全相反的卦。对卦关系体现了阴阳的对立统一原理。</Text>
+          </Description>
+          <HexagramDetail hexagram={relationships.opposite} />
+        </>
+      ) : (
+        <Text>无对应的对卦关系</Text>
+      ),
+    },
+    {
+      key: '2',
+      label: '综卦关系',
+      children: relationships.complementary ? (
+        <>
+          <Description>
+            <Text>综卦是指将原卦上下颠倒而成的卦。综卦关系展示了事物的另一面。</Text>
+          </Description>
+          <HexagramDetail hexagram={relationships.complementary} />
+        </>
+      ) : (
+        <Text>无对应的综卦关系</Text>
+      ),
+    },
+    {
+      key: '3',
+      label: '互卦关系',
+      children: relationships.mutual ? (
+        <>
+          <Description>
+            <Text>互卦是由原卦第二、三、四爻构成上卦，第三、四、五爻构成下卦而成的卦。</Text>
+          </Description>
+          <HexagramDetail hexagram={relationships.mutual} />
+        </>
+      ) : (
+        <Text>无对应的互卦关系</Text>
+      ),
+    },
+    {
+      key: '4',
+      label: '核卦关系',
+      children: relationships.nuclear ? (
+        <>
+          <Description>
+            <Text>核卦是由原卦去掉上下两爻后，中间四爻分别作为上下卦而成的卦。</Text>
+          </Description>
+          <HexagramDetail hexagram={relationships.nuclear} />
+        </>
+      ) : (
+        <Text>无对应的核卦关系</Text>
+      ),
+    },
+  ];
 
   return (
-    <RelationshipContainer>
-      <Title level={4}>卦象关系</Title>
-      <Space direction="vertical" style={{ width: '100%' }}>
-        {Object.entries(relatedHexagrams).map(([type, relatedHexagram]) => (
-          <RelationshipCard key={type}>
-            <Title level={5}>
-              {type === 'opposite'
-                ? '对宫卦'
-                : type === 'inverse'
-                ? '综卦'
-                : type === 'mutual'
-                ? '互卦'
-                : '核卦'}
-            </Title>
-            <RelationshipRow>
-              <HexagramInfo>
-                <HexagramDisplay
-                  hexagram={hexagram.key}
-                  size="small"
-                  showTrigramNames={false}
-                  animated={false}
-                />
-                <Text strong>{hexagram.name}卦</Text>
-              </HexagramInfo>
-              <RelationshipInfo>
-                <Text>{relationshipDescriptions[type as keyof typeof relationshipDescriptions]}</Text>
-              </RelationshipInfo>
-              <HexagramInfo>
-                <HexagramDisplay
-                  hexagram={relatedHexagram.key}
-                  size="small"
-                  showTrigramNames={false}
-                  animated={false}
-                />
-                <Text strong>{relatedHexagram.name}卦</Text>
-              </HexagramInfo>
-            </RelationshipRow>
-          </RelationshipCard>
-        ))}
-      </Space>
-    </RelationshipContainer>
+    <Container>
+      <RelationshipCard
+        title={
+          <Title level={4} style={{ margin: 0 }}>
+            {hexagram.name}卦 - 卦象关系
+          </Title>
+        }
+      >
+        <Tabs
+          defaultActiveKey="1"
+          items={items}
+          type="card"
+          animated={{ inkBar: true, tabPane: true }}
+        />
+      </RelationshipCard>
+    </Container>
   );
-};
-
-export default HexagramRelationships; 
+}; 

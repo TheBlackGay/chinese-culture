@@ -5,8 +5,8 @@ import { Input, Card, List, Modal, Typography, Row, Col, Pagination } from 'antd
 import styled from 'styled-components';
 import { BASE_HEXAGRAMS } from '../data/base';
 import { Hexagram } from '../types';
-import HexagramDisplay from './HexagramDisplay';
-import HexagramDetail from './HexagramDetail';
+import { HexagramDisplay } from './HexagramDisplay';
+import { HexagramDetail } from './HexagramDetail';
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -28,32 +28,30 @@ const HexagramCard = styled(Card)`
   }
 `;
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 12;
 
-const HexagramSearch: React.FC = () => {
+export const HexagramSearch: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [selectedHexagram, setSelectedHexagram] = useState<Hexagram | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 按sequence排序的卦象数组
-  const sortedHexagrams = Object.values(BASE_HEXAGRAMS).sort(
-    (a, b) => a.sequence - b.sequence
-  );
+  // 确保卦象数组按序号排序，从第1卦开始
+  const sortedHexagrams = Object.values(BASE_HEXAGRAMS)
+    .sort((a, b) => (a.sequence || 0) - (b.sequence || 0))
+    .filter(hexagram => hexagram.sequence > 0);
 
   const filteredHexagrams = sortedHexagrams.filter((hexagram) => {
     if (!searchText) return true;
     
     const searchLower = searchText.toLowerCase();
+    const sequenceStr = hexagram.sequence?.toString() || '';
+    
     return (
       hexagram.name.toLowerCase().includes(searchLower) ||
+      sequenceStr.includes(searchLower) ||
       hexagram.nature.toLowerCase().includes(searchLower) ||
       hexagram.description.toLowerCase().includes(searchLower) ||
-      hexagram.meaning.general.toLowerCase().includes(searchLower) ||
-      hexagram.meaning.love.toLowerCase().includes(searchLower) ||
-      hexagram.meaning.career.toLowerCase().includes(searchLower) ||
-      hexagram.meaning.health.toLowerCase().includes(searchLower) ||
-      hexagram.meaning.wealth.toLowerCase().includes(searchLower) ||
-      hexagram.sequence.toString().includes(searchLower)
+      hexagram.meaning.general.toLowerCase().includes(searchLower)
     );
   });
 
@@ -91,16 +89,12 @@ const HexagramSearch: React.FC = () => {
               bodyStyle={{ padding: '12px' }}
             >
               <div style={{ textAlign: 'center' }}>
-                <HexagramDisplay
-                  hexagram={hexagram.key}
-                  size="small"
-                  showTrigramNames={false}
-                />
-                <Text strong style={{ fontSize: '16px', display: 'block' }}>
-                  {hexagram.name}卦
+                <HexagramDisplay hexagram={hexagram} showDetails={false} />
+                <Text strong style={{ fontSize: '16px', display: 'block', marginTop: 8 }}>
+                  第{hexagram.sequence}卦 {hexagram.name}
                 </Text>
-                <Text type="secondary" style={{ fontSize: '12px' }}>
-                  第{hexagram.sequence}卦 · {hexagram.nature}
+                <Text type="secondary" style={{ fontSize: '14px' }}>
+                  {hexagram.nature}
                 </Text>
               </div>
             </HexagramCard>
@@ -119,7 +113,7 @@ const HexagramSearch: React.FC = () => {
       </div>
 
       <Modal
-        title={selectedHexagram?.name + '卦详解'}
+        title={`第${selectedHexagram?.sequence}卦 ${selectedHexagram?.name} - 详解`}
         open={!!selectedHexagram}
         onCancel={() => setSelectedHexagram(null)}
         width={800}
