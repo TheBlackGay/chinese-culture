@@ -35,13 +35,27 @@ const HexagramSearch: React.FC = () => {
   const [selectedHexagram, setSelectedHexagram] = useState<Hexagram | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredHexagrams = Object.values(BASE_HEXAGRAMS).filter(
-    (hexagram) =>
-      !searchText ||
-      hexagram.name.includes(searchText) ||
-      hexagram.nature.includes(searchText) ||
-      hexagram.description.includes(searchText)
+  // 按sequence排序的卦象数组
+  const sortedHexagrams = Object.values(BASE_HEXAGRAMS).sort(
+    (a, b) => a.sequence - b.sequence
   );
+
+  const filteredHexagrams = sortedHexagrams.filter((hexagram) => {
+    if (!searchText) return true;
+    
+    const searchLower = searchText.toLowerCase();
+    return (
+      hexagram.name.toLowerCase().includes(searchLower) ||
+      hexagram.nature.toLowerCase().includes(searchLower) ||
+      hexagram.description.toLowerCase().includes(searchLower) ||
+      hexagram.meaning.general.toLowerCase().includes(searchLower) ||
+      hexagram.meaning.love.toLowerCase().includes(searchLower) ||
+      hexagram.meaning.career.toLowerCase().includes(searchLower) ||
+      hexagram.meaning.health.toLowerCase().includes(searchLower) ||
+      hexagram.meaning.wealth.toLowerCase().includes(searchLower) ||
+      hexagram.sequence.toString().includes(searchLower)
+    );
+  });
 
   const currentHexagrams = filteredHexagrams.slice(
     (currentPage - 1) * PAGE_SIZE,
@@ -60,11 +74,12 @@ const HexagramSearch: React.FC = () => {
   return (
     <SearchContainer>
       <Search
-        placeholder="输入卦名、性质或关键词搜索"
+        placeholder="输入卦名、序号、性质或关键词搜索"
         allowClear
         enterButton
         size="large"
         onSearch={handleSearch}
+        onChange={(e) => handleSearch(e.target.value)}
         style={{ marginBottom: 24 }}
       />
 

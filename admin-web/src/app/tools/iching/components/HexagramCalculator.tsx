@@ -24,7 +24,7 @@ const CoinContainer = styled.div`
   margin: 16px 0;
 `;
 
-const Coin = styled.div<{ value: number }>`
+const Coin = styled.div<{ value: number; isSpinning?: boolean }>`
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -34,8 +34,19 @@ const Coin = styled.div<{ value: number }>`
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  border: 2px solid ${({ value }) => (value === 2 ? '#DAA520' : '#A9A9A9')};
+  color: ${({ value }) => (value === 2 ? '#8B4513' : '#696969')};
+  font-weight: bold;
+  animation: ${({ isSpinning }) => isSpinning ? 'spin 0.5s linear' : 'none'};
+  
+  @keyframes spin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+  
   &:hover {
     transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -71,6 +82,7 @@ const HexagramCalculator: React.FC = () => {
   const [coins, setCoins] = useState<number[][]>([]);
   const [currentThrow, setCurrentThrow] = useState<number[]>([2, 2, 2]);
   const [changingLines, setChangingLines] = useState<number[]>([]);
+  const [spinningCoins, setSpinningCoins] = useState<boolean[]>([false, false, false]);
 
   const calculateByTime = useCallback(() => {
     const hexagramKey = calculateHexagram(selectedDate.toDate());
@@ -83,39 +95,43 @@ const HexagramCalculator: React.FC = () => {
   const throwCoins = useCallback(() => {
     if (coins.length >= 6) return;
 
-    const sum = currentThrow.reduce((a, b) => a + b, 0);
-    const newCoins = [...coins, currentThrow];
-    setCoins(newCoins);
+    // 设置所有铜钱为旋转状态
+    setSpinningCoins([true, true, true]);
+    
+    // 延迟生成随机数并停止旋转
+    setTimeout(() => {
+      const newThrow = [
+        Math.random() < 0.5 ? 2 : 3,
+        Math.random() < 0.5 ? 2 : 3,
+        Math.random() < 0.5 ? 2 : 3
+      ];
+      
+      setCurrentThrow(newThrow);
+      setSpinningCoins([false, false, false]);
+      
+      const newCoins = [...coins, newThrow];
+      setCoins(newCoins);
 
-    if (newCoins.length === 6) {
-      const hexagramKey = calculateManualHexagram(newCoins);
-      const changedKey = getChangedHexagram(newCoins);
-      
-      setCurrentHexagram(BASE_HEXAGRAMS[hexagramKey]);
-      
-      // 计算变爻
-      const newChangingLines = newCoins.map((throwResult, index) => {
-        const sum = throwResult.reduce((a, b) => a + b, 0);
-        return sum === 6 || sum === 9 ? index : -1;
-      }).filter(index => index !== -1);
-      
-      setChangingLines(newChangingLines);
+      if (newCoins.length === 6) {
+        const hexagramKey = calculateManualHexagram(newCoins);
+        const changedKey = getChangedHexagram(newCoins);
+        
+        setCurrentHexagram(BASE_HEXAGRAMS[hexagramKey]);
+        
+        // 计算变爻
+        const newChangingLines = newCoins.map((throwResult, index) => {
+          const sum = throwResult.reduce((a, b) => a + b, 0);
+          return sum === 6 || sum === 9 ? index : -1;
+        }).filter(index => index !== -1);
+        
+        setChangingLines(newChangingLines);
 
-      if (hexagramKey !== changedKey) {
-        setChangedHexagram(BASE_HEXAGRAMS[changedKey]);
+        if (hexagramKey !== changedKey) {
+          setChangedHexagram(BASE_HEXAGRAMS[changedKey]);
+        }
       }
-    }
-
-    setCurrentThrow([2, 2, 2]);
-  }, [coins, currentThrow]);
-
-  const toggleCoin = useCallback((index: number) => {
-    setCurrentThrow(prev => {
-      const newThrow = [...prev];
-      newThrow[index] = newThrow[index] === 2 ? 3 : 2;
-      return newThrow;
-    });
-  }, []);
+    }, 500);
+  }, [coins]);
 
   const resetManual = useCallback(() => {
     setCoins([]);
@@ -164,23 +180,31 @@ const HexagramCalculator: React.FC = () => {
                   <Coin
                     key={index}
                     value={value}
-                    onClick={() => toggleCoin(index)}
+                    isSpinning={spinningCoins[index]}
                   >
                     {value}
                   </Coin>
                 ))}
               </CoinContainer>
               <Space>
-                <Button type="primary" onClick={throwCoins} disabled={coins.length >= 6}>
+                <Button 
+                  type="primary" 
+                  onClick={throwCoins} 
+                  disabled={coins.length >= 6}
+                >
                   投掷铜钱
                 </Button>
                 <Button onClick={resetManual}>重新开始</Button>
               </Space>
               {coins.length > 0 && (
-                <div>
+                <div style={{ marginTop: 16 }}>
                   {coins.map((throwResult, index) => (
-                    <div key={index}>
+                    <div key={index} style={{ marginBottom: 8 }}>
                       第{index + 1}爻：{throwResult.join(' ')} = {throwResult.reduce((a, b) => a + b, 0)}
+                      {throwResult.reduce((a, b) => a + b, 0) === 6 && ' (老阴)'}
+                      {throwResult.reduce((a, b) => a + b, 0) === 7 && ' (少阳)'}
+                      {throwResult.reduce((a, b) => a + b, 0) === 8 && ' (少阴)'}
+                      {throwResult.reduce((a, b) => a + b, 0) === 9 && ' (老阳)'}
                     </div>
                   ))}
                 </div>

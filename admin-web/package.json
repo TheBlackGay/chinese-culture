@@ -15,7 +15,7 @@
     "@ant-design/icons": "^5.0.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/styled-components": "^5.1.34",
-    "antd": "^5.11.0",
+    "antd": "^5.22.7",
     "dayjs": "^1.11.13",
     "lunar-typescript": "^1.7.6",
     "next": "14.0.0",

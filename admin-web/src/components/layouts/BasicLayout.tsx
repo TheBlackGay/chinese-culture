@@ -36,25 +36,7 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
       icon: <DashboardOutlined />,
       label: '仪表盘',
     },
-    {
-      key: '/content',
-      icon: <FileTextOutlined />,
-      label: '内容管理',
-      children: [
-        {
-          key: '/content/articles',
-          label: '文章管理',
-        },
-        {
-          key: '/content/categories',
-          label: '分类管理',
-        },
-        {
-          key: '/content/tags',
-          label: '标签管理',
-        },
-      ],
-    },
+
     {
       key: '/tools',
       icon: <ToolOutlined />,
@@ -150,16 +132,16 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
           boxShadow: '2px 0 8px 0 rgba(29,35,41,.05)',
           background: token.colorBgContainer,
         }}
-        width={260}
+        width={200}
       >
         <div className="flex items-center justify-center p-4 h-16 border-b border-[#f0f0f0]">
           {!collapsed && (
             <div className="text-lg font-semibold text-[#1890ff] flex items-center">
-              <Image src="/logo.png" alt="Logo" width={32} height={32} className="mr-2" />
-              中国文化管理
+              <Image src="/chinese-culture-logo.png" alt="Logo" width={32} height={32} className="mr-2" />
+              中华文化
             </div>
           )}
-          {collapsed && <Image src="/logo.png" alt="Logo" width={32} height={32} />}
+          {collapsed && <Image src="/chinese-culture-logo.png" alt="Logo" width={32} height={32} />}
         </div>
         <Menu
           mode="inline"
@@ -198,7 +180,12 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
                   height: 64,
                 }}
               />
-              <Breadcrumb items={breadcrumbs.map(item => ({ title: item.label }))} />
+              <Breadcrumb 
+                items={breadcrumbs.map(item => ({ 
+                  title: <span onClick={() => router.push(item.path)} style={{ cursor: 'pointer' }}>{item.label}</span> 
+                }))} 
+                style={{ marginLeft: 16 }}
+              />
             </div>
             <div className="flex items-center gap-4">
               <Button 
