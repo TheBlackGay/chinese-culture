@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, ChangeEvent } from 'react';
 import { Input, Card, List, Modal, Typography, Row, Col, Pagination } from 'antd';
 import styled from 'styled-components';
 import { BASE_HEXAGRAMS } from '../data/base';
@@ -77,7 +77,7 @@ export const HexagramSearch: React.FC = () => {
         enterButton
         size="large"
         onSearch={handleSearch}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
         style={{ marginBottom: 24 }}
       />
 

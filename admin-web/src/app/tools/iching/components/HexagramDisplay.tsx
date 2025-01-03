@@ -87,12 +87,12 @@ const ElementBadge = styled.span`
   animation: ${flash} 3s infinite ease-in-out;
 `;
 
-interface Props {
+interface HexagramDisplayProps {
   hexagram: Hexagram;
   showDetails?: boolean;
 }
 
-export const HexagramDisplay: React.FC<Props> = ({ hexagram, showDetails = true }) => {
+export const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexagram, showDetails = true }) => {
   const lines = hexagram.key.split('').map(bit => bit === '1');
 
   return (

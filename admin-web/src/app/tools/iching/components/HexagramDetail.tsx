@@ -51,11 +51,11 @@ const MeaningBox = styled.div`
   border-left: 4px solid #1890ff;
 `;
 
-interface Props {
+interface HexagramDetailProps {
   hexagram: Hexagram;
 }
 
-export const HexagramDetail: React.FC<Props> = ({ hexagram }) => {
+export const HexagramDetail: React.FC<HexagramDetailProps> = ({ hexagram }) => {
   return (
     <Container>
       <DetailCard
