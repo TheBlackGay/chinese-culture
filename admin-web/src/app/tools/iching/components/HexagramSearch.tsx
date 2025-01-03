@@ -123,6 +123,4 @@ export const HexagramSearch: React.FC = () => {
       </Modal>
     </SearchContainer>
   );
-};
-
-export default HexagramSearch; 
+}; 
