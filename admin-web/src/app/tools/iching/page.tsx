@@ -1,125 +1,88 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Button, Card, Space, Typography, Divider, List } from 'antd';
-import { getHexagramKey, getHexagramName, getChangedHexagram, HEXAGRAM_DATA } from './data';
+import React from 'react';
+import { Tabs, Typography, Card } from 'antd';
+import styled from 'styled-components';
+import HexagramSearch from './components/HexagramSearch';
+import HexagramCalculator from './components/HexagramCalculator';
 
-const { Title, Text } = Typography;
+const { Title, Paragraph } = Typography;
+
+const PageContainer = styled.div`
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100vh;
+`;
+
+const HeaderContainer = styled.div`
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+`;
+
+const ContentContainer = styled(Card)`
+  margin-top: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+`;
+
+const TabContainer = styled.div`
+  .ant-tabs-nav {
+    margin-bottom: 16px;
+    &::before {
+      border-bottom: 2px solid #f0f0f0;
+    }
+  }
+  
+  .ant-tabs-tab {
+    padding: 12px 24px;
+    font-size: 16px;
+    
+    &.ant-tabs-tab-active {
+      font-weight: 500;
+    }
+  }
+`;
+
+const items = [
+  {
+    key: '1',
+    label: '卦象查询',
+    children: <HexagramSearch />,
+  },
+  {
+    key: '2',
+    label: '卦象演算',
+    children: <HexagramCalculator />,
+  },
+];
 
 export default function IChingPage() {
-  const [lines, setLines] = useState<number[]>([]);
-  const [result, setResult] = useState<string | null>(null);
-  const [changedResult, setChangedResult] = useState<string | null>(null);
-
-  // 投掷三枚铜钱
-  const throwCoins = () => {
-    // 模拟投掷三枚铜钱
-    const coins = Array(3).fill(0).map(() => Math.random() < 0.5 ? 2 : 3);
-    const sum = coins.reduce((a, b) => a + b, 0);
-    
-    // 根据和数确定爻的值
-    let value: number;
-    switch (sum) {
-      case 6: // 老阴
-        value = 6;
-        break;
-      case 7: // 少阳
-        value = 7;
-        break;
-      case 8: // 少阴
-        value = 8;
-        break;
-      case 9: // 老阳
-        value = 9;
-        break;
-      default:
-        value = 0;
-    }
-
-    // 添加新的爻
-    const newLines = [...lines, value];
-    setLines(newLines);
-
-    // 如果已经有六爻，计算卦象
-    if (newLines.length === 6) {
-      const hexagramKey = getHexagramKey(newLines);
-      setResult(hexagramKey);
-      
-      // 计算变卦
-      const changedKey = getChangedHexagram(newLines);
-      setChangedResult(changedKey);
-    }
-  };
-
-  // 重新开始
-  const reset = () => {
-    setLines([]);
-    setResult(null);
-    setChangedResult(null);
-  };
-
-  // 渲染卦象信息
-  const renderHexagramInfo = (hexagramKey: string | null) => {
-    if (!hexagramKey || !HEXAGRAM_DATA[hexagramKey]) return null;
-    
-    const hexagram = HEXAGRAM_DATA[hexagramKey];
-    return (
-      <Card style={{ marginTop: 16 }}>
-        <Title level={4}>{hexagram.name}卦</Title>
-        <Text>{hexagram.description}</Text>
-        <Divider />
-        <List
-          size="small"
-          dataSource={hexagram.yaoTexts}
-          renderItem={(text, index) => (
-            <List.Item>
-              <Text>{text}</Text>
-            </List.Item>
-          )}
-        />
-      </Card>
-    );
-  };
-
   return (
-    <div style={{ padding: 24 }}>
-      <Title level={2}>周易卦象</Title>
-      <Space direction="vertical" style={{ width: '100%' }}>
-        <Card>
-          <Space>
-            <Button type="primary" onClick={throwCoins} disabled={lines.length === 6}>
-              投掷铜钱
-            </Button>
-            <Button onClick={reset}>重新开始</Button>
-          </Space>
-          <div style={{ marginTop: 16 }}>
-            <Text>已投掷 {lines.length} 次</Text>
-            {lines.length > 0 && (
-              <div style={{ marginTop: 8 }}>
-                {lines.map((line, index) => (
-                  <div key={index}>
-                    第{index + 1}爻：{line === 6 ? '老阴' : line === 7 ? '少阳' : line === 8 ? '少阴' : '老阳'}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </Card>
+    <PageContainer>
+      <HeaderContainer>
+        <Title level={2} style={{ marginBottom: 16 }}>周易卦象</Title>
+        <Paragraph style={{ maxWidth: 800, margin: '0 auto', color: '#666' }}>
+          周易是中国古代最重要的经典之一，包含六十四卦，每卦由六爻组成。
+          通过卦象的变化，可以洞察事物的发展规律和趋势。
+        </Paragraph>
+      </HeaderContainer>
 
-        {result && (
-          <>
-            <Title level={3}>本卦</Title>
-            {renderHexagramInfo(result)}
-          </>
-        )}
-
-        {changedResult && result !== changedResult && (
-          <>
-            <Title level={3}>变卦</Title>
-            {renderHexagramInfo(changedResult)}
-          </>
-        )}
-      </Space>
-    </div>
+      <ContentContainer>
+        <TabContainer>
+          <Tabs
+            defaultActiveKey="1"
+            items={items}
+            size="large"
+            animated={{ inkBar: true, tabPane: true }}
+          />
+        </TabContainer>
+      </ContentContainer>
+    </PageContainer>
   );
 } 
