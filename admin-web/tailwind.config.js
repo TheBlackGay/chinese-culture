@@ -5,45 +5,22 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  important: true, // 确保 Tailwind 样式优先级高于 Ant Design
   theme: {
     extend: {
       colors: {
-        primary: 'var(--primary-color)',
-        success: 'var(--success-color)',
-        warning: 'var(--warning-color)',
-        error: 'var(--error-color)',
-        info: 'var(--info-color)',
+        primary: '#1890ff',
+        success: '#52c41a',
+        warning: '#faad14',
+        error: '#f5222d',
       },
-      backgroundColor: {
-        base: 'var(--bg-color)',
-        component: 'var(--component-bg)',
-        hover: 'var(--hover-bg)',
-      },
-      textColor: {
-        base: 'var(--text-color)',
-        secondary: 'var(--text-color-secondary)',
-        disabled: 'var(--disabled-color)',
-      },
-      borderColor: {
-        base: 'var(--border-color)',
-      },
-      spacing: {
-        xs: 'var(--spacing-xs)',
-        sm: 'var(--spacing-sm)',
-        md: 'var(--spacing-md)',
-        lg: 'var(--spacing-lg)',
-        xl: 'var(--spacing-xl)',
-      },
-      fontSize: {
-        sm: 'var(--font-size-sm)',
-        base: 'var(--font-size-base)',
-        lg: 'var(--font-size-lg)',
+      boxShadow: {
+        card: '0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
+        'card-hover': '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
       },
     },
   },
   plugins: [],
-  // 禁用 Tailwind 的预设样式
+  // 确保 Tailwind 的样式不会覆盖 Ant Design 的样式
   corePlugins: {
     preflight: false,
   },

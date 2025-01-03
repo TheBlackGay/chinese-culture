@@ -1,87 +1,115 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Calendar, Badge, Card, Typography } from 'antd';
 import type { Dayjs } from 'dayjs';
-import type { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import { Solar } from 'lunar-typescript';
 
 const { Text } = Typography;
 
 interface CalendarData {
-  lunar: string;
-  solarTerm?: string;
+  lunarDay: string;
+  lunarMonth: string;
   festivals: string[];
+  jieQi?: string;
+  suited?: string[];
+  avoid?: string[];
 }
 
 export default function LunarCalendar() {
-  const [selectedDate, setSelectedDate] = useState<Dayjs>();
-
+  // 获取指定日期的农历信息
   const getCalendarData = (date: Dayjs): CalendarData => {
     try {
-      // 获取阳历日期
-      const solar = Solar.fromDate(date.toDate());
-      // 获取农历日期
+      // 使用 lunar-typescript 获取农历信息
+      const solar = Solar.fromYmd(date.year(), date.month() + 1, date.date());
       const lunar = solar.getLunar();
-      // 获取节气
-      const jieQi = lunar.getJieQi();
-      // 获取节日
-      const festivals = lunar.getFestivals().map(f => f.toString());
-
+      
       return {
-        lunar: `${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}`,
-        solarTerm: jieQi,
-        festivals,
+        lunarMonth: lunar.getMonthInChinese(),
+        lunarDay: lunar.getDayInChinese(),
+        festivals: [
+          ...lunar.getFestivals(), // 获取农历节日
+          ...solar.getFestivals(), // 获取阳历节日
+        ],
+        jieQi: lunar.getJieQi(), // 获取节气
+        suited: lunar.getDayYi(), // 获取宜
+        avoid: lunar.getDayJi(), // 获取忌
       };
     } catch (error) {
-      console.error('Error getting calendar data:', error);
+      console.error('Error getting lunar data:', error);
       return {
-        lunar: '',
+        lunarMonth: '',
+        lunarDay: '',
         festivals: [],
+        suited: [],
+        avoid: [],
       };
     }
   };
 
+  // 自定义日期单元格
   const dateCellRender = (date: Dayjs) => {
-    try {
-      const data = getCalendarData(date);
-      return (
-        <div className="text-xs">
-          <div>{data.lunar}</div>
-          {data.solarTerm && (
-            <div className="text-green-600">{data.solarTerm}</div>
-          )}
-          {data.festivals.map((festival, index) => (
-            <Badge
-              key={index}
-              status="error"
-              text={<Text type="danger">{festival}</Text>}
-            />
-          ))}
-        </div>
-      );
-    } catch (error) {
-      console.error('Error rendering date cell:', error);
-      return null;
-    }
+    const data = getCalendarData(date);
+    
+    return (
+      <div className="lunar-cell">
+        <Text className="lunar-day">{data.lunarMonth}月{data.lunarDay}</Text>
+        {data.festivals.map((festival, index) => (
+          <Badge key={index} status="success" text={festival} />
+        ))}
+        {data.jieQi && <Badge status="processing" text={data.jieQi} />}
+        {data.suited && data.suited.length > 0 && (
+          <div className="suited">
+            <Text type="success">宜：{data.suited.join('、')}</Text>
+          </div>
+        )}
+        {data.avoid && data.avoid.length > 0 && (
+          <div className="avoid">
+            <Text type="danger">忌：{data.avoid.join('、')}</Text>
+          </div>
+        )}
+      </div>
+    );
   };
 
-  const onSelect = (date: Dayjs) => {
-    setSelectedDate(date);
-  };
-
-  const onPanelChange = (date: Dayjs, mode: CalendarMode) => {
-    console.log(date.format('YYYY-MM-DD'), mode);
+  // 自定义月份单元格
+  const monthCellRender = (date: Dayjs) => {
+    const solar = Solar.fromYmd(date.year(), date.month() + 1, 1);
+    const lunar = solar.getLunar();
+    return (
+      <div className="lunar-month">
+        <Text>{lunar.getMonthInChinese()}月</Text>
+      </div>
+    );
   };
 
   return (
-    <Card title="农历日历" className="calendar-card">
+    <Card title="农历日历" className="lunar-calendar">
       <Calendar
-        onSelect={onSelect}
-        onPanelChange={onPanelChange}
         cellRender={dateCellRender}
-        fullscreen={false}
+        monthCellRender={monthCellRender}
       />
+      <style jsx global>{`
+        .lunar-calendar .lunar-cell {
+          min-height: 80px;
+        }
+        .lunar-calendar .lunar-day {
+          display: block;
+          color: #666;
+          font-size: 12px;
+        }
+        .lunar-calendar .ant-badge {
+          display: block;
+          margin: 2px 0;
+          font-size: 12px;
+          line-height: 1.2;
+        }
+        .lunar-calendar .suited,
+        .lunar-calendar .avoid {
+          font-size: 12px;
+          margin-top: 4px;
+        }
+      `}</style>
     </Card>
   );
 } 

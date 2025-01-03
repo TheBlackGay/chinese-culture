@@ -1,19 +1,19 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
+import BasicLayout from '@/components/layouts/BasicLayout';
 import Loading from '@/components/common/Loading';
-import ErrorBoundary from '@/components/common/ErrorBoundary';
 
-export default function ToolsLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ErrorBoundary>
+    <BasicLayout>
       <Suspense fallback={<Loading />}>
         {children}
       </Suspense>
-    </ErrorBoundary>
+    </BasicLayout>
   );
 } 

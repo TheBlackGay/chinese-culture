@@ -1,0 +1,105 @@
+/* 日历容器样式 */
+.lunar-calendar-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.lunar-calendar-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 日历单元格样式 */
+.date-cell {
+  position: relative;
+  min-height: 80px;
+  padding: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.date-cell:hover {
+  background-color: rgba(24, 144, 255, 0.05);
+}
+
+/* 农历日期样式 */
+.lunar-date {
+  display: block;
+  text-align: center;
+  margin-bottom: 4px;
+  color: #666;
+  font-size: 12px;
+}
+
+/* 节日和节气样式 */
+.festival {
+  font-size: 12px;
+  color: #f5222d;
+  margin-bottom: 2px;
+}
+
+.jieqi {
+  font-size: 12px;
+  color: #52c41a;
+  margin-bottom: 2px;
+}
+
+/* 宜忌信息样式 */
+.day-yi, .day-ji {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.day-yi {
+  color: #52c41a;
+}
+
+.day-ji {
+  color: #ff4d4f;
+}
+
+/* 日历头部样式 */
+.ant-picker-calendar-header {
+  padding: 12px !important;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 今天的样式 */
+.ant-picker-cell-today .ant-picker-cell-inner {
+  background: rgba(24, 144, 255, 0.1) !important;
+}
+
+/* 选中日期的样式 */
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background: #1890ff !important;
+  color: white !important;
+}
+
+/* 周末的样式 */
+.ant-picker-calendar-date-content {
+  height: auto !important;
+}
+
+/* 动画效果 */
+.calendar-fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.calendar-fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.calendar-fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.calendar-fade-exit-active {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 300ms, transform 300ms;
+} 

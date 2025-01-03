@@ -1,32 +1,33 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import AntdProvider from "@/components/providers/AntdProvider";
-import LayoutProvider from "@/components/layouts/LayoutProvider";
+'use client';
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import BasicLayout from '@/components/layouts/BasicLayout';
+import StyledComponentsRegistry from '@/lib/AntdRegistry';
+import '@/styles/globals.css';
 
-export const metadata: Metadata = {
-  title: "中国文化管理系统",
-  description: "中国文化管理系统 - 传承文明，弘扬文化",
+const theme = {
+  token: {
+    colorPrimary: '#1890ff',
+    borderRadius: 4,
+    colorBgContainer: '#ffffff',
+    colorBgLayout: '#f0f2f5',
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="zh-CN">
-      <body className={`${inter.className} antialiased`}>
-        <AntdProvider>
-          <LayoutProvider>
-            {children}
-          </LayoutProvider>
-        </AntdProvider>
+      <body>
+        <StyledComponentsRegistry>
+          <ConfigProvider theme={theme} locale={zhCN}>
+            <BasicLayout>{children}</BasicLayout>
+          </ConfigProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

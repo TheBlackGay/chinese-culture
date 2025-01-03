@@ -1,0 +1,126 @@
+/* 侧边栏过渡动画 */
+.ant-layout-sider {
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* 菜单项悬停效果 */
+.ant-menu-item {
+  transition: all 0.3s ease-in-out !important;
+}
+
+.ant-menu-item:hover {
+  background-color: rgba(24, 144, 255, 0.1) !important;
+}
+
+/* 顶部栏阴影效果 */
+.ant-layout-header {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+/* 内容区域过渡效果 */
+.ant-layout-content {
+  transition: all 0.3s ease-in-out;
+}
+
+/* 用户头像悬停效果 */
+.user-avatar {
+  transition: transform 0.3s ease-in-out;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+}
+
+/* 面包屑导航样式 */
+.ant-breadcrumb {
+  font-size: 14px;
+}
+
+.ant-breadcrumb a {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.ant-breadcrumb a:hover {
+  color: #1890ff;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 菜单展开/收起动画 */
+.ant-menu-inline-collapsed {
+  transition: all 0.3s ease-in-out !important;
+}
+
+/* 卡片内容区域样式 */
+.content-card {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 
+              0 1px 6px -1px rgba(0, 0, 0, 0.02), 
+              0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease-in-out;
+}
+
+.content-card:hover {
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 
+              0 6px 16px 0 rgba(0, 0, 0, 0.08), 
+              0 9px 28px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 按钮悬停效果 */
+.ant-btn {
+  transition: all 0.3s ease-in-out !important;
+}
+
+.ant-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Logo 区域样式 */
+.logo-container {
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.logo-text {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.ant-layout-sider-collapsed .logo-text {
+  opacity: 0;
+}
+
+/* 通知图标动画 */
+@keyframes bellShake {
+  0% { transform: rotate(0); }
+  15% { transform: rotate(5deg); }
+  30% { transform: rotate(-5deg); }
+  45% { transform: rotate(4deg); }
+  60% { transform: rotate(-4deg); }
+  75% { transform: rotate(2deg); }
+  85% { transform: rotate(-2deg); }
+  92% { transform: rotate(1deg); }
+  100% { transform: rotate(0); }
+}
+
+.notification-bell:hover {
+  animation: bellShake 0.8s ease-in-out;
+} 

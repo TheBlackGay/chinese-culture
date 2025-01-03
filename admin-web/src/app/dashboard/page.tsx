@@ -1,59 +1,82 @@
 'use client';
 
-import React from 'react';
-import dynamic from 'next/dynamic';
-import { Row, Col } from 'antd';
+import { Card, Row, Col, Statistic } from 'antd';
 import {
   UserOutlined,
   FileTextOutlined,
-  TagOutlined,
-  CommentOutlined,
+  EyeOutlined,
+  LikeOutlined
 } from '@ant-design/icons';
+import LunarCalendar from '@/components/LunarCalendar';
+import styled from 'styled-components';
 
-const StatisticCard = dynamic(() => import('@/components/Dashboard/StatisticCard'), {
-  ssr: false,
-});
+const StyledCard = styled(Card)`
+  &.content-card {
+    transition: all 0.3s ease-in-out;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+`;
 
-const LunarCalendar = dynamic(() => import('@/components/Calendar/LunarCalendar'), {
-  ssr: false,
-});
-
-export default function DashboardPage() {
-  const statistics = [
-    {
-      title: '用户总数',
-      value: 1234,
-      prefix: <UserOutlined />,
-    },
-    {
-      title: '文章总数',
-      value: 56,
-      prefix: <FileTextOutlined />,
-    },
-    {
-      title: '标签总数',
-      value: 18,
-      prefix: <TagOutlined />,
-    },
-    {
-      title: '评论总数',
-      value: 289,
-      prefix: <CommentOutlined />,
-    },
-  ];
-
+export default function Dashboard() {
   return (
-    <div className="p-6">
-      <Row gutter={[16, 16]}>
-        {statistics.map((stat, index) => (
-          <Col key={index} xs={24} sm={12} md={6}>
-            <StatisticCard {...stat} />
-          </Col>
-        ))}
+    <div className="dashboard-container">
+      <Row gutter={[24, 24]}>
+        <Col xs={24} sm={12} lg={6}>
+          <StyledCard hoverable className="content-card">
+            <Statistic
+              title="总用户数"
+              value={1234}
+              prefix={<UserOutlined />}
+              valueStyle={{ color: '#1890ff' }}
+            />
+          </StyledCard>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <StyledCard hoverable className="content-card">
+            <Statistic
+              title="文章数量"
+              value={56}
+              prefix={<FileTextOutlined />}
+              valueStyle={{ color: '#52c41a' }}
+            />
+          </StyledCard>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <StyledCard hoverable className="content-card">
+            <Statistic
+              title="总访问量"
+              value={9876}
+              prefix={<EyeOutlined />}
+              valueStyle={{ color: '#faad14' }}
+            />
+          </StyledCard>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <StyledCard hoverable className="content-card">
+            <Statistic
+              title="收藏数"
+              value={432}
+              prefix={<LikeOutlined />}
+              valueStyle={{ color: '#eb2f96' }}
+            />
+          </StyledCard>
+        </Col>
       </Row>
 
-      <Row className="mt-6">
-        <Col xs={24}>
+      <Row gutter={[24, 24]} className="mt-6">
+        <Col xs={24} lg={16}>
+          <StyledCard 
+            title="最近活动" 
+            className="content-card"
+            bodyStyle={{ height: '400px' }}
+          >
+            {/* 这里可以添加图表或活动列表 */}
+          </StyledCard>
+        </Col>
+        <Col xs={24} lg={8}>
           <LunarCalendar />
         </Col>
       </Row>
