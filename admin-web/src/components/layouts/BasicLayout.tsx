@@ -9,6 +9,10 @@ import {
   FileTextOutlined,
   SettingOutlined,
   UserOutlined,
+  CalendarOutlined,
+  CompassOutlined,
+  FireOutlined,
+  ZhihuOutlined,
 } from '@ant-design/icons';
 import { usePathname, useRouter } from 'next/navigation';
 import type { MenuProps } from 'antd';
@@ -46,6 +50,33 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
         {
           key: '/content/tags',
           label: '标签管理',
+        },
+      ],
+    },
+    {
+      key: '/tools',
+      icon: <CompassOutlined />,
+      label: '文化工具',
+      children: [
+        {
+          key: '/tools/bazi',
+          icon: <CalendarOutlined />,
+          label: '生辰八字',
+        },
+        {
+          key: '/tools/lucky-days',
+          icon: <CalendarOutlined />,
+          label: '黄道吉日',
+        },
+        {
+          key: '/tools/five-elements',
+          icon: <FireOutlined />,
+          label: '五行属性',
+        },
+        {
+          key: '/tools/zodiac',
+          icon: <ZhihuOutlined />,
+          label: '生肖信息',
         },
       ],
     },
@@ -90,7 +121,7 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
           theme="dark"
           mode="inline"
           selectedKeys={[pathname]}
-          defaultOpenKeys={['/content']}
+          defaultOpenKeys={['/content', '/tools']}
           items={menuItems}
           onClick={handleMenuClick}
         />
@@ -108,7 +139,7 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
             </Button>
           </Dropdown>
         </Header>
-        <Content className="m-6 min-h-[280px] bg-white">
+        <Content className="m-6 min-h-[280px] bg-white p-6 rounded-lg">
           {children}
         </Content>
       </Layout>
