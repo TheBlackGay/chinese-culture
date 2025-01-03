@@ -1,0 +1,72 @@
+/**
+ * @file 样式变量定义
+ */
+
+:root {
+  // 主题色
+  --primary-color: #1890ff;
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --error-color: #f5222d;
+  --info-color: #1890ff;
+
+  // 文字颜色
+  --text-color: rgba(0, 0, 0, 0.85);
+  --text-color-secondary: rgba(0, 0, 0, 0.45);
+  --disabled-color: rgba(0, 0, 0, 0.25);
+  --heading-color: rgba(0, 0, 0, 0.85);
+
+  // 背景色
+  --bg-color: #f0f2f5;
+  --component-bg: #fff;
+  --hover-bg: rgba(0, 0, 0, 0.02);
+
+  // 边框
+  --border-color: #d9d9d9;
+  --border-radius-base: 2px;
+  --border-width: 1px;
+
+  // 阴影
+  --shadow-color: rgba(0, 0, 0, 0.15);
+  --shadow-1: 0 2px 8px var(--shadow-color);
+  --shadow-2: 0 4px 12px var(--shadow-color);
+
+  // 间距
+  --spacing-unit: 4px;
+  --spacing-xs: var(--spacing-unit);
+  --spacing-sm: calc(var(--spacing-unit) * 2);
+  --spacing-md: calc(var(--spacing-unit) * 4);
+  --spacing-lg: calc(var(--spacing-unit) * 6);
+  --spacing-xl: calc(var(--spacing-unit) * 8);
+
+  // 字体
+  --font-size-base: 14px;
+  --font-size-sm: 12px;
+  --font-size-lg: 16px;
+  --line-height-base: 1.5;
+
+  // 滚动条
+  --scrollbar-track-color: #f5f5f5;
+  --scrollbar-thumb-color: #ccc;
+
+  // 布局
+  --header-height: 64px;
+  --sidebar-width: 256px;
+  --sidebar-collapsed-width: 80px;
+  --content-padding: 24px;
+}
+
+// 暗色主题变量
+[data-theme='dark'] {
+  --text-color: rgba(255, 255, 255, 0.85);
+  --text-color-secondary: rgba(255, 255, 255, 0.45);
+  --disabled-color: rgba(255, 255, 255, 0.25);
+  --heading-color: rgba(255, 255, 255, 0.85);
+  --bg-color: #141414;
+  --component-bg: #1f1f1f;
+  --hover-bg: rgba(255, 255, 255, 0.08);
+  --border-color: #434343;
+  --shadow-color: rgba(0, 0, 0, 0.45);
+  --scrollbar-track-color: #262626;
+  --scrollbar-thumb-color: #434343;
+} 
