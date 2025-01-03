@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Layout, Menu, Button, Dropdown } from 'antd';
+import React, { useState, Suspense } from 'react';
+import { Layout, Menu, Button, Dropdown, Spin } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -13,6 +13,11 @@ import {
   CompassOutlined,
   FireOutlined,
   ZhihuOutlined,
+  FontSizeOutlined,
+  BookOutlined,
+  ScheduleOutlined,
+  DeploymentUnitOutlined,
+  ToolOutlined,
 } from '@ant-design/icons';
 import { usePathname, useRouter } from 'next/navigation';
 import type { MenuProps } from 'antd';
@@ -30,58 +35,48 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
 
   const menuItems: MenuProps['items'] = [
     {
-      key: '/dashboard',
+      key: 'dashboard',
       icon: <DashboardOutlined />,
       label: '仪表盘',
     },
     {
-      key: '/content',
-      icon: <FileTextOutlined />,
-      label: '内容管理',
-      children: [
-        {
-          key: '/content/articles',
-          label: '文章管理',
-        },
-        {
-          key: '/content/categories',
-          label: '分类管理',
-        },
-        {
-          key: '/content/tags',
-          label: '标签管理',
-        },
-      ],
-    },
-    {
-      key: '/tools',
-      icon: <CompassOutlined />,
+      key: 'tools',
+      icon: <ToolOutlined />,
       label: '文化工具',
       children: [
         {
-          key: '/tools/bazi',
-          icon: <CalendarOutlined />,
+          key: 'tools/bazi',
           label: '生辰八字',
         },
         {
-          key: '/tools/lucky-days',
-          icon: <CalendarOutlined />,
+          key: 'tools/lucky-days',
           label: '黄道吉日',
         },
         {
-          key: '/tools/five-elements',
-          icon: <FireOutlined />,
+          key: 'tools/five-elements',
           label: '五行属性',
         },
         {
-          key: '/tools/zodiac',
-          icon: <ZhihuOutlined />,
+          key: 'tools/zodiac',
           label: '生肖信息',
+        },
+        {
+          key: 'tools/hexagram',
+          label: '周易卦象',
+        },
+        {
+          key: 'tools/festivals',
+          label: '传统节日',
         },
       ],
     },
     {
-      key: '/settings',
+      key: 'content',
+      icon: <FileTextOutlined />,
+      label: '内容管理',
+    },
+    {
+      key: 'settings',
       icon: <SettingOutlined />,
       label: '系统设置',
     },
@@ -99,7 +94,8 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
   ];
 
   const handleMenuClick = ({ key }: { key: string }) => {
-    router.push(key);
+    const path = key.startsWith('/') ? key : `/${key}`;
+    router.push(path);
   };
 
   const handleUserMenuClick = ({ key }: { key: string }) => {
@@ -120,8 +116,8 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={[pathname]}
-          defaultOpenKeys={['/content', '/tools']}
+          selectedKeys={[pathname.slice(1)]}
+          defaultOpenKeys={['content', 'tools']}
           items={menuItems}
           onClick={handleMenuClick}
         />
@@ -140,7 +136,13 @@ export default function BasicLayout({ children }: BasicLayoutProps) {
           </Dropdown>
         </Header>
         <Content className="m-6 min-h-[280px] bg-white p-6 rounded-lg">
-          {children}
+          <Suspense fallback={
+            <div className="flex justify-center items-center h-[200px]">
+              <Spin size="large" tip="加载中..." />
+            </div>
+          }>
+            {children}
+          </Suspense>
         </Content>
       </Layout>
     </Layout>
