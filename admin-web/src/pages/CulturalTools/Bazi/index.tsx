@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip } from 'antd';
+import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip, Tabs } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { getBaZi, getLunarInfo, getTrueSolarTime } from '@/services/lunar';
@@ -8,6 +8,7 @@ import styles from './index.less';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
+const { TabPane } = Tabs;
 
 // 五行顺序和颜色映射
 const wuXingConfig = [
@@ -42,6 +43,7 @@ const BaziPage: React.FC = () => {
   const [baziResult, setBaziResult] = useState<string[]>([]);
   const [lunarInfo, setLunarInfo] = useState<any>(null);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
+  const [activeTab, setActiveTab] = useState<string>('basic');
 
   // 加载历史记录
   useEffect(() => {
@@ -141,6 +143,283 @@ const BaziPage: React.FC = () => {
     },
   ];
 
+  // 渲染基本信息内容
+  const renderBasicInfo = () => (
+    <Card className={styles.resultCard} bordered={false}>
+      <Row gutter={[16, 16]}>
+        {/* 基本信息区域 */}
+        <Col span={24}>
+          <div className={styles.infoBlock}>
+            <Text className={styles.infoTitle}>基本信息</Text>
+            <Row gutter={[32, 16]}>
+              <Col span={8}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>阳历：</Text>
+                  <Text>{selectedDateTime?.format('YYYY年MM月DD日 HH:mm')}</Text>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>农历：</Text>
+                  <Text>{lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese}</Text>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>生肖：</Text>
+                  <Text>{lunarInfo.zodiac}</Text>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>星座：</Text>
+                  <Text>{lunarInfo.constellation}</Text>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>节气：</Text>
+                  <Text>{lunarInfo.term || '无'}</Text>
+                </div>
+              </Col>
+              <Col span={8}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>真太阳时：</Text>
+                  <Text>{selectedDateTime ? getTrueSolarTime(selectedDateTime.toDate()) : '--'}</Text>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </Col>
+
+        {/* 八字表格区域 */}
+        <Col span={24}>
+          <Table 
+            dataSource={[{}]} 
+            columns={columns} 
+            pagination={false}
+            className={styles.baziTable}
+          />
+        </Col>
+
+        {/* 纳音五行 */}
+        <Col span={24}>
+          <div className={styles.infoBlock}>
+            <Text className={styles.infoTitle}>纳音五行</Text>
+            <Row gutter={[16, 16]}>
+              <Col span={6}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>年柱纳音：</Text>
+                  <Text>{lunarInfo.naYin.year}</Text>
+                </div>
+              </Col>
+              <Col span={6}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>月柱纳音：</Text>
+                  <Text>{lunarInfo.naYin.month}</Text>
+                </div>
+              </Col>
+              <Col span={6}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>日柱纳音：</Text>
+                  <Text>{lunarInfo.naYin.day}</Text>
+                </div>
+              </Col>
+              <Col span={6}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>时柱纳音：</Text>
+                  <Text>{lunarInfo.naYin.hour}</Text>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </Col>
+
+        {/* 命理信息区域 */}
+        <Col span={24}>
+          <Row gutter={[32, 16]} className={styles.infoSection}>
+            {/* 基本命理 */}
+            <Col span={8}>
+              <div className={styles.infoBlock}>
+                <Text className={styles.infoTitle}>基本命理</Text>
+                <div className={styles.infoContent}>
+                  {lunarInfo.taiYuan && (
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>胎元：</Text>
+                      <Text>{lunarInfo.taiYuan}</Text>
+                    </div>
+                  )}
+                  {lunarInfo.mingGong && (
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>命宫：</Text>
+                      <Text>{lunarInfo.mingGong}</Text>
+                    </div>
+                  )}
+                  {lunarInfo.shenGong && (
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>身宫：</Text>
+                      <Text>{lunarInfo.shenGong}</Text>
+                    </div>
+                  )}
+                  {lunarInfo.taiXi && (
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>胎息：</Text>
+                      <Text>{lunarInfo.taiXi}</Text>
+                    </div>
+                  )}
+                  {lunarInfo.mingGua && (
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>命卦：</Text>
+                      <Text>{lunarInfo.mingGua}</Text>
+                    </div>
+                  )}
+                  <div className={styles.infoItem}>
+                    <Text type="secondary">更多命理信息正在开发中...</Text>
+                  </div>
+                </div>
+              </div>
+            </Col>
+
+            {/* 神煞信息 */}
+            <Col span={8}>
+              <div className={styles.infoBlock}>
+                <Text className={styles.infoTitle}>神煞信息</Text>
+                <div className={styles.infoContent}>
+                  <div className={styles.infoItem}>
+                    <Text className={styles.infoLabel}>当前节气：</Text>
+                    <Text>{lunarInfo.jieQi.current}</Text>
+                  </div>
+                  <div className={styles.infoItem}>
+                    <Text className={styles.infoLabel}>下一节气：</Text>
+                    <Text>{lunarInfo.jieQi.next} ({lunarInfo.jieQi.nextDate})</Text>
+                  </div>
+                  {lunarInfo.jiShen?.length > 0 && (
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>吉神：</Text>
+                      <div className={styles.tagGroup}>
+                        {lunarInfo.jiShen.map((shen: string, index: number) => (
+                          <Tag key={index} color="success">{shen}</Tag>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {lunarInfo.xiongSha?.length > 0 && (
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>凶煞：</Text>
+                      <div className={styles.tagGroup}>
+                        {lunarInfo.xiongSha.map((sha: string, index: number) => (
+                          <Tag key={index} color="error">{sha}</Tag>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div className={styles.infoItem}>
+                    <Text type="secondary">更多神煞信息正在开发中...</Text>
+                  </div>
+                </div>
+              </div>
+            </Col>
+
+            {/* 五行分布 */}
+            <Col span={8}>
+              <div className={styles.infoBlock}>
+                <Text className={styles.infoTitle}>五行分布</Text>
+                <div className={styles.wuxingContent}>
+                  {wuXingConfig.map(({ element, color, description }) => (
+                    <div key={element} className={styles.wuxingProgressItem}>
+                      <div className={styles.wuxingLabel}>
+                        <div className={styles.wuxingTitleGroup}>
+                          <Tag color={color} className={styles.wuxingTag}>
+                            {element}
+                          </Tag>
+                          <Tooltip title={description} placement="right">
+                            <ExclamationCircleOutlined className={styles.wuxingInfo} />
+                          </Tooltip>
+                        </div>
+                        <span className={styles.wuxingCount}>{lunarInfo.wuXing[element]}</span>
+                      </div>
+                      <Progress
+                        type="line"
+                        percent={(lunarInfo.wuXing[element] / MAX_WUXING_COUNT) * 100}
+                        strokeColor={color}
+                        showInfo={false}
+                        className={styles.wuxingProgress}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </Col>
+
+        {/* 十神六亲 */}
+        <Col span={24}>
+          <div className={styles.infoBlock}>
+            <Text className={styles.infoTitle}>十神六亲</Text>
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <div className={styles.infoSubBlock}>
+                  <Text className={styles.infoSubTitle}>十神</Text>
+                  <div className={styles.infoGrid}>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>年柱：</Text>
+                      <Text>{lunarInfo.shiShen.year}</Text>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>月柱：</Text>
+                      <Text>{lunarInfo.shiShen.month}</Text>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>日柱：</Text>
+                      <Text>{lunarInfo.shiShen.day}</Text>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>时柱：</Text>
+                      <Text>{lunarInfo.shiShen.hour}</Text>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+              <Col span={12}>
+                <div className={styles.infoSubBlock}>
+                  <Text className={styles.infoSubTitle}>六亲</Text>
+                  <div className={styles.infoGrid}>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>年柱：</Text>
+                      <Text>{lunarInfo.liuQin.year}</Text>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>月柱：</Text>
+                      <Text>{lunarInfo.liuQin.month}</Text>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>日柱：</Text>
+                      <Text>{lunarInfo.liuQin.day}</Text>
+                    </div>
+                    <div className={styles.infoItem}>
+                      <Text className={styles.infoLabel}>时柱：</Text>
+                      <Text>{lunarInfo.liuQin.hour}</Text>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </Col>
+      </Row>
+    </Card>
+  );
+
+  // 渲染基本排盘内容
+  const renderBasicChart = () => (
+    <Card className={styles.resultCard} bordered={false}>
+      <div style={{ textAlign: 'center', padding: '40px 0' }}>
+        <Text type="secondary" style={{ fontSize: 16 }}>基本排盘功能开发中...</Text>
+      </div>
+    </Card>
+  );
+
   return (
     <PageContainer>
       <div className={styles.container}>
@@ -163,270 +442,18 @@ const BaziPage: React.FC = () => {
               </div>
 
               {lunarInfo && (
-                <Card className={styles.resultCard} bordered={false}>
-                  <Row gutter={[16, 16]}>
-                    {/* 基本信息区域 */}
-                    <Col span={24}>
-                      <div className={styles.infoBlock}>
-                        <Text className={styles.infoTitle}>基本信息</Text>
-                        <Row gutter={[32, 16]}>
-                          <Col span={8}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>阳历：</Text>
-                              <Text>{selectedDateTime?.format('YYYY年MM月DD日 HH:mm')}</Text>
-                            </div>
-                          </Col>
-                          <Col span={8}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>农历：</Text>
-                              <Text>{lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese}</Text>
-                            </div>
-                          </Col>
-                          <Col span={8}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>生肖：</Text>
-                              <Text>{lunarInfo.zodiac}</Text>
-                            </div>
-                          </Col>
-                          <Col span={8}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>星座：</Text>
-                              <Text>{lunarInfo.constellation}</Text>
-                            </div>
-                          </Col>
-                          <Col span={8}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>节气：</Text>
-                              <Text>{lunarInfo.term || '无'}</Text>
-                            </div>
-                          </Col>
-                          <Col span={8}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>真太阳时：</Text>
-                              <Text>{selectedDateTime ? getTrueSolarTime(selectedDateTime.toDate()) : '--'}</Text>
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Col>
-
-                    {/* 八字表格区域 */}
-                    <Col span={24}>
-                      <Table 
-                        dataSource={[{}]} 
-                        columns={columns} 
-                        pagination={false}
-                        className={styles.baziTable}
-                      />
-                    </Col>
-
-                    {/* 纳音五行 */}
-                    <Col span={24}>
-                      <div className={styles.infoBlock}>
-                        <Text className={styles.infoTitle}>纳音五行</Text>
-                        <Row gutter={[16, 16]}>
-                          <Col span={6}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>年柱纳音：</Text>
-                              <Text>{lunarInfo.naYin.year}</Text>
-                            </div>
-                          </Col>
-                          <Col span={6}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>月柱纳音：</Text>
-                              <Text>{lunarInfo.naYin.month}</Text>
-                            </div>
-                          </Col>
-                          <Col span={6}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>日柱纳音：</Text>
-                              <Text>{lunarInfo.naYin.day}</Text>
-                            </div>
-                          </Col>
-                          <Col span={6}>
-                            <div className={styles.infoItem}>
-                              <Text className={styles.infoLabel}>时柱纳音：</Text>
-                              <Text>{lunarInfo.naYin.hour}</Text>
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Col>
-
-                    {/* 命理信息区域 */}
-                    <Col span={24}>
-                      <Row gutter={[32, 16]} className={styles.infoSection}>
-                        {/* 基本命理 */}
-                        <Col span={8}>
-                          <div className={styles.infoBlock}>
-                            <Text className={styles.infoTitle}>基本命理</Text>
-                            <div className={styles.infoContent}>
-                              {lunarInfo.taiYuan && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>胎元：</Text>
-                                  <Text>{lunarInfo.taiYuan}</Text>
-                                </div>
-                              )}
-                              {lunarInfo.mingGong && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>命宫：</Text>
-                                  <Text>{lunarInfo.mingGong}</Text>
-                                </div>
-                              )}
-                              {lunarInfo.shenGong && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>身宫：</Text>
-                                  <Text>{lunarInfo.shenGong}</Text>
-                                </div>
-                              )}
-                              {lunarInfo.taiXi && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>胎息：</Text>
-                                  <Text>{lunarInfo.taiXi}</Text>
-                                </div>
-                              )}
-                              {lunarInfo.mingGua && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>命卦：</Text>
-                                  <Text>{lunarInfo.mingGua}</Text>
-                                </div>
-                              )}
-                              <div className={styles.infoItem}>
-                                <Text type="secondary">更多命理信息正在开发中...</Text>
-                              </div>
-                            </div>
-                          </div>
-                        </Col>
-
-                        {/* 神煞信息 */}
-                        <Col span={8}>
-                          <div className={styles.infoBlock}>
-                            <Text className={styles.infoTitle}>神煞信息</Text>
-                            <div className={styles.infoContent}>
-                              <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>当前节气：</Text>
-                                <Text>{lunarInfo.jieQi.current}</Text>
-                              </div>
-                              <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>下一节气：</Text>
-                                <Text>{lunarInfo.jieQi.next} ({lunarInfo.jieQi.nextDate})</Text>
-                              </div>
-                              {lunarInfo.jiShen?.length > 0 && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>吉神：</Text>
-                                  <div className={styles.tagGroup}>
-                                    {lunarInfo.jiShen.map((shen: string, index: number) => (
-                                      <Tag key={index} color="success">{shen}</Tag>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              {lunarInfo.xiongSha?.length > 0 && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>凶煞：</Text>
-                                  <div className={styles.tagGroup}>
-                                    {lunarInfo.xiongSha.map((sha: string, index: number) => (
-                                      <Tag key={index} color="error">{sha}</Tag>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              <div className={styles.infoItem}>
-                                <Text type="secondary">更多神煞信息正在开发中...</Text>
-                              </div>
-                            </div>
-                          </div>
-                        </Col>
-
-                        {/* 五行分布 */}
-                        <Col span={8}>
-                          <div className={styles.infoBlock}>
-                            <Text className={styles.infoTitle}>五行分布</Text>
-                            <div className={styles.wuxingContent}>
-                              {wuXingConfig.map(({ element, color, description }) => (
-                                <div key={element} className={styles.wuxingProgressItem}>
-                                  <div className={styles.wuxingLabel}>
-                                    <div className={styles.wuxingTitleGroup}>
-                                      <Tag color={color} className={styles.wuxingTag}>
-                                        {element}
-                                      </Tag>
-                                      <Tooltip title={description} placement="right">
-                                        <ExclamationCircleOutlined className={styles.wuxingInfo} />
-                                      </Tooltip>
-                                    </div>
-                                    <span className={styles.wuxingCount}>{lunarInfo.wuXing[element]}</span>
-                                  </div>
-                                  <Progress
-                                    type="line"
-                                    percent={(lunarInfo.wuXing[element] / MAX_WUXING_COUNT) * 100}
-                                    strokeColor={color}
-                                    showInfo={false}
-                                    className={styles.wuxingProgress}
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </Col>
-                      </Row>
-                    </Col>
-
-                    {/* 十神六亲 */}
-                    <Col span={24}>
-                      <div className={styles.infoBlock}>
-                        <Text className={styles.infoTitle}>十神六亲</Text>
-                        <Row gutter={[16, 16]}>
-                          <Col span={12}>
-                            <div className={styles.infoSubBlock}>
-                              <Text className={styles.infoSubTitle}>十神</Text>
-                              <div className={styles.infoGrid}>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>年柱：</Text>
-                                  <Text>{lunarInfo.shiShen.year}</Text>
-                                </div>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>月柱：</Text>
-                                  <Text>{lunarInfo.shiShen.month}</Text>
-                                </div>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>日柱：</Text>
-                                  <Text>{lunarInfo.shiShen.day}</Text>
-                                </div>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>时柱：</Text>
-                                  <Text>{lunarInfo.shiShen.hour}</Text>
-                                </div>
-                              </div>
-                            </div>
-                          </Col>
-                          <Col span={12}>
-                            <div className={styles.infoSubBlock}>
-                              <Text className={styles.infoSubTitle}>六亲</Text>
-                              <div className={styles.infoGrid}>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>年柱：</Text>
-                                  <Text>{lunarInfo.liuQin.year}</Text>
-                                </div>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>月柱：</Text>
-                                  <Text>{lunarInfo.liuQin.month}</Text>
-                                </div>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>日柱：</Text>
-                                  <Text>{lunarInfo.liuQin.day}</Text>
-                                </div>
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>时柱：</Text>
-                                  <Text>{lunarInfo.liuQin.hour}</Text>
-                                </div>
-                              </div>
-                            </div>
-                          </Col>
-                        </Row>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card>
+                <Tabs 
+                  activeKey={activeTab}
+                  onChange={setActiveTab}
+                  className={styles.contentTabs}
+                >
+                  <TabPane tab="基本信息" key="basic">
+                    {renderBasicInfo()}
+                  </TabPane>
+                  <TabPane tab="基本排盘" key="chart">
+                    {renderBasicChart()}
+                  </TabPane>
+                </Tabs>
               )}
             </Space>
           </Card>
