@@ -175,37 +175,49 @@ const BaziPage: React.FC = () => {
           <div className={styles.infoBlock}>
             <Text className={styles.infoTitle}>基本信息</Text>
             <Row gutter={[32, 16]}>
-              <Col span={8}>
+              <Col span={12}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>阳历：</Text>
                   <Text>{selectedDateTime?.format('YYYY年MM月DD日 HH:mm')}</Text>
                 </div>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>农历：</Text>
-                  <Text>{lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese}</Text>
+                  <Text>
+                    {lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese} {lunarInfo.hourInChinese}时
+                  </Text>
                 </div>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>生肖：</Text>
                   <Text>{lunarInfo.zodiac}</Text>
                 </div>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>星座：</Text>
                   <Text>{lunarInfo.constellation}</Text>
                 </div>
               </Col>
-              <Col span={8}>
+              <Col span={24}>
                 <div className={styles.infoItem}>
-                  <Text className={styles.infoLabel}>节气：</Text>
-                  <Text>{lunarInfo.term || '无'}</Text>
+                  <Text className={styles.infoLabel}>出生节气：</Text>
+                  <div>
+                    <div>
+                      <Text>出生于{lunarInfo.jieQi.current}后{lunarInfo.jieQi.currentDays}天{lunarInfo.jieQi.currentHours}小时，</Text>
+                      <Text>{lunarInfo.jieQi.next}前{lunarInfo.jieQi.nextDays}天{lunarInfo.jieQi.nextHours}小时</Text>
+                    </div>
+                    <div style={{ marginTop: 4, color: 'rgba(255, 255, 255, 0.45)' }}>
+                      <Text>{lunarInfo.jieQi.current}：{lunarInfo.jieQi.currentDate}</Text>
+                      <Text style={{ margin: '0 8px' }}>|</Text>
+                      <Text>{lunarInfo.jieQi.next}：{lunarInfo.jieQi.nextDate}</Text>
+                    </div>
+                  </div>
                 </div>
               </Col>
-              <Col span={8}>
+              <Col span={12}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>真太阳时：</Text>
                   <Text>{selectedDateTime ? getTrueSolarTime(selectedDateTime.toDate()) : '--'}</Text>
