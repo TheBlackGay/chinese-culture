@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Divider } from 'antd';
+import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Divider, Progress } from 'antd';
 import type { Dayjs } from 'dayjs';
 import { getBaZi, getLunarInfo } from '@/services/lunar';
 import styles from './index.less';
 
 const { Text } = Typography;
 
-// 五行颜色映射
-const wuXingColors: Record<string, string> = {
-  '木': '#4CAF50',
-  '火': '#FF5722',
-  '土': '#FF9800',
-  '金': '#FFD700',
-  '水': '#2196F3'
-};
+// 五行顺序和颜色映射
+const wuXingConfig = [
+  { element: '金', color: '#FFD700' },
+  { element: '木', color: '#4CAF50' },
+  { element: '水', color: '#2196F3' },
+  { element: '火', color: '#FF5722' },
+  { element: '土', color: '#FF9800' },
+] as const;
+
+// 五行颜色映射对象（为了兼容其他地方的使用）
+const wuXingColors: Record<string, string> = Object.fromEntries(
+  wuXingConfig.map(({ element, color }) => [element, color])
+);
+
+// 五行最大数量
+const MAX_WUXING_COUNT = 5;
 
 const BaziPage: React.FC = () => {
   const [selectedDateTime, setSelectedDateTime] = useState<Dayjs | null>(null);
@@ -165,12 +173,21 @@ const BaziPage: React.FC = () => {
                       <div className={styles.infoBlock}>
                         <Text className={styles.infoTitle}>五行分布</Text>
                         <div className={styles.wuxingContent}>
-                          {Object.entries(lunarInfo.wuXing).map(([element, count]) => (
-                            <div key={element} className={styles.wuxingItem}>
-                              <Tag color={wuXingColors[element]} className={styles.wuxingTag}>
-                                {element}
-                              </Tag>
-                              <Text className={styles.wuxingCount}>{count}个</Text>
+                          {wuXingConfig.map(({ element, color }) => (
+                            <div key={element} className={styles.wuxingProgressItem}>
+                              <div className={styles.wuxingLabel}>
+                                <Tag color={color} className={styles.wuxingTag}>
+                                  {element}
+                                </Tag>
+                                <span className={styles.wuxingCount}>{lunarInfo.wuXing[element]}</span>
+                              </div>
+                              <Progress
+                                type="line"
+                                percent={(lunarInfo.wuXing[element] / MAX_WUXING_COUNT) * 100}
+                                strokeColor={color}
+                                showInfo={false}
+                                className={styles.wuxingProgress}
+                              />
                             </div>
                           ))}
                         </div>
