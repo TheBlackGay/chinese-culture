@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip, Tabs } from 'antd';
+import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip, Tabs, Radio } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { getBaZi, getLunarInfo, getTrueSolarTime } from '@/services/lunar';
+import { calculateChengGu } from '@/services/chengGu';
 import styles from './index.less';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
@@ -34,6 +35,7 @@ const STORAGE_KEY = 'bazi_history';
 interface HistoryRecord {
   id: string;
   datetime: string;
+  gender: 'male' | 'female';
   lunarInfo: any;
   timestamp: number;
 }
@@ -44,6 +46,7 @@ const BaziPage: React.FC = () => {
   const [lunarInfo, setLunarInfo] = useState<any>(null);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [activeTab, setActiveTab] = useState<string>('basic');
+  const [gender, setGender] = useState<'male' | 'female'>('male');
 
   // 加载历史记录
   useEffect(() => {
@@ -70,6 +73,7 @@ const BaziPage: React.FC = () => {
   // 从历史记录加载数据
   const loadFromHistory = (record: HistoryRecord) => {
     setSelectedDateTime(dayjs(record.datetime));
+    setGender(record.gender);
     setLunarInfo(record.lunarInfo);
   };
 
@@ -80,13 +84,32 @@ const BaziPage: React.FC = () => {
       setBaziResult(bazi);
       
       const lunar = getLunarInfo(date);
-      setLunarInfo(lunar);
+      console.log('Lunar info:', lunar);
+      
+      // 计算称骨结果
+      const chengGu = calculateChengGu(
+        lunar.yearInGanZhi,
+        lunar.month,
+        lunar.day,
+        lunar.ganZhi.hour.zhi,
+        gender
+      );
+      console.log('ChengGu result:', chengGu);
+      
+      setLunarInfo({
+        ...lunar,
+        chengGu
+      });
 
       // 添加到历史记录
       saveHistory({
         id: Date.now().toString(),
         datetime: selectedDateTime.format('YYYY-MM-DD HH:mm'),
-        lunarInfo: lunar,
+        gender,
+        lunarInfo: {
+          ...lunar,
+          chengGu
+        },
         timestamp: Date.now(),
       });
     }
@@ -195,7 +218,7 @@ const BaziPage: React.FC = () => {
         {/* 八字表格区域 */}
         <Col span={24}>
           <Table 
-            dataSource={[{}]} 
+            dataSource={[{ key: 'bazi-row' }]} 
             columns={columns} 
             pagination={false}
             className={styles.baziTable}
@@ -407,6 +430,26 @@ const BaziPage: React.FC = () => {
             </Row>
           </div>
         </Col>
+
+        {/* 袁天罡称骨 */}
+        <Col span={24}>
+          <div className={styles.infoBlock}>
+            <Text className={styles.infoTitle}>袁天罡称骨</Text>
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <div className={styles.infoItem}>
+                  <Text className={styles.infoLabel}>称骨重量：</Text>
+                  <Text>{lunarInfo.chengGu?.weight || '--'} 两</Text>
+                </div>
+                {lunarInfo.chengGu?.description && (
+                  <div className={styles.infoItem} style={{ marginTop: 8 }}>
+                    <Text>{lunarInfo.chengGu.description}</Text>
+                  </div>
+                )}
+              </Col>
+            </Row>
+          </div>
+        </Col>
       </Row>
     </Card>
   );
@@ -436,6 +479,15 @@ const BaziPage: React.FC = () => {
                   placeholder="选择日期和时间"
                   format="YYYY-MM-DD HH:mm"
                 />
+                <Radio.Group 
+                  value={gender} 
+                  onChange={(e) => setGender(e.target.value)}
+                  optionType="button"
+                  buttonStyle="solid"
+                >
+                  <Radio.Button value="male">男命</Radio.Button>
+                  <Radio.Button value="female">女命</Radio.Button>
+                </Radio.Group>
                 <Button type="primary" onClick={handleCalculate}>
                   计算
                 </Button>
@@ -495,6 +547,9 @@ const BaziPage: React.FC = () => {
                       <div className={styles.historyContent}>
                         <div className={styles.historyDateTime}>
                           {item.datetime}
+                          <Tag color={item.gender === 'male' ? 'blue' : 'pink'} style={{ marginLeft: 8 }}>
+                            {item.gender === 'male' ? '男命' : '女命'}
+                          </Tag>
                         </div>
                         <div className={styles.historyInfo}>
                           <Tag>{item.lunarInfo.yearInGanZhi}</Tag>
