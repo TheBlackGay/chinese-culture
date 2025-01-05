@@ -66,17 +66,34 @@ export const getLunarInfo = (date: Date = new Date()): LunarInfo => {
     hour: splitGanZhi(hourGZ)
   };
 
-  // 统计五行
+  // 统计五行 - 使用农历时间的干支来计算
   const wuXing: { [key: string]: number } = {
     '木': 0, '火': 0, '土': 0, '金': 0, '水': 0
   };
 
-  [ganZhi.year, ganZhi.month, ganZhi.day, ganZhi.hour].forEach(gz => {
-    const gan = ganWuXing[gz.gan];
-    const zhi = zhiWuXing[gz.zhi];
-    wuXing[gan]++;
-    wuXing[zhi]++;
-  });
+  // 年干支五行
+  const yearGan = ganWuXing[lunar.getYearGan()];
+  const yearZhi = zhiWuXing[lunar.getYearZhi()];
+  wuXing[yearGan]++;
+  wuXing[yearZhi]++;
+
+  // 月干支五行
+  const monthGan = ganWuXing[lunar.getMonthGan()];
+  const monthZhi = zhiWuXing[lunar.getMonthZhi()];
+  wuXing[monthGan]++;
+  wuXing[monthZhi]++;
+
+  // 日干支五行
+  const dayGan = ganWuXing[lunar.getDayGan()];
+  const dayZhi = zhiWuXing[lunar.getDayZhi()];
+  wuXing[dayGan]++;
+  wuXing[dayZhi]++;
+
+  // 时干支五行
+  const hourGan = ganWuXing[lunar.getTimeGan()];
+  const hourZhi = zhiWuXing[lunar.getTimeZhi()];
+  wuXing[hourGan]++;
+  wuXing[hourZhi]++;
 
   return {
     year: lunar.getYear(),
