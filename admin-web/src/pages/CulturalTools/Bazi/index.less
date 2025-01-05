@@ -74,6 +74,13 @@
     border-bottom: 1px solid rgba(255, 255, 255, 8%);
   }
 
+  .infoSubTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 65%);
+    margin-bottom: 12px;
+  }
+
   .infoContent {
     display: flex;
     flex-direction: column;
@@ -89,6 +96,64 @@
   .infoLabel {
     color: rgba(255, 255, 255, 45%);
     min-width: 70px;
+  }
+
+  .infoGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .tagGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    :global {
+      .ant-tag {
+        margin-right: 0;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        color: rgba(255, 255, 255, 85%);
+      }
+    }
+  }
+}
+
+.infoSubBlock {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  padding: 12px;
+  height: 100%;
+}
+
+// 纳音五行区域样式
+.naYinSection {
+  margin-bottom: 16px;
+  
+  .naYinGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+}
+
+// 十神六亲区域样式
+.shiShenLiuQin {
+  .gridContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+// 神煞信息样式
+.shenShaInfo {
+  .tagList {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 

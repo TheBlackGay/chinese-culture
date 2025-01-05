@@ -175,49 +175,92 @@ const BaziPage: React.FC = () => {
                       />
                     </Col>
 
-                    {/* 信息展示区域 */}
+                    {/* 纳音五行 */}
+                    <Col span={24}>
+                      <div className={styles.infoBlock}>
+                        <Text className={styles.infoTitle}>纳音五行</Text>
+                        <Row gutter={[16, 16]}>
+                          <Col span={6}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>年柱纳音：</Text>
+                              <Text>{lunarInfo.naYin.year}</Text>
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>月柱纳音：</Text>
+                              <Text>{lunarInfo.naYin.month}</Text>
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>日柱纳音：</Text>
+                              <Text>{lunarInfo.naYin.day}</Text>
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>时柱纳音：</Text>
+                              <Text>{lunarInfo.naYin.hour}</Text>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+
+                    {/* 命理信息区域 */}
                     <Col span={24}>
                       <Row gutter={[32, 16]} className={styles.infoSection}>
-                        {/* 基本信息 */}
+                        {/* 基本命理 */}
                         <Col span={8}>
                           <div className={styles.infoBlock}>
-                            <Text className={styles.infoTitle}>基本信息</Text>
+                            <Text className={styles.infoTitle}>基本命理</Text>
                             <div className={styles.infoContent}>
                               <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>阳历：</Text>
-                                <Text>{selectedDateTime?.format('YYYY年MM月DD日 HH:mm')}</Text>
+                                <Text className={styles.infoLabel}>胎元：</Text>
+                                <Text>{lunarInfo.taiYuan}</Text>
                               </div>
                               <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>农历：</Text>
-                                <Text>{lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese}</Text>
+                                <Text className={styles.infoLabel}>命宫：</Text>
+                                <Text>{lunarInfo.mingGong}</Text>
                               </div>
                               <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>真太阳时：</Text>
-                                <Text>{selectedDateTime?.format('HH:mm')}</Text>
+                                <Text className={styles.infoLabel}>身宫：</Text>
+                                <Text>{lunarInfo.shenGong}</Text>
+                              </div>
+                              <div className={styles.infoItem}>
+                                <Text className={styles.infoLabel}>胎息：</Text>
+                                <Text>{lunarInfo.taiXi}</Text>
+                              </div>
+                              <div className={styles.infoItem}>
+                                <Text className={styles.infoLabel}>命卦：</Text>
+                                <Text>{lunarInfo.mingGua}</Text>
                               </div>
                             </div>
                           </div>
                         </Col>
 
-                        {/* 命理信息 */}
+                        {/* 神煞信息 */}
                         <Col span={8}>
                           <div className={styles.infoBlock}>
-                            <Text className={styles.infoTitle}>命理信息</Text>
+                            <Text className={styles.infoTitle}>神煞信息</Text>
                             <div className={styles.infoContent}>
                               <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>生肖：</Text>
-                                <Text>{lunarInfo.zodiac}</Text>
+                                <Text className={styles.infoLabel}>当前节气：</Text>
+                                <Text>{lunarInfo.jieQi.current}</Text>
                               </div>
                               <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>星座：</Text>
-                                <Text>{lunarInfo.constellation}</Text>
+                                <Text className={styles.infoLabel}>下一节气：</Text>
+                                <Text>{lunarInfo.jieQi.next} ({lunarInfo.jieQi.nextDate})</Text>
                               </div>
-                              {lunarInfo.term && (
-                                <div className={styles.infoItem}>
-                                  <Text className={styles.infoLabel}>节气：</Text>
-                                  <Text>{lunarInfo.term}</Text>
+                              <div className={styles.infoItem}>
+                                <Text className={styles.infoLabel}>吉神方位：</Text>
+                                <div className={styles.tagGroup}>
+                                  {lunarInfo.jiShen.map((shen, index) => (
+                                    <Tag key={index}>{shen}</Tag>
+                                  ))}
                                 </div>
-                              )}
+                              </div>
                             </div>
                           </div>
                         </Col>
@@ -253,6 +296,61 @@ const BaziPage: React.FC = () => {
                           </div>
                         </Col>
                       </Row>
+                    </Col>
+
+                    {/* 十神六亲 */}
+                    <Col span={24}>
+                      <div className={styles.infoBlock}>
+                        <Text className={styles.infoTitle}>十神六亲</Text>
+                        <Row gutter={[16, 16]}>
+                          <Col span={12}>
+                            <div className={styles.infoSubBlock}>
+                              <Text className={styles.infoSubTitle}>十神</Text>
+                              <div className={styles.infoGrid}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>年柱：</Text>
+                                  <Text>{lunarInfo.shiShen.year}</Text>
+                                </div>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>月柱：</Text>
+                                  <Text>{lunarInfo.shiShen.month}</Text>
+                                </div>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>日柱：</Text>
+                                  <Text>{lunarInfo.shiShen.day}</Text>
+                                </div>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>时柱：</Text>
+                                  <Text>{lunarInfo.shiShen.hour}</Text>
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                          <Col span={12}>
+                            <div className={styles.infoSubBlock}>
+                              <Text className={styles.infoSubTitle}>六亲</Text>
+                              <div className={styles.infoGrid}>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>年柱：</Text>
+                                  <Text>{lunarInfo.liuQin.year}</Text>
+                                </div>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>月柱：</Text>
+                                  <Text>{lunarInfo.liuQin.month}</Text>
+                                </div>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>日柱：</Text>
+                                  <Text>{lunarInfo.liuQin.day}</Text>
+                                </div>
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>时柱：</Text>
+                                  <Text>{lunarInfo.liuQin.hour}</Text>
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
                     </Col>
                   </Row>
                 </Card>
@@ -302,6 +400,7 @@ const BaziPage: React.FC = () => {
                           <Tag>{item.lunarInfo.yearInGanZhi}</Tag>
                           <Tag>{item.lunarInfo.monthInGanZhi}</Tag>
                           <Tag>{item.lunarInfo.dayInGanZhi}</Tag>
+                          <Tag>{item.lunarInfo.hourInGanZhi}</Tag>
                         </div>
                       </div>
                     </List.Item>

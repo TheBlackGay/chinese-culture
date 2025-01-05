@@ -1,4 +1,4 @@
-import { Solar, Lunar } from 'lunar-typescript';
+import { Lunar, Solar } from 'lunar-typescript';
 
 export interface LunarInfo {
   year: number;
@@ -7,6 +7,7 @@ export interface LunarInfo {
   yearInGanZhi: string;
   monthInGanZhi: string;
   dayInGanZhi: string;
+  hourInGanZhi: string;
   yearInChinese: string;
   monthInChinese: string;
   dayInChinese: string;
@@ -22,6 +23,55 @@ export interface LunarInfo {
     month: { gan: string; zhi: string; wuXing: string };
     day: { gan: string; zhi: string; wuXing: string };
     hour: { gan: string; zhi: string; wuXing: string };
+  };
+  naYin: {
+    year: string;
+    month: string;
+    day: string;
+    hour: string;
+  };
+  taiYuan: string;
+  mingGong: string;
+  shenGong: string;
+  
+  // 长生十二神
+  changSheng: {
+    year: string;   // 年柱长生
+    month: string;  // 月柱长生
+    day: string;    // 日柱长生
+    hour: string;   // 时柱长生
+  };
+  
+  // 十神
+  shiShen: {
+    year: string;
+    month: string;
+    day: string;
+    hour: string;
+  };
+  
+  // 节令
+  jieQi: {
+    current: string;
+    next: string;
+    nextDate: string;
+  };
+  
+  // 吉神方位
+  jiShen: string[];
+  
+  // 胎息
+  taiXi: string;
+  
+  // 命卦
+  mingGua: string;
+  
+  // 六亲
+  liuQin: {
+    year: string;
+    month: string;
+    day: string;
+    hour: string;
   };
 }
 
@@ -52,67 +102,117 @@ const splitGanZhi = (ganZhi: string) => {
   };
 };
 
-export const getLunarInfo = (date: Date = new Date()): LunarInfo => {
+export function getLunarInfo(date: Date): LunarInfo {
+  // 先转换为阳历对象，再获取阴历对象
   const solar = Solar.fromDate(date);
   const lunar = solar.getLunar();
-  const baZi = lunar.getBaZi();
-
-  // 解析八字
-  const [yearGZ, monthGZ, dayGZ, hourGZ] = baZi;
-  const ganZhi = {
-    year: splitGanZhi(yearGZ),
-    month: splitGanZhi(monthGZ),
-    day: splitGanZhi(dayGZ),
-    hour: splitGanZhi(hourGZ)
+  
+  // 获取八字
+  const bazi = lunar.getEightChar();
+  
+  // 获取纳音
+  const naYin = {
+    year: bazi.getYearNaYin(),
+    month: bazi.getMonthNaYin(),
+    day: bazi.getDayNaYin(),
+    hour: bazi.getTimeNaYin(),
   };
 
-  // 统计五行 - 使用农历时间的干支来计算
+  // 获取节气信息
+  const jieQi = {
+    current: lunar.getJieQi() || '',
+    next: lunar.getNextJieQi()?.getName() || '',
+    nextDate: lunar.getNextJieQi()?.getSolar().toYmd() || '',
+  };
+
+  // 获取十神
+  const shiShen = {
+    year: bazi.getYearShiShenGan(),
+    month: bazi.getMonthShiShenGan(),
+    day: bazi.getDayShiShenGan(),
+    hour: bazi.getTimeShiShenGan(),
+  };
+
+  // 获取六亲
+  const liuQin = {
+    year: bazi.getYearXun(),
+    month: bazi.getMonthXun(),
+    day: bazi.getDayXun(),
+    hour: bazi.getTimeXun(),
+  };
+
+  // 统计五行 - 使用八字的干支来计算
   const wuXing: { [key: string]: number } = {
     '木': 0, '火': 0, '土': 0, '金': 0, '水': 0
   };
 
   // 年干支五行
-  const yearGan = ganWuXing[lunar.getYearGan()];
-  const yearZhi = zhiWuXing[lunar.getYearZhi()];
+  const yearGan = ganWuXing[bazi.getYear()[0]];
+  const yearZhi = zhiWuXing[bazi.getYear()[1]];
   wuXing[yearGan]++;
   wuXing[yearZhi]++;
 
   // 月干支五行
-  const monthGan = ganWuXing[lunar.getMonthGan()];
-  const monthZhi = zhiWuXing[lunar.getMonthZhi()];
+  const monthGan = ganWuXing[bazi.getMonth()[0]];
+  const monthZhi = zhiWuXing[bazi.getMonth()[1]];
   wuXing[monthGan]++;
   wuXing[monthZhi]++;
 
   // 日干支五行
-  const dayGan = ganWuXing[lunar.getDayGan()];
-  const dayZhi = zhiWuXing[lunar.getDayZhi()];
+  const dayGan = ganWuXing[bazi.getDay()[0]];
+  const dayZhi = zhiWuXing[bazi.getDay()[1]];
   wuXing[dayGan]++;
   wuXing[dayZhi]++;
 
   // 时干支五行
-  const hourGan = ganWuXing[lunar.getTimeGan()];
-  const hourZhi = zhiWuXing[lunar.getTimeZhi()];
+  const hourGan = ganWuXing[bazi.getTime()[0]];
+  const hourZhi = zhiWuXing[bazi.getTime()[1]];
   wuXing[hourGan]++;
   wuXing[hourZhi]++;
+
+  // 解析干支
+  const ganZhi = {
+    year: splitGanZhi(bazi.getYear()),
+    month: splitGanZhi(bazi.getMonth()),
+    day: splitGanZhi(bazi.getDay()),
+    hour: splitGanZhi(bazi.getTime()),
+  };
 
   return {
     year: lunar.getYear(),
     month: lunar.getMonth(),
     day: lunar.getDay(),
-    yearInGanZhi: yearGZ,
-    monthInGanZhi: monthGZ,
-    dayInGanZhi: dayGZ,
+    yearInGanZhi: bazi.getYear(),
+    monthInGanZhi: bazi.getMonth(),
+    dayInGanZhi: bazi.getDay(),
+    hourInGanZhi: bazi.getTime(),
     yearInChinese: lunar.getYearInChinese(),
     monthInChinese: lunar.getMonthInChinese(),
     dayInChinese: lunar.getDayInChinese(),
     zodiac: lunar.getYearShengXiao(),
     term: lunar.getJieQi(),
-    festivals: [...lunar.getFestivals(), ...solar.getFestivals()],
+    festivals: lunar.getFestivals(),
     constellation: solar.getXingZuo(),
     wuXing,
-    ganZhi
+    ganZhi,
+    naYin,
+    taiYuan: '',  // 暂时返回空字符串
+    mingGong: '', // 暂时返回空字符串
+    shenGong: '', // 暂时返回空字符串
+    changSheng: {
+      year: '',  // 暂时返回空字符串
+      month: '', // 暂时返回空字符串
+      day: '',   // 暂时返回空字符串
+      hour: '',  // 暂时返回空字符串
+    },
+    shiShen,
+    jieQi,
+    jiShen: [], // 暂时返回空数组
+    taiXi: '',  // 暂时返回空字符串
+    mingGua: '', // 暂时返回空字符串
+    liuQin,
   };
-};
+}
 
 export const getNextTerm = (date: Date = new Date()): { name: string; date: Date } => {
   const solar = Solar.fromDate(date);
