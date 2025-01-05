@@ -1,34 +1,31 @@
 import { defineConfig } from '@umijs/max';
+import routes from './config/routes';
 
 export default defineConfig({
-  antd: {},
+  antd: {
+    theme: {
+      token: {
+        colorPrimary: '#00b4ff',
+        colorBgContainer: '#1a1a1a',
+        colorBgElevated: '#242424',
+        colorText: '#ffffff',
+        colorTextSecondary: 'rgba(255, 255, 255, 0.65)',
+        borderRadius: 8,
+        wireframe: false,
+      },
+    },
+  },
   access: {},
   model: {},
   initialState: {},
   request: {},
   layout: {
-    title: '@umijs/max',
+    title: '中国传统文化管理系统',
+    locale: true,
   },
-  routes: [
-    {
-      path: '/',
-      redirect: '/home',
-    },
-    {
-      name: '首页',
-      path: '/home',
-      component: './Home',
-    },
-    {
-      name: '权限演示',
-      path: '/access',
-      component: './Access',
-    },
-    {
-      name: ' CRUD 示例',
-      path: '/table',
-      component: './Table',
-    },
-  ],
+  routes,
   npmClient: 'pnpm',
+  tailwindcss: {
+    tailwindCssFilePath: './tailwind.css',
+  },
 });

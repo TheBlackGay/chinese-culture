@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #00b4ff;
+  --bg-color: #141414;
+  --text-color: #ffffff;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.ant-pro-layout .ant-layout {
+  background-color: var(--bg-color);
+}
+
+/* 自定义暗色主题样式 */
+.dark {
+  --bg-color: #141414;
+  --text-color: #ffffff;
+} 

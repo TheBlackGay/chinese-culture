@@ -14,3 +14,12 @@ export const layout = () => {
     },
   };
 };
+
+// 配置 antd 暗色主题
+export const antd = {
+  configProvider: {
+    theme: {
+      algorithm: 'dark',
+    },
+  },
+};
