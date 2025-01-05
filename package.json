@@ -16,7 +16,8 @@
     "@ant-design/pro-components": "^2.4.4",
     "@umijs/max": "^4.4.4",
     "antd": "^5.4.0",
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "lunar-typescript": "^1.7.6"
   },
   "devDependencies": {
     "@types/react": "^18.0.33",
