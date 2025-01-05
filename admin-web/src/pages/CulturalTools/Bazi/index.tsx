@@ -439,7 +439,7 @@ const BaziPage: React.FC = () => {
               <Col span={24}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>称骨重量：</Text>
-                  <Text>{lunarInfo.chengGu?.weight || '--'} 两</Text>
+                  <Text>{lunarInfo.chengGu?.weightInChinese || '--'}</Text>
                 </div>
                 {lunarInfo.chengGu?.description && (
                   <div className={styles.infoItem} style={{ marginTop: 8 }}>
@@ -456,10 +456,10 @@ const BaziPage: React.FC = () => {
                 <div className={styles.infoItem} style={{ marginTop: 16 }}>
                   <Text className={styles.infoLabel}>分项重量：</Text>
                   <div className={styles.weightDetails}>
-                    <Tag>年：{lunarInfo.chengGu?.yearWeight || '--'} 两</Tag>
-                    <Tag>月：{lunarInfo.chengGu?.monthWeight || '--'} 两</Tag>
-                    <Tag>日：{lunarInfo.chengGu?.dayWeight || '--'} 两</Tag>
-                    <Tag>时：{lunarInfo.chengGu?.hourWeight || '--'} 两</Tag>
+                    <Tag>年：{lunarInfo.chengGu?.yearWeightInChinese || '--'}</Tag>
+                    <Tag>月：{lunarInfo.chengGu?.monthWeightInChinese || '--'}</Tag>
+                    <Tag>日：{lunarInfo.chengGu?.dayWeightInChinese || '--'}</Tag>
+                    <Tag>时：{lunarInfo.chengGu?.hourWeightInChinese || '--'}</Tag>
                   </div>
                 </div>
               </Col>

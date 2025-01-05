@@ -472,13 +472,41 @@ const femaleChengGuSongs: Record<string, { text: string; explanation: string }> 
   }
 };
 
+// 数字转中文
+const numberToChinese = (num: number): string => {
+  const chineseNumbers = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+  
+  // 处理整数部分
+  const integerPart = Math.floor(num);
+  let result = integerPart === 0 ? '' : chineseNumbers[integerPart];
+  
+  // 处理小数部分（钱）
+  const decimalPart = Math.round((num - integerPart) * 10);
+  
+  if (integerPart > 0) {
+    result += '两';
+    if (decimalPart > 0) {
+      result += chineseNumbers[decimalPart] + '钱';
+    }
+  } else if (decimalPart > 0) {
+    result = chineseNumbers[decimalPart] + '钱';
+  }
+  
+  return result || '零两';
+};
+
 // 计算称骨重量
 export interface ChengGuResult {
   weight: number;        // 总重量
+  weightInChinese: string; // 总重量（中文）
   yearWeight: number;    // 年重
+  yearWeightInChinese: string; // 年重（中文）
   monthWeight: number;   // 月重
+  monthWeightInChinese: string; // 月重（中文）
   dayWeight: number;     // 日重
+  dayWeightInChinese: string; // 日重（中文）
   hourWeight: number;    // 时重
+  hourWeightInChinese: string; // 时重（中文）
   description: string;   // 称骨歌诀描述
   explanation: string;   // 解释
 }
@@ -515,6 +543,13 @@ export function calculateChengGu(
   const totalWeight = +(yearWeight + monthWeight + dayWeight + hourWeight).toFixed(1);
   console.log('Total weight:', totalWeight);
 
+  // 转换各个部分的重量为中文
+  const yearWeightChinese = numberToChinese(yearWeight);
+  const monthWeightChinese = numberToChinese(monthWeight);
+  const dayWeightChinese = numberToChinese(dayWeight);
+  const hourWeightChinese = numberToChinese(hourWeight);
+  const totalWeightChinese = numberToChinese(totalWeight);
+
   // 根据性别选择歌诀表
   const songTable = gender === 'male' ? maleChengGuSongs : femaleChengGuSongs;
   
@@ -530,10 +565,15 @@ export function calculateChengGu(
 
   const result = {
     weight: totalWeight,
+    weightInChinese: totalWeightChinese,
     yearWeight,
+    yearWeightInChinese: yearWeightChinese,
     monthWeight,
+    monthWeightInChinese: monthWeightChinese,
     dayWeight,
+    dayWeightInChinese: dayWeightChinese,
     hourWeight,
+    hourWeightInChinese: hourWeightChinese,
     description: song.text,
     explanation: song.explanation,
   };
