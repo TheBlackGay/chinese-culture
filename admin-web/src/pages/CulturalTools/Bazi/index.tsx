@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, DatePicker, Button, Typography, Table, Alert, Tag, Row, Col, Space } from 'antd';
+import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Divider } from 'antd';
 import type { Dayjs } from 'dayjs';
 import { getBaZi, getLunarInfo } from '@/services/lunar';
 import styles from './index.less';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 // 五行颜色映射
 const wuXingColors: Record<string, string> = {
@@ -86,7 +86,7 @@ const BaziPage: React.FC = () => {
   return (
     <PageContainer>
       <Card bordered={false}>
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <div className={styles.header}>
             <DatePicker 
               showTime
@@ -101,58 +101,85 @@ const BaziPage: React.FC = () => {
           </div>
 
           {lunarInfo && (
-            <>
-              <Card className={styles.baziCard} bordered={false}>
-                <Table 
-                  dataSource={[{}]} 
-                  columns={columns} 
-                  pagination={false}
-                  className={styles.baziTable}
-                />
-              </Card>
-              
-              <Card className={styles.wuxingCard} bordered={false} title="五行分布">
-                <Row gutter={[24, 24]} justify="space-around" align="middle">
-                  {Object.entries(lunarInfo.wuXing).map(([element, count]) => (
-                    <Col key={element}>
-                      <div className={styles.wuxingItem}>
-                        <Tag color={wuXingColors[element]} className={styles.wuxingTag}>
-                          {element}
-                        </Tag>
-                        <span className={styles.wuxingCount}>{count}个</span>
-                      </div>
-                    </Col>
-                  ))}
-                </Row>
-              </Card>
-              
-              <Card className={styles.lunarCard} bordered={false}>
-                <Row gutter={[32, 16]}>
-                  <Col span={8}>
-                    <div className={styles.infoItem}>
-                      <Text className={styles.infoLabel}>农历</Text>
-                      <Text className={styles.infoValue}>
-                        {lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese}
-                      </Text>
-                    </div>
-                  </Col>
-                  <Col span={8}>
-                    <div className={styles.infoItem}>
-                      <Text className={styles.infoLabel}>生肖</Text>
-                      <Text className={styles.infoValue}>{lunarInfo.zodiac}</Text>
-                    </div>
-                  </Col>
-                  {lunarInfo.term && (
+            <Card className={styles.resultCard} bordered={false}>
+              <Row gutter={[16, 16]}>
+                {/* 八字表格区域 */}
+                <Col span={24}>
+                  <Table 
+                    dataSource={[{}]} 
+                    columns={columns} 
+                    pagination={false}
+                    className={styles.baziTable}
+                  />
+                </Col>
+
+                {/* 信息展示区域 */}
+                <Col span={24}>
+                  <Row gutter={[32, 16]} className={styles.infoSection}>
+                    {/* 基本信息 */}
                     <Col span={8}>
-                      <div className={styles.infoItem}>
-                        <Text className={styles.infoLabel}>节气</Text>
-                        <Text className={styles.infoValue}>{lunarInfo.term}</Text>
+                      <div className={styles.infoBlock}>
+                        <Text className={styles.infoTitle}>基本信息</Text>
+                        <div className={styles.infoContent}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>阳历：</Text>
+                            <Text>{selectedDateTime?.format('YYYY年MM月DD日 HH:mm')}</Text>
+                          </div>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>农历：</Text>
+                            <Text>{lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese}</Text>
+                          </div>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>真太阳时：</Text>
+                            <Text>{selectedDateTime?.format('HH:mm')}</Text>
+                          </div>
+                        </div>
                       </div>
                     </Col>
-                  )}
-                </Row>
-              </Card>
-            </>
+
+                    {/* 命理信息 */}
+                    <Col span={8}>
+                      <div className={styles.infoBlock}>
+                        <Text className={styles.infoTitle}>命理信息</Text>
+                        <div className={styles.infoContent}>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>生肖：</Text>
+                            <Text>{lunarInfo.zodiac}</Text>
+                          </div>
+                          <div className={styles.infoItem}>
+                            <Text className={styles.infoLabel}>星座：</Text>
+                            <Text>{lunarInfo.constellation}</Text>
+                          </div>
+                          {lunarInfo.term && (
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>节气：</Text>
+                              <Text>{lunarInfo.term}</Text>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Col>
+
+                    {/* 五行分布 */}
+                    <Col span={8}>
+                      <div className={styles.infoBlock}>
+                        <Text className={styles.infoTitle}>五行分布</Text>
+                        <div className={styles.wuxingContent}>
+                          {Object.entries(lunarInfo.wuXing).map(([element, count]) => (
+                            <div key={element} className={styles.wuxingItem}>
+                              <Tag color={wuXingColors[element]} className={styles.wuxingTag}>
+                                {element}
+                              </Tag>
+                              <Text className={styles.wuxingCount}>{count}个</Text>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Card>
           )}
         </Space>
       </Card>

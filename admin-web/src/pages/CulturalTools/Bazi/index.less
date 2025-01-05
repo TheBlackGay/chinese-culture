@@ -3,10 +3,10 @@
 .header {
   display: flex;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.baziCard {
+.resultCard {
   background: #141414;
   border-radius: 8px;
 
@@ -22,12 +22,13 @@
         font-weight: 500;
         border-bottom: 1px solid rgba(255, 255, 255, 8%);
         color: rgba(255, 255, 255, 85%);
+        padding: 12px 8px;
       }
 
       .ant-table-tbody > tr > td {
         background: #141414;
         border-bottom: none;
-        padding: 16px 8px;
+        padding: 12px 8px;
       }
     }
   }
@@ -51,55 +52,67 @@
   }
 }
 
-.wuxingCard {
-  background: #141414;
-  border-radius: 8px;
+.infoSection {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 8%);
+}
 
-  :global {
-    .ant-card-head {
-      background: #1f1f1f;
-      border-bottom: 1px solid rgba(255, 255, 255, 8%);
-    }
+.infoBlock {
+  background: #1f1f1f;
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+
+  .infoTitle {
+    display: block;
+    color: rgba(255, 255, 255, 85%);
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 8%);
   }
 
-  .wuxingItem {
+  .infoContent {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 8px;
   }
 
-  .wuxingTag {
-    font-size: 16px;
-    padding: 4px 16px;
-    border-radius: 4px;
-  }
-
-  .wuxingCount {
-    font-size: 20px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 85%);
-  }
-}
-
-.lunarCard {
-  background: #141414;
-  border-radius: 8px;
-
   .infoItem {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 8px;
   }
 
   .infoLabel {
     color: rgba(255, 255, 255, 45%);
-    font-size: 14px;
+    min-width: 70px;
   }
+}
 
-  .infoValue {
-    font-size: 16px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 85%);
-  }
+.wuxingContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+.wuxingItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wuxingTag {
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 0;
+}
+
+.wuxingCount {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 85%);
 }

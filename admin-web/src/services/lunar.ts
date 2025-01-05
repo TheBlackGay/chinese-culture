@@ -13,6 +13,7 @@ export interface LunarInfo {
   zodiac: string;
   term: string | null;
   festivals: string[];
+  constellation: string;
   wuXing: {
     [key: string]: number;  // 五行统计
   };
@@ -90,6 +91,7 @@ export const getLunarInfo = (date: Date = new Date()): LunarInfo => {
     zodiac: lunar.getYearShengXiao(),
     term: lunar.getJieQi(),
     festivals: [...lunar.getFestivals(), ...solar.getFestivals()],
+    constellation: solar.getXingZuo(),
     wuXing,
     ganZhi
   };
@@ -108,4 +110,43 @@ export const getNextTerm = (date: Date = new Date()): { name: string; date: Date
 export const getBaZi = (date: Date = new Date(), hour: number = 0): string[] => {
   const lunar = Lunar.fromDate(date);
   return lunar.getBaZi();
+};
+
+// 获取星座
+export const getZodiacSign = (date: Date): string => {
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  const zodiacDates = [
+    { name: '摩羯座', startMonth: 12, startDay: 22, endMonth: 1, endDay: 19 },
+    { name: '水瓶座', startMonth: 1, startDay: 20, endMonth: 2, endDay: 18 },
+    { name: '双鱼座', startMonth: 2, startDay: 19, endMonth: 3, endDay: 20 },
+    { name: '白羊座', startMonth: 3, startDay: 21, endMonth: 4, endDay: 19 },
+    { name: '金牛座', startMonth: 4, startDay: 20, endMonth: 5, endDay: 20 },
+    { name: '双子座', startMonth: 5, startDay: 21, endMonth: 6, endDay: 21 },
+    { name: '巨蟹座', startMonth: 6, startDay: 22, endMonth: 7, endDay: 22 },
+    { name: '狮子座', startMonth: 7, startDay: 23, endMonth: 8, endDay: 22 },
+    { name: '处女座', startMonth: 8, startDay: 23, endMonth: 9, endDay: 22 },
+    { name: '天秤座', startMonth: 9, startDay: 23, endMonth: 10, endDay: 23 },
+    { name: '天蝎座', startMonth: 10, startDay: 24, endMonth: 11, endDay: 22 },
+    { name: '射手座', startMonth: 11, startDay: 23, endMonth: 12, endDay: 21 }
+  ];
+
+  // 处理跨年的情况（摩羯座）
+  if (month === 12 && day >= 22 || month === 1 && day <= 19) {
+    return '摩羯座';
+  }
+
+  // 其他星座
+  const zodiac = zodiacDates.find(z => {
+    if (month === z.startMonth) {
+      return day >= z.startDay;
+    }
+    if (month === z.endMonth) {
+      return day <= z.endDay;
+    }
+    return false;
+  });
+
+  return zodiac?.name || '未知';
 }; 
