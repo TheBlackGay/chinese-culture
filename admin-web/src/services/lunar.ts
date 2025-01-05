@@ -266,4 +266,23 @@ export const getZodiacSign = (date: Date): string => {
   });
 
   return zodiac?.name || '未知';
+};
+
+// 计算真太阳时
+export const getTrueSolarTime = (date: Date, longitude: number = 120): string => {
+  // 获取时区偏移（以分钟为单位）
+  const timezoneOffset = -date.getTimezoneOffset();
+  
+  // 经度修正（每偏离基准经度1度，对应4分钟的时差）
+  const longitudeCorrection = (longitude - 120) * 4;
+  
+  // 计算真太阳时（分钟）
+  const trueSolarMinutes = date.getHours() * 60 + date.getMinutes() + 
+    timezoneOffset + longitudeCorrection;
+  
+  // 转换为时:分格式
+  const hours = Math.floor(trueSolarMinutes / 60) % 24;
+  const minutes = Math.floor(trueSolarMinutes % 60);
+  
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }; 

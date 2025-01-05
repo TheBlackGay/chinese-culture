@@ -3,7 +3,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { getBaZi, getLunarInfo } from '@/services/lunar';
+import { getBaZi, getLunarInfo, getTrueSolarTime } from '@/services/lunar';
 import styles from './index.less';
 import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
@@ -165,6 +165,51 @@ const BaziPage: React.FC = () => {
               {lunarInfo && (
                 <Card className={styles.resultCard} bordered={false}>
                   <Row gutter={[16, 16]}>
+                    {/* 基本信息区域 */}
+                    <Col span={24}>
+                      <div className={styles.infoBlock}>
+                        <Text className={styles.infoTitle}>基本信息</Text>
+                        <Row gutter={[32, 16]}>
+                          <Col span={8}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>阳历：</Text>
+                              <Text>{selectedDateTime?.format('YYYY年MM月DD日 HH:mm')}</Text>
+                            </div>
+                          </Col>
+                          <Col span={8}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>农历：</Text>
+                              <Text>{lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese}</Text>
+                            </div>
+                          </Col>
+                          <Col span={8}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>生肖：</Text>
+                              <Text>{lunarInfo.zodiac}</Text>
+                            </div>
+                          </Col>
+                          <Col span={8}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>星座：</Text>
+                              <Text>{lunarInfo.constellation}</Text>
+                            </div>
+                          </Col>
+                          <Col span={8}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>节气：</Text>
+                              <Text>{lunarInfo.term || '无'}</Text>
+                            </div>
+                          </Col>
+                          <Col span={8}>
+                            <div className={styles.infoItem}>
+                              <Text className={styles.infoLabel}>真太阳时：</Text>
+                              <Text>{selectedDateTime ? getTrueSolarTime(selectedDateTime.toDate()) : '--'}</Text>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+
                     {/* 八字表格区域 */}
                     <Col span={24}>
                       <Table 
