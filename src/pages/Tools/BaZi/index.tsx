@@ -28,15 +28,33 @@ interface BaZiResult {
 
 // 五行颜色映射
 const wuxingColors: Record<string, string> = {
-  木: '#4caf50', // 绿色
-  火: '#f44336', // 红色
-  土: '#795548', // 棕色
-  金: '#ffd700', // 金色
-  水: '#2196f3', // 蓝色
+  '木': '#4caf50',  // 绿色
+  '火': '#f44336',  // 红色
+  '土': '#795548',  // 棕色
+  '金': '#ffd700',  // 金色
+  '水': '#2196f3',  // 蓝色
 };
 
 // 五行顺序
 const wuxingOrder = ['木', '火', '土', '金', '水'];
+
+// 天干五行对应
+const tianganWuxing: Record<string, string> = {
+  '甲': '木', '乙': '木',
+  '丙': '火', '丁': '火',
+  '戊': '土', '己': '土',
+  '庚': '金', '辛': '金',
+  '壬': '水', '癸': '水',
+};
+
+// 地支五行对应
+const dizhiWuxing: Record<string, string> = {
+  '寅': '木', '卯': '木',
+  '巳': '火', '午': '火',
+  '辰': '土', '戌': '土', '丑': '土', '未': '土',
+  '申': '金', '酉': '金',
+  '亥': '水', '子': '水',
+};
 
 const BaZiPage: React.FC = () => {
   const [form] = Form.useForm();
@@ -44,31 +62,27 @@ const BaZiPage: React.FC = () => {
 
   // 计算五行
   const calculateWuXing = (ganZhi: string) => {
-    const wuxingMap: { [key: string]: string } = {
-      甲: '木',
-      乙: '木',
-      丙: '火',
-      丁: '火',
-      戊: '土',
-      己: '土',
-      庚: '金',
-      辛: '金',
-      壬: '水',
-      癸: '水',
-    };
-    return wuxingMap[ganZhi[0]] || '';
+    // 分别获取天干和地支
+    const gan = ganZhi[0];  // 第一个字是天干
+    const zhi = ganZhi[1];  // 第二个字是地支
+
+    // 获取天干和地支的五行
+    const ganWuxing = tianganWuxing[gan] || '';
+    const zhiWuxing = dizhiWuxing[zhi] || '';
+
+    return [ganWuxing, zhiWuxing];
   };
 
   // 统计五行数量
   const countWuxing = (wuxingArray: string[]): Record<string, number> => {
     const count: Record<string, number> = {
-      木: 0,
-      火: 0,
-      土: 0,
-      金: 0,
-      水: 0,
+      '木': 0,
+      '火': 0,
+      '土': 0,
+      '金': 0,
+      '水': 0,
     };
-    wuxingArray.forEach((w) => {
+    wuxingArray.forEach(w => {
       if (w) count[w]++;
     });
     return count;
@@ -96,11 +110,17 @@ const BaZiPage: React.FC = () => {
       console.log('Time GanZhi:', timeGanZhi);
 
       // 计算五行
+      const yearWuxing = calculateWuXing(yearGanZhi);
+      const monthWuxing = calculateWuXing(monthGanZhi);
+      const dayWuxing = calculateWuXing(dayGanZhi);
+      const timeWuxing = calculateWuXing(timeGanZhi);
+
+      // 合并所有五行
       const wuxing = [
-        calculateWuXing(yearGanZhi),
-        calculateWuXing(monthGanZhi),
-        calculateWuXing(dayGanZhi),
-        calculateWuXing(timeGanZhi),
+        ...yearWuxing,
+        ...monthWuxing,
+        ...dayWuxing,
+        ...timeWuxing,
       ];
       console.log('五行:', wuxing);
 
@@ -125,6 +145,7 @@ const BaZiPage: React.FC = () => {
       console.log('最终结果:', baZiResult);
       setResult(baZiResult);
       message.success('八字计算完成！');
+
     } catch (error) {
       console.error('计算八字时出错：', error);
       message.error('计算八字时出错，请检查输入日期是否正确');
@@ -206,27 +227,24 @@ const BaZiPage: React.FC = () => {
             <div>
               <Text className="text-white/60">八字：</Text>
               <Text className="text-white/85" style={{ marginLeft: '8px' }}>
-                {result
-                  ? `${result.yearGanZhi} ${result.monthGanZhi} ${result.dayGanZhi} ${result.timeGanZhi}`
-                  : '待计算'}
+                {result ? `${result.yearGanZhi} ${result.monthGanZhi} ${result.dayGanZhi} ${result.timeGanZhi}` : '待计算'}
               </Text>
             </div>
             <div>
               <Text className="text-white/60">五行：</Text>
               <div className="flex flex-wrap gap-2 mt-2">
-                {result &&
-                  wuxingOrder.map((wuxing) => (
-                    <Tag
-                      key={wuxing}
-                      color={wuxingColors[wuxing]}
-                      style={{
-                        borderColor: wuxingColors[wuxing],
-                        backgroundColor: `${wuxingColors[wuxing]}1A`,
-                      }}
-                    >
-                      {`${wuxing}: ${result.wuxingCount[wuxing]}`}
-                    </Tag>
-                  ))}
+                {result && wuxingOrder.map((wuxing) => (
+                  <Tag
+                    key={wuxing}
+                    color={wuxingColors[wuxing]}
+                    style={{
+                      borderColor: wuxingColors[wuxing],
+                      backgroundColor: `${wuxingColors[wuxing]}1A`,
+                    }}
+                  >
+                    {`${wuxing}: ${result.wuxingCount[wuxing]}`}
+                  </Tag>
+                ))}
               </div>
             </div>
             <div>
