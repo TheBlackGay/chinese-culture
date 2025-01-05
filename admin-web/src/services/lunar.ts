@@ -25,14 +25,20 @@ export interface LunarInfo {
     hour: { gan: string; zhi: string; wuXing: string };
   };
   naYin: {
-    year: string;
-    month: string;
-    day: string;
-    hour: string;
+    year: string;   // 年柱纳音
+    month: string;  // 月柱纳音
+    day: string;    // 日柱纳音
+    hour: string;   // 时柱纳音
   };
-  taiYuan: string;
-  mingGong: string;
-  shenGong: string;
+  taiYuan: string;  // 胎元
+  mingGong: string; // 命宫
+  shenGong: string; // 身宫
+  taiXi: string;    // 胎息
+  mingGua: string;  // 命卦
+  
+  // 神煞
+  jiShen: string[];   // 吉神
+  xiongSha: string[]; // 凶煞
   
   // 长生十二神
   changSheng: {
@@ -44,34 +50,25 @@ export interface LunarInfo {
   
   // 十神
   shiShen: {
-    year: string;
-    month: string;
-    day: string;
-    hour: string;
+    year: string;   // 年柱十神
+    month: string;  // 月柱十神
+    day: string;    // 日柱十神
+    hour: string;   // 时柱十神
   };
   
   // 节令
   jieQi: {
-    current: string;
-    next: string;
-    nextDate: string;
+    current: string;  // 当前节气
+    next: string;     // 下一节气
+    nextDate: string; // 下一节气日期
   };
-  
-  // 吉神方位
-  jiShen: string[];
-  
-  // 胎息
-  taiXi: string;
-  
-  // 命卦
-  mingGua: string;
   
   // 六亲
   liuQin: {
-    year: string;
-    month: string;
-    day: string;
-    hour: string;
+    year: string;   // 年柱六亲
+    month: string;  // 月柱六亲
+    day: string;    // 日柱六亲
+    hour: string;   // 时柱六亲
   };
 }
 
@@ -118,6 +115,32 @@ export function getLunarInfo(date: Date): LunarInfo {
     hour: bazi.getTimeNaYin(),
   };
 
+  // 获取命理信息 - 暂时返回空值
+  const taiYuan = '';
+  const mingGong = '';
+  const shenGong = '';
+  const taiXi = '';
+  const mingGua = '';
+
+  // 获取神煞信息 - 暂时返回空数组
+  const jiShen: string[] = [];
+  const xiongSha: string[] = [];
+
+  try {
+    // 尝试获取神煞信息
+    if (lunar.getShenSha) {
+      const shenSha = lunar.getShenSha();
+      if (shenSha.getJiShen) {
+        jiShen.push(...shenSha.getJiShen());
+      }
+      if (shenSha.getXiongSha) {
+        xiongSha.push(...shenSha.getXiongSha());
+      }
+    }
+  } catch (error) {
+    console.log('获取神煞信息失败:', error);
+  }
+
   // 获取节气信息
   const jieQi = {
     current: lunar.getJieQi() || '',
@@ -133,7 +156,15 @@ export function getLunarInfo(date: Date): LunarInfo {
     hour: bazi.getTimeShiShenGan(),
   };
 
-  // 获取六亲
+  // 获取长生十二神 - 暂时返回空值
+  const changSheng = {
+    year: '',
+    month: '',
+    day: '',
+    hour: '',
+  };
+
+  // 获取六亲 - 使用地支旬空
   const liuQin = {
     year: bazi.getYearXun(),
     month: bazi.getMonthXun(),
@@ -196,20 +227,16 @@ export function getLunarInfo(date: Date): LunarInfo {
     wuXing,
     ganZhi,
     naYin,
-    taiYuan: '',  // 暂时返回空字符串
-    mingGong: '', // 暂时返回空字符串
-    shenGong: '', // 暂时返回空字符串
-    changSheng: {
-      year: '',  // 暂时返回空字符串
-      month: '', // 暂时返回空字符串
-      day: '',   // 暂时返回空字符串
-      hour: '',  // 暂时返回空字符串
-    },
+    taiYuan,
+    mingGong,
+    shenGong,
+    changSheng,
     shiShen,
     jieQi,
-    jiShen: [], // 暂时返回空数组
-    taiXi: '',  // 暂时返回空字符串
-    mingGua: '', // 暂时返回空字符串
+    jiShen,
+    xiongSha,
+    taiXi,
+    mingGua,
     liuQin,
   };
 }

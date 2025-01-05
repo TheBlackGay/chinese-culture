@@ -261,25 +261,38 @@ const BaziPage: React.FC = () => {
                           <div className={styles.infoBlock}>
                             <Text className={styles.infoTitle}>基本命理</Text>
                             <div className={styles.infoContent}>
+                              {lunarInfo.taiYuan && (
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>胎元：</Text>
+                                  <Text>{lunarInfo.taiYuan}</Text>
+                                </div>
+                              )}
+                              {lunarInfo.mingGong && (
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>命宫：</Text>
+                                  <Text>{lunarInfo.mingGong}</Text>
+                                </div>
+                              )}
+                              {lunarInfo.shenGong && (
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>身宫：</Text>
+                                  <Text>{lunarInfo.shenGong}</Text>
+                                </div>
+                              )}
+                              {lunarInfo.taiXi && (
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>胎息：</Text>
+                                  <Text>{lunarInfo.taiXi}</Text>
+                                </div>
+                              )}
+                              {lunarInfo.mingGua && (
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>命卦：</Text>
+                                  <Text>{lunarInfo.mingGua}</Text>
+                                </div>
+                              )}
                               <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>胎元：</Text>
-                                <Text>{lunarInfo.taiYuan}</Text>
-                              </div>
-                              <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>命宫：</Text>
-                                <Text>{lunarInfo.mingGong}</Text>
-                              </div>
-                              <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>身宫：</Text>
-                                <Text>{lunarInfo.shenGong}</Text>
-                              </div>
-                              <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>胎息：</Text>
-                                <Text>{lunarInfo.taiXi}</Text>
-                              </div>
-                              <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>命卦：</Text>
-                                <Text>{lunarInfo.mingGua}</Text>
+                                <Text type="secondary">更多命理信息正在开发中...</Text>
                               </div>
                             </div>
                           </div>
@@ -298,13 +311,28 @@ const BaziPage: React.FC = () => {
                                 <Text className={styles.infoLabel}>下一节气：</Text>
                                 <Text>{lunarInfo.jieQi.next} ({lunarInfo.jieQi.nextDate})</Text>
                               </div>
-                              <div className={styles.infoItem}>
-                                <Text className={styles.infoLabel}>吉神方位：</Text>
-                                <div className={styles.tagGroup}>
-                                  {lunarInfo.jiShen.map((shen, index) => (
-                                    <Tag key={index}>{shen}</Tag>
-                                  ))}
+                              {lunarInfo.jiShen?.length > 0 && (
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>吉神：</Text>
+                                  <div className={styles.tagGroup}>
+                                    {lunarInfo.jiShen.map((shen: string, index: number) => (
+                                      <Tag key={index} color="success">{shen}</Tag>
+                                    ))}
+                                  </div>
                                 </div>
+                              )}
+                              {lunarInfo.xiongSha?.length > 0 && (
+                                <div className={styles.infoItem}>
+                                  <Text className={styles.infoLabel}>凶煞：</Text>
+                                  <div className={styles.tagGroup}>
+                                    {lunarInfo.xiongSha.map((sha: string, index: number) => (
+                                      <Tag key={index} color="error">{sha}</Tag>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              <div className={styles.infoItem}>
+                                <Text type="secondary">更多神煞信息正在开发中...</Text>
                               </div>
                             </div>
                           </div>
