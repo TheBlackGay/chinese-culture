@@ -443,9 +443,25 @@ const BaziPage: React.FC = () => {
                 </div>
                 {lunarInfo.chengGu?.description && (
                   <div className={styles.infoItem} style={{ marginTop: 8 }}>
+                    <Text className={styles.infoLabel}>歌诀：</Text>
                     <Text>{lunarInfo.chengGu.description}</Text>
                   </div>
                 )}
+                {lunarInfo.chengGu?.explanation && (
+                  <div className={styles.infoItem} style={{ marginTop: 8 }}>
+                    <Text className={styles.infoLabel}>解释：</Text>
+                    <Text>{lunarInfo.chengGu.explanation}</Text>
+                  </div>
+                )}
+                <div className={styles.infoItem} style={{ marginTop: 16 }}>
+                  <Text className={styles.infoLabel}>分项重量：</Text>
+                  <div className={styles.weightDetails}>
+                    <Tag>年：{lunarInfo.chengGu?.yearWeight || '--'} 两</Tag>
+                    <Tag>月：{lunarInfo.chengGu?.monthWeight || '--'} 两</Tag>
+                    <Tag>日：{lunarInfo.chengGu?.dayWeight || '--'} 两</Tag>
+                    <Tag>时：{lunarInfo.chengGu?.hourWeight || '--'} 两</Tag>
+                  </div>
+                </div>
               </Col>
             </Row>
           </div>
