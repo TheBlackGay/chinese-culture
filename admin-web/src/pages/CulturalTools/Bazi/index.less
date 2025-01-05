@@ -1,0 +1,105 @@
+@import 'antd/es/style/themes/default.less';
+
+.header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.baziCard {
+  background: #141414;
+  border-radius: 8px;
+
+  .baziTable {
+    :global {
+      .ant-table {
+        background: transparent;
+      }
+
+      .ant-table-thead > tr > th {
+        background: #1f1f1f;
+        font-size: 16px;
+        font-weight: 500;
+        border-bottom: 1px solid rgba(255, 255, 255, 8%);
+        color: rgba(255, 255, 255, 85%);
+      }
+
+      .ant-table-tbody > tr > td {
+        background: #141414;
+        border-bottom: none;
+        padding: 16px 8px;
+      }
+    }
+  }
+}
+
+.ganzhiBox {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ganzhiTag {
+  font-size: 18px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin: 0;
+
+  &:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+  }
+}
+
+.wuxingCard {
+  background: #141414;
+  border-radius: 8px;
+
+  :global {
+    .ant-card-head {
+      background: #1f1f1f;
+      border-bottom: 1px solid rgba(255, 255, 255, 8%);
+    }
+  }
+
+  .wuxingItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wuxingTag {
+    font-size: 16px;
+    padding: 4px 16px;
+    border-radius: 4px;
+  }
+
+  .wuxingCount {
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 85%);
+  }
+}
+
+.lunarCard {
+  background: #141414;
+  border-radius: 8px;
+
+  .infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .infoLabel {
+    color: rgba(255, 255, 255, 45%);
+    font-size: 14px;
+  }
+
+  .infoValue {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 85%);
+  }
+}
