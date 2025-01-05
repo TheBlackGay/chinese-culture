@@ -1,0 +1,126 @@
+/**
+ * @file Ant Design 主题自定义
+ */
+
+// 覆盖 Ant Design 默认样式
+.ant-btn {
+  &-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+
+    &:hover,
+    &:focus {
+      background-color: var(--primary-color);
+      filter: brightness(1.1);
+    }
+  }
+}
+
+.ant-input,
+.ant-select {
+  &:hover,
+  &:focus {
+    border-color: var(--primary-color);
+  }
+}
+
+.ant-table {
+  background-color: var(--component-bg);
+
+  &-thead > tr > th {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+  }
+
+  &-tbody > tr {
+    &:hover > td {
+      background-color: var(--hover-bg);
+    }
+  }
+}
+
+.ant-modal {
+  &-content {
+    background-color: var(--component-bg);
+  }
+
+  &-header {
+    background-color: var(--component-bg);
+    border-bottom-color: var(--border-color);
+  }
+
+  &-footer {
+    border-top-color: var(--border-color);
+  }
+}
+
+.ant-card {
+  background-color: var(--component-bg);
+  border-color: var(--border-color);
+
+  &-head {
+    border-bottom-color: var(--border-color);
+  }
+}
+
+.ant-menu {
+  background-color: var(--component-bg);
+  border-right-color: var(--border-color);
+
+  &-item {
+    &:hover {
+      background-color: var(--hover-bg);
+    }
+
+    &-selected {
+      background-color: var(--primary-color);
+      color: #fff;
+
+      &:hover {
+        background-color: var(--primary-color);
+        filter: brightness(1.1);
+      }
+    }
+  }
+}
+
+.ant-layout {
+  &-sider {
+    background-color: var(--component-bg);
+    border-right: 1px solid var(--border-color);
+  }
+
+  &-header {
+    background-color: var(--component-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+
+// 暗色主题适配
+[data-theme='dark'] {
+  .ant-btn {
+    &-default {
+      background-color: transparent;
+      border-color: var(--border-color);
+      color: var(--text-color);
+
+      &:hover,
+      &:focus {
+        background-color: var(--hover-bg);
+        border-color: var(--primary-color);
+      }
+    }
+  }
+
+  .ant-input,
+  .ant-select-selector {
+    background-color: transparent;
+    border-color: var(--border-color);
+  }
+
+  .ant-table {
+    &-thead > tr > th {
+      background-color: var(--hover-bg);
+    }
+  }
+} 
