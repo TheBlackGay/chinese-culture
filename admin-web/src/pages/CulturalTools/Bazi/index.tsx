@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse } from 'antd';
+import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { getBaZi, getLunarInfo } from '@/services/lunar';
 import styles from './index.less';
-import { CaretRightOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
 // 五行顺序和颜色映射
 const wuXingConfig = [
-  { element: '金', color: '#FFD700' },
-  { element: '木', color: '#4CAF50' },
-  { element: '水', color: '#2196F3' },
-  { element: '火', color: '#FF5722' },
-  { element: '土', color: '#FF9800' },
+  { element: '金', color: '#FFD700', description: '金代表着坚强、刚毅，象征着秋天，与肺、大肠相对应。性质坚强、清洁、含蓄。' },
+  { element: '木', color: '#4CAF50', description: '木代表着生长、向上，象征着春天，与肝、胆相对应。性质温和、向上、生发。' },
+  { element: '水', color: '#2196F3', description: '水代表着智慧、灵活，象征着冬天，与肾、膀胱相对应。性质柔和、灵活、下行。' },
+  { element: '火', color: '#FF5722', description: '火代表着温暖、光明，象征着夏天，与心、小肠相对应。性质温暖、上升、明亮。' },
+  { element: '土', color: '#FF9800', description: '土代表着包容、中和，象征着季节交替，与脾、胃相对应。性质厚重、包容、中正。' },
 ] as const;
 
 // 五行颜色映射对象（为了兼容其他地方的使用）
@@ -227,12 +227,17 @@ const BaziPage: React.FC = () => {
                           <div className={styles.infoBlock}>
                             <Text className={styles.infoTitle}>五行分布</Text>
                             <div className={styles.wuxingContent}>
-                              {wuXingConfig.map(({ element, color }) => (
+                              {wuXingConfig.map(({ element, color, description }) => (
                                 <div key={element} className={styles.wuxingProgressItem}>
                                   <div className={styles.wuxingLabel}>
-                                    <Tag color={color} className={styles.wuxingTag}>
-                                      {element}
-                                    </Tag>
+                                    <div className={styles.wuxingTitleGroup}>
+                                      <Tag color={color} className={styles.wuxingTag}>
+                                        {element}
+                                      </Tag>
+                                      <Tooltip title={description} placement="right">
+                                        <ExclamationCircleOutlined className={styles.wuxingInfo} />
+                                      </Tooltip>
+                                    </div>
                                     <span className={styles.wuxingCount}>{lunarInfo.wuXing[element]}</span>
                                   </div>
                                   <Progress
