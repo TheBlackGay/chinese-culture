@@ -191,16 +191,6 @@ const BaguaPage: React.FC = () => {
                   ))}
                 </div>
 
-                <div className={styles.coinResult}>
-                  {coinResults.map((result, index) => (
-                    <div key={index} className={styles.yaoResult}>
-                      <span>第{index + 1}爻：</span>
-                      <span>{result.filter(r => r === 1).length}正{result.filter(r => r === 0).length}反</span>
-                      <span>{getYaoType(result)}</span>
-                    </div>
-                  ))}
-                </div>
-
                 <div className={styles.actionButtons}>
                   <Button 
                     type="primary"
@@ -215,6 +205,16 @@ const BaguaPage: React.FC = () => {
                   >
                     重新开始
                   </Button>
+                </div>
+
+                <div className={styles.coinResult}>
+                  {coinResults.map((result, index) => (
+                    <div key={index} className={styles.yaoResult}>
+                      <span>第{index + 1}爻：</span>
+                      <span>{result.filter(r => r === 1).length}正{result.filter(r => r === 0).length}反</span>
+                      <span>{getYaoType(result)}</span>
+                    </div>
+                  ))}
                 </div>
 
                 <div style={{ marginTop: 16, color: '#8b4513', fontSize: '14px' }}>
