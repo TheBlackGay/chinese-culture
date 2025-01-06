@@ -39,8 +39,13 @@ export default defineConfig({
       routes: [
         {
           path: '/cultural-tools/bazi',
-          name: '八字计算',
+          name: '八字',
           component: './CulturalTools/Bazi',
+        },
+        {
+          path: '/cultural-tools/ziwei',
+          name: '紫微斗数',
+          component: './CulturalTools/Ziwei',
         },
         {
           path: '/cultural-tools/bagua',

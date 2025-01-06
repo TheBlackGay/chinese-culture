@@ -26,6 +26,9 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      iztro:
+        specifier: ^2.3.3
+        version: 2.4.4
       lunar-typescript:
         specifier: ^1.7.6
         version: 1.7.6
@@ -3219,6 +3222,9 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  i18next@23.16.8:
+    resolution: {integrity: sha512-06r/TitrM88Mg5FdUXAKL96dJMzgqLE5dv3ryBAra4KCwD9mJ4ndOTS95ZuymIGoE+2hzfdaMak2X11/es7ZWg==}
+
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
@@ -3530,6 +3536,9 @@ packages:
     resolution: {integrity: sha512-H0dkQoCa3b2VEeKQBOxFph+JAbcrQdE7KC0UkqwpLmv2EC4P41QXP+rqo9wYodACiG5/WM5s9oDApTU8utwj9g==}
     engines: {node: '>= 0.4'}
 
+  iztro@2.4.4:
+    resolution: {integrity: sha512-73K6Bb2It9BrciKi7KPcnGlHUUU5BjVOJe/zVmVwUENtTu32wnd/zY7FcPPVwXcZxUVbPxZRdhAV795mlQmrmg==}
+
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
@@ -3785,6 +3794,9 @@ packages:
   lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
+
+  lunar-lite@0.2.3:
+    resolution: {integrity: sha512-sI8BMt3Q9RFvRJSKOdrutxRVc+REVmo709aeUKlAJFOg04+/PS9z/wORDVLJzo+fgBE7cdiIKGbNk1yU6emepg==}
 
   lunar-typescript@1.7.6:
     resolution: {integrity: sha512-vrNRgzJ6UgK++P81jaOykV7YBCLemC8l/XDbsXE7MinojXolOKiIHm6sOZg5wdDMbJxCWP1ERAaqcBV9mhw2Bg==}
@@ -10372,6 +10384,10 @@ snapshots:
 
   husky@9.1.7: {}
 
+  i18next@23.16.8:
+    dependencies:
+      '@babel/runtime': 7.26.0
+
   iconv-lite@0.4.24:
     dependencies:
       safer-buffer: 2.1.2
@@ -10675,6 +10691,12 @@ snapshots:
       has-symbols: 1.1.0
       set-function-name: 2.0.2
 
+  iztro@2.4.4:
+    dependencies:
+      dayjs: 1.11.13
+      i18next: 23.16.8
+      lunar-lite: 0.2.3
+
   jackspeak@3.4.3:
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -10948,6 +10970,10 @@ snapshots:
   lru-cache@6.0.0:
     dependencies:
       yallist: 4.0.0
+
+  lunar-lite@0.2.3:
+    dependencies:
+      lunar-typescript: 1.7.6
 
   lunar-typescript@1.7.6: {}
 

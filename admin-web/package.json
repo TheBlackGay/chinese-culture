@@ -22,7 +22,8 @@
     "@umijs/max": "^4.4.4",
     "antd": "^5.4.0",
     "dayjs": "^1.11.13",
-    "lunar-typescript": "^1.7.6"
+    "lunar-typescript": "^1.7.6",
+    "iztro": "^2.3.3"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",

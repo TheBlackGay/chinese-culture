@@ -5,8 +5,10 @@ import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { getBaZi, getLunarInfo, getTrueSolarTime } from '@/services/lunar';
 import { calculateChengGu } from '@/services/chengGu';
+import { calculateZiWei } from '@/services/ziwei';
 import styles from './index.less';
 import { CaretRightOutlined, ExclamationCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import ZiWeiChart from '@/components/ZiWeiChart';
 
 const { Text, Title } = Typography;
 const { TabPane } = Tabs;
@@ -47,6 +49,7 @@ const BaziPage: React.FC = () => {
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [activeTab, setActiveTab] = useState<string>('basic');
   const [gender, setGender] = useState<'male' | 'female'>('male');
+  const [ziWeiResult, setZiWeiResult] = useState<any>(null);
 
   // 加载历史记录
   useEffect(() => {
@@ -100,8 +103,7 @@ const BaziPage: React.FC = () => {
       const completeInfo = {
         ...lunar,
         chengGu,
-        gender, // 添加性别信息
-        // 确保所有必要的属性都存在
+        gender,
         naYin: lunar.naYin || {},
         wuXing: lunar.wuXing || {},
         jiShen: lunar.jiShen || [],
@@ -125,6 +127,16 @@ const BaziPage: React.FC = () => {
         lunarInfo: completeInfo,
         timestamp: Date.now(),
       });
+
+      // 计算紫微斗数
+      const ziwei = calculateZiWei(
+        selectedDateTime.year(),
+        selectedDateTime.month() + 1,
+        selectedDateTime.date(),
+        selectedDateTime.hour(),
+        gender
+      );
+      setZiWeiResult(ziwei);
     }
   };
 
@@ -536,6 +548,11 @@ const BaziPage: React.FC = () => {
     </Card>
   );
 
+  // 渲染紫微斗数内容
+  const renderZiWeiInfo = () => (
+    <ZiWeiChart data={ziWeiResult} />
+  );
+
   return (
     <PageContainer>
       <div className={styles.container}>
@@ -577,6 +594,9 @@ const BaziPage: React.FC = () => {
                   </TabPane>
                   <TabPane tab="基本排盘" key="chart">
                     {renderBasicChart()}
+                  </TabPane>
+                  <TabPane tab="紫微斗数" key="ziwei">
+                    {renderZiWeiInfo()}
                   </TabPane>
                 </Tabs>
               )}
