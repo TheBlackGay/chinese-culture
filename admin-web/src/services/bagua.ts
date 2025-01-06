@@ -293,15 +293,15 @@ const hexagramData: { [key: string]: HexagramInfo } = {
   '010001': {
     name: '水山蹇',
     meaning: '艰难、困阻',
-    description: '水山蹇，象征山阻水流，行进艰难。提示当前困难重重，需要智慧渡过。',
-    analysis: '事业暂时受阻；感情有所阻碍；投资理财需谨慎；健康方面注意调理。',
+    description: '水山蹇，水流被山阻，象征行动受阻。提示当前困难重重，需要谨慎前行。',
+    analysis: '事业暂时受阻；感情有所阻碍；投资需要谨慎；健康多加注意。',
     yaoChanges: {
       1: '往蹇，来誉',
       2: '王臣蹇蹇，匪躬之故',
-      3: '往蹇来反',
-      4: '往蹇来连',
-      5: '大蹇朋来',
-      6: '往蹇来硕，吉，利见大人'
+      3: '往蹇，来反',
+      4: '往蹇，来连',
+      5: '大蹇，朋来',
+      6: '往蹇，来硕，吉；利见大人'
     }
   },
   '010011': {
@@ -350,14 +350,14 @@ const hexagramData: { [key: string]: HexagramInfo } = {
   '101000': {
     name: '火地晋',
     meaning: '进步、晋升',
-    description: '火光上升，照耀大地，象征上进和晋升，提醒在进步过程中要循序渐进。',
-    analysis: '事业上升发展；感情逐渐深入；投资理财稳步增长；健康持续改善。',
+    description: '火地晋，火光上升于地，象征光明前进。提示当前形势向上，有利于进取。',
+    analysis: '事业上升发展；感情逐步深入；投资收益渐增；健康状况改善。',
     yaoChanges: {
-      1: '晋如，摧如，贞吉。罔孚，裕无咎',
+      1: '晋如，摧如，贞吉。罔孚，裕，无咎',
       2: '晋如，愁如，贞吉。受兹介福，于其王母',
       3: '众允，悔亡',
       4: '晋如硕鼠，贞厉',
-      5: '悔亡，失得勿恤，往吉无不利',
+      5: '悔亡，失得勿恤，往吉，无不利',
       6: '晋其角，维用伐邑，厉吉无咎，贞吝'
     }
   },
@@ -435,8 +435,8 @@ const hexagramData: { [key: string]: HexagramInfo } = {
   '110001': {
     name: '风山渐',
     meaning: '渐进、循序',
-    description: '风山渐，象征风吹山岗，渐进向上。提示当前要循序渐进，不可冒进。',
-    analysis: '事业稳步前进；感情水到渠成；投资循序渐进；健康逐步改善。',
+    description: '风山渐，风在山上徐徐吹动，象征循序渐进。提示当前要稳步前进，不可急躁。',
+    analysis: '事业需循序渐进；感情要慢慢培养；投资宜稳健为主；健康重在持续。',
     yaoChanges: {
       1: '鸿渐于干，小子厉，有言，无咎',
       2: '鸿渐于磐，饮食衎衎，吉',
@@ -462,10 +462,10 @@ const hexagramData: { [key: string]: HexagramInfo } = {
   },
   // 艮卦系列
   '100100': {
-    name: '艮为山',
-    meaning: '止静、稳重',
-    description: '艮为山，象征山的稳重特性。提示当前要稳重行事，适时止静，但不可过分保守。',
-    analysis: '事业宜稳健发展；感情需要专一；投资保持稳健；健康注意修养。',
+    name: '山山艮',
+    meaning: '止、静止',
+    description: '山山艮，双山相叠，象征停止。提示当前要适时止步，静观其变。',
+    analysis: '事业需要停顿思考；感情要保持克制；投资理财宜守不宜进；健康注意休养。',
     yaoChanges: {
       1: '艮其趾，无咎，利永贞',
       2: '艮其腓，不拯其随，其心不快',
@@ -603,48 +603,6 @@ const hexagramData: { [key: string]: HexagramInfo } = {
     }
   },
   // 乾卦系列（补充）
-  '111010': {
-    name: '天水讼',
-    meaning: '争讼',
-    description: '天在上水在下，阳刚之气下降，表示争讼、冲突。',
-    analysis: '当前易生争执，应当明辨是非，谨慎处理纷争。',
-    yaoChanges: {
-      1: '不永所事，小有言，终吉',
-      2: '不克讼，归而逋，其邑人三百户，无眚',
-      3: '食旧德，贞厉，终吉',
-      4: '不克讼，复即命，渝安贞，吉',
-      5: '讼，元吉',
-      6: '或锡之鞶带，终朝三褫之'
-    }
-  },
-  '111001': {
-    name: '天风姤',
-    meaning: '遇合',
-    description: '天上有风，阳气初降，万物相遇，表示偶然相遇、邂逅。',
-    analysis: '机遇来临，但需要把握适度，不可过分追求。',
-    yaoChanges: {
-      1: '系于金柅，贞吉',
-      2: '包有鱼，无咎',
-      3: '臀无肤，其行次且',
-      4: '包无鱼，起凶',
-      5: '以杞包瓜，含章，有陨自天',
-      6: '姤其角，吝，无咎'
-    }
-  },
-  '111100': {
-    name: '天雷无妄',
-    meaning: '无妄',
-    description: '天上打雷，自然现象，表示无妄之灾或无妄之福。',
-    analysis: '事态发展出人意料，需要以正直之心应对。',
-    yaoChanges: {
-      1: '无妄，往吉',
-      2: '不耕获，不菑畲，则利有攸往',
-      3: '无妄之灾，或系之牛，行人之得，邑人之灾',
-      4: '可贞，无咎',
-      5: '无妄之疾，勿药有喜',
-      6: '无妄，行有眚，无攸利'
-    }
-  },
   '111000': {
     name: '天地否',
     meaning: '闭塞、不通',
@@ -657,6 +615,20 @@ const hexagramData: { [key: string]: HexagramInfo } = {
       4: '有命，无咎，畴离祉',
       5: '休否，大人吉，其亡其亡，系于苞桑',
       6: '倾否，先否后喜'
+    }
+  },
+  '111001': {
+    name: '天雷无妄',
+    meaning: '自然、无妄',
+    description: '天雷无妄，象征天降雷声，自然运行。提示当前形势自然发展，不可妄为。',
+    analysis: '事业顺其自然；感情水到渠成；投资循天时；健康保持规律。',
+    yaoChanges: {
+      1: '无妄往，吉',
+      2: '不耕获，不菑畲，则利有攸往',
+      3: '无妄之灾，或系之牛，行人之得，邑人之灾',
+      4: '可贞，无咎',
+      5: '无妄之疾，勿药有喜',
+      6: '无妄，行有眚，无攸利'
     }
   },
   '101011': {
@@ -730,11 +702,11 @@ const hexagramData: { [key: string]: HexagramInfo } = {
       6: '大君有命，开国承家，小人勿用'
     }
   },
-  '000011': {
+  '000101': {
     name: '地火明夷',
     meaning: '晦暗、隐伏',
-    description: '地火明夷，象征火光入地，光明受损。提示当前要韬光养晦，等待时机。',
-    analysis: '事业暂时低调；感情需要耐心；投资宜守不宜进；健康注意修养。',
+    description: '火光入地，象征光明受损。提示当前处境不利，需要韬光养晦，等待时机。',
+    analysis: '事业宜避锋芒；感情需要耐心；投资保持谨慎；健康注意休养。',
     yaoChanges: {
       1: '明夷于飞，垂其翼，君子于行，三日不食，有攸往，主人有言',
       2: '明夷，夷于左股，用拯马壮，吉',
@@ -817,9 +789,9 @@ const hexagramData: { [key: string]: HexagramInfo } = {
   },
   '000110': {
     name: '地风升',
-    meaning: '升进、上升',
-    description: '风在地上升起，象征事物向上发展。提示当前形势日益向好，但需循序渐进。',
-    analysis: '事业蒸蒸日上；感情逐步深入；投资稳步增长；健康状况改善。',
+    meaning: '上升、升腾',
+    description: '地风升，风从地下升起，象征上升。提示当前形势向上，有利于发展。',
+    analysis: '事业上升发展；感情逐步升温；投资收益上涨；健康状况改善。',
     yaoChanges: {
       1: '允升，大吉',
       2: '孚乃利用禴，无咎',
@@ -827,6 +799,246 @@ const hexagramData: { [key: string]: HexagramInfo } = {
       4: '王用亨于岐山，吉无咎',
       5: '贞吉，升阶',
       6: '冥升，利于不息之贞'
+    }
+  },
+  // 添加缺失的卦象
+  '110011': {
+    name: '风泽中孚',
+    meaning: '诚信、信任',
+    description: '风行泽上，万物生长，表示以诚信感化他人。提示当前要以诚待人，守信践诺。',
+    analysis: '事业以诚为本；感情需要信任；投资讲究诚信；健康保持乐观。',
+    yaoChanges: {
+      1: '虞吉，有它不燕',
+      2: '鸣鹤在阴，其子和之，我有好爵，吾与尔靡之',
+      3: '得敌，或鼓或罢，或泣或歌',
+      4: '月几望，马匹亡，无咎',
+      5: '有孚挛如，无咎',
+      6: '翰音登于天，贞凶'
+    }
+  },
+  '011110': {
+    name: '泽风大过',
+    meaning: '过度、太过',
+    description: '泽水浸风，力量过大。提示当前形势有过度之象，需要适可而止。',
+    analysis: '事业需要节制；感情不可过度；投资要有节度；健康防止过劳。',
+    yaoChanges: {
+      1: '藉用白茅，无咎',
+      2: '枯杨生稊，老夫得其女妻，无不利',
+      3: '栋桡，凶',
+      4: '栋隆，吉；有它吝',
+      5: '枯杨生华，老妇得其士夫，无咎无誉',
+      6: '过涉灭顶，凶，无咎'
+    }
+  },
+  '101100': {
+    name: '火雷噬嗑',
+    meaning: '决断、明断',
+    description: '雷电交加，象征果断决策。提示当前要当机立断，把握时机。',
+    analysis: '事业需要魄力；感情应当果断；投资把握机会；健康注意节制。',
+    yaoChanges: {
+      1: '屦校灭趾，无咎',
+      2: '噬肤灭鼻，无咎',
+      3: '噬腊肉，遇毒；小吝，无咎',
+      4: '噬乾胏，得金矢，利艰贞，吉',
+      5: '噬乾肉，得黄金，贞厉，无咎',
+      6: '何校灭耳，凶'
+    }
+  },
+  '100011': {
+    name: '山泽损',
+    meaning: '损益、取舍',
+    description: '山泽损，山高水下，表示有所损失才有所得。提示当前要有所取舍。',
+    analysis: '事业需要权衡；感情要有付出；投资要有准备；健康注意节制。',
+    yaoChanges: {
+      1: '已事遄往，无咎，酌损之',
+      2: '利贞，征凶，弗损益之',
+      3: '三人行，则损一人；一人行，则得其友',
+      4: '损其疾，使遄有喜，无咎',
+      5: '或益之，十朋之龟弗克违，元吉',
+      6: '弗损益之，无咎，贞吉，利有攸往，得臣无家'
+    }
+  },
+  // 添加更多缺失的卦象
+  '010101': {
+    name: '水火既济',
+    meaning: '完成、成就',
+    description: '水火既济，阴阳调和。提示当前事物已经达到圆满阶段，但要防止物极必反。',
+    analysis: '事业已见成效；感情趋于圆满；投资收获在望；健康状况良好。',
+    yaoChanges: {
+      1: '曳其轮，濡其尾，无咎',
+      2: '妇丧其茀，勿逐，七日得',
+      3: '高宗伐鬼方，三年克之，小人勿用',
+      4: '繻有衣袽，终日戒',
+      5: '东邻杀牛，不如西邻之禴祭，实受其福',
+      6: '濡其首，厉'
+    }
+  },
+  '001100': {
+    name: '雷火丰',
+    meaning: '丰盛、充实',
+    description: '雷电交加，光明充盈。提示当前形势大好，但要防止骄傲自满。',
+    analysis: '事业蒸蒸日上；感情美满和谐；投资收益可观；健康充满活力。',
+    yaoChanges: {
+      1: '遇其配主，虽旬无咎，往有尚',
+      2: '丰其蔀，日中见斗，往得疑疾，有孚发若，吉',
+      3: '丰其沛，日中见沫，折其右肱，无咎',
+      4: '丰其蔀，日中见斗，遇其夷主，吉',
+      5: '来章，有庆誉，吉',
+      6: '丰其屋，蔀其家，窥其户，阒其无人，三岁不觌，凶'
+    }
+  },
+  '111010': {
+    name: '天水讼',
+    meaning: '争讼、诉讼',
+    description: '天在上水在下，阳刚之气下降，表示争讼、冲突。提示当前易生争执，需要明智处理。',
+    analysis: '事业有争议；感情需沟通；投资需谨慎；健康防纷扰。',
+    yaoChanges: {
+      1: '不永所事，小有言，终吉',
+      2: '不克讼，归而逋，其邑人三百户，无眚',
+      3: '食旧德，贞厉，终吉',
+      4: '不克讼，复即命，渝安贞，吉',
+      5: '讼，元吉',
+      6: '或锡之鞶带，终朝三褫之'
+    }
+  },
+  '111100': {
+    name: '天雷无妄',
+    meaning: '无妄、自然',
+    description: '天上打雷，自然现象，表示无妄之灾或无妄之福。提示当前要顺其自然，不可妄为。',
+    analysis: '事业顺其自然；感情水到渠成；投资循天时；健康保持规律。',
+    yaoChanges: {
+      1: '无妄，往吉',
+      2: '不耕获，不菑畲，则利有攸往',
+      3: '无妄之灾，或系之牛，行人之得，邑人之灾',
+      4: '可贞，无咎',
+      5: '无妄之疾，勿药有喜',
+      6: '无妄，行有眚，无攸利'
+    }
+  },
+  '001110': {
+    name: '雷风恒',
+    meaning: '恒久、持续',
+    description: '雷电风行，阴阳交合，象征持久不变。提示当前要持之以恒，保持恒心。',
+    analysis: '事业需要坚持；感情要保持专一；投资要有恒心；健康持续调养。',
+    yaoChanges: {
+      1: '浚恒，贞凶，无攸利',
+      2: '悔亡',
+      3: '不恒其德，或承之羞，贞吝',
+      4: '田无禽',
+      5: '恒其德，贞，妇人吉，夫子凶',
+      6: '振恒，凶'
+    }
+  },
+  '011101': {
+    name: '泽火革',
+    meaning: '改革、变革',
+    description: '泽火革，火烤干泽水，象征变革。提示当前需要改革创新，但要循序渐进。',
+    analysis: '事业需要创新改革；感情要有新突破；投资理财需调整；健康注意调养。',
+    yaoChanges: {
+      1: '巩用黄牛之革',
+      2: '己日乃革之，征吉，无咎',
+      3: '征凶，贞厉。革言三就，有孚',
+      4: '悔亡，有孚改命，吉',
+      5: '大人虎变，未占有孚',
+      6: '君子豹变，小人革面，征凶，居贞吉'
+    }
+  },
+  '110101': {
+    name: '风火家人',
+    meaning: '家庭、和睦',
+    description: '风吹火旺，象征家庭和睦。提示当前要注重家庭关系，保持内外和谐。',
+    analysis: '事业需要团队合作；感情注重家庭和谐；投资理财稳健发展；健康关注家人。',
+    yaoChanges: {
+      1: '闲有家，悔亡',
+      2: '无攸遂，在中馈，贞吉',
+      3: '家人嗃嗃，悔厉吉',
+      4: '富家，大吉',
+      5: '王假有家，勿恤吉',
+      6: '有孚威如，终吉'
+    }
+  },
+  '000011': {
+    name: '地泽临',
+    meaning: '临近、监督',
+    description: '地泽临，泽在地上，水往下渗，象征居高临下。提示当前要以谦逊的态度监察和管理。',
+    analysis: '事业上要以身作则；感情要以诚相待；投资需要严格监管；健康注意自我监督。',
+    yaoChanges: {
+      1: '咸临，贞吉',
+      2: '咸临，吉无不利',
+      3: '甘临，无攸利。既忧之，无咎',
+      4: '至临，无咎',
+      5: '知临，大君之宜，吉',
+      6: '敦临，吉无咎'
+    }
+  },
+  '110100': {
+    name: '风山渐',
+    meaning: '渐进、循序',
+    description: '风山渐，风在山上徐徐吹动，象征循序渐进。提示当前要稳步前进，不可急躁。',
+    analysis: '事业需循序渐进；感情要慢慢培养；投资宜稳健为主；健康重在持续。',
+    yaoChanges: {
+      1: '鸿渐于干，小子厉，有言，无咎',
+      2: '鸿渐于磐，饮食衎衎，吉',
+      3: '鸿渐于陆，夫征不复，妇孕不育，凶；利御寇',
+      4: '鸿渐于木，或得其桷，无咎',
+      5: '鸿渐于陵，妇三岁不孕，终莫之胜，吉',
+      6: '鸿渐于陆，其羽可用为仪，吉'
+    }
+  },
+  '101110': {
+    name: '火风鼎',
+    meaning: '革新、变化',
+    description: '火风鼎，火借风势，象征革新进取。提示当前适合创新改革，但要把握分寸。',
+    analysis: '事业宜创新突破；感情需要新意；投资可以创新；健康注意调养。',
+    yaoChanges: {
+      1: '鼎颠趾，利出否，得妾以其子，无咎',
+      2: '鼎有实，我仇有疾，不我能即，吉',
+      3: '鼎耳革，其行塞，雉膏不食，方雨亏悔，终吉',
+      4: '鼎折足，覆公餗，其形渥，凶',
+      5: '鼎黄耳金铉，利贞',
+      6: '鼎玉铉，大吉，无不利'
+    }
+  },
+  '100110': {
+    name: '山风蛊',
+    meaning: '蛊惑、整顿',
+    description: '山风蛊，山下起风，象征腐败需要整顿。提示当前要整顿革新，匡正弊端。',
+    analysis: '事业需要整顿；感情要澄清误会；投资需要调整；健康及时调理。',
+    yaoChanges: {
+      1: '干父之蛊，有子，考无咎，厉终吉',
+      2: '干母之蛊，不可贞',
+      3: '干父之蛊，小有悔，无大咎',
+      4: '裕父之蛊，往见吝',
+      5: '干父之蛊，用誉',
+      6: '不事王侯，高尚其事'
+    }
+  },
+  '100101': {
+    name: '山火贲',
+    meaning: '文明、装饰',
+    description: '山火贲，火光映山，象征文明装饰。提示当前要注重外在表现，但不可过分。',
+    analysis: '事业讲究形象；感情重视仪表；投资注意包装；健康关注外表。',
+    yaoChanges: {
+      1: '贲其趾，舍车而徒',
+      2: '贲其须',
+      3: '贲如，濡如，永贞吉',
+      4: '贲如，皤如，白马翰如，匪寇婚媾',
+      5: '贲于丘园，束帛戋戋，吝，终吉',
+      6: '白贲，无咎'
+    }
+  },
+  '010100': {
+    name: '水山蹇',
+    meaning: '艰难、困阻',
+    description: '水山蹇，水流被山阻，象征行动受阻。提示当前困难重重，需要谨慎前行。',
+    analysis: '事业暂时受阻；感情有所阻碍；投资需要谨慎；健康多加注意。',
+    yaoChanges: {
+      1: '往蹇，来誉',
+      2: '王臣蹇蹇，匪躬之故',
+      3: '往蹇，来反',
+      4: '往蹇，来连',
+      5: '大蹇，朋来',
+      6: '往蹇，来硕，吉；利见大人'
     }
   }
 };
@@ -1003,4 +1215,137 @@ ${hexagramInfo.description}
 从五行关系来看，${wuxingAnalysis}
 具体分析：${hexagramInfo.analysis}
 建议：在行动时要把握时机，明察形势，审时度势。注意在发展过程中保持谦逊谨慎的态度，不可操之过急。`;
-} 
+}
+
+// 检查所有可能的卦象组合
+function checkAllPossibleHexagrams() {
+  const baguas = Object.values(baguaData);
+  const allCombinations = new Set<string>();
+  const missingHexagrams = new Set<string>();
+  
+  // 生成所有可能的组合
+  for (let num = 1; num <= 50; num++) {
+    const upperNumber = Math.ceil(num / 7) % 8 || 8;
+    const lowerNumber = num % 8 || 8;
+    
+    const upperTrigram = baguas[upperNumber - 1];
+    const lowerTrigram = baguas[lowerNumber - 1];
+    
+    const hexagramCode = upperTrigram.binary + lowerTrigram.binary;
+    allCombinations.add(hexagramCode);
+    
+    if (!hexagramData[hexagramCode]) {
+      missingHexagrams.add(hexagramCode);
+      console.log(`数字${num}生成的卦象代码${hexagramCode}（上卦：${upperTrigram.name}，下卦：${lowerTrigram.name}）在数据中缺失`);
+    }
+  }
+  
+  console.log('所有可能的组合数量：', allCombinations.size);
+  console.log('缺失的卦象数量：', missingHexagrams.size);
+  return { allCombinations, missingHexagrams };
+}
+
+// 检查卦象的唯一性
+function checkHexagramUniqueness() {
+  const hexagramCodes = Object.keys(hexagramData);
+  const uniqueCodes = new Set(hexagramCodes);
+  
+  console.log('总卦象数量：', hexagramCodes.length);
+  console.log('唯一卦象数量：', uniqueCodes.size);
+  
+  if (hexagramCodes.length !== uniqueCodes.size) {
+    console.log('发现重复的卦象：');
+    const codeCount = new Map<string, number>();
+    hexagramCodes.forEach(code => {
+      codeCount.set(code, (codeCount.get(code) || 0) + 1);
+    });
+    
+    codeCount.forEach((count, code) => {
+      if (count > 1) {
+        console.log(`卦象代码 ${code} 重复出现 ${count} 次，卦名：${hexagramData[code].name}`);
+      }
+    });
+  }
+  
+  return hexagramCodes.length === uniqueCodes.size;
+}
+
+// 执行检查
+console.log('开始检查所有可能的卦象组合...');
+const { allCombinations, missingHexagrams } = checkAllPossibleHexagrams(); 
+
+// 执行唯一性检查
+console.log('开始检查卦象的唯一性...');
+const isUnique = checkHexagramUniqueness();
+console.log('卦象唯一性检查结果：', isUnique ? '通过' : '存在重复');
+
+// 测试特定数字的卦象生成
+function testNumberHexagram(number: number) {
+  const upperNumber = Math.ceil(number / 7) % 8 || 8;
+  const lowerNumber = number % 8 || 8;
+  
+  const baguas = Object.values(baguaData);
+  const upperTrigram = baguas[upperNumber - 1];
+  const lowerTrigram = baguas[lowerNumber - 1];
+  
+  const hexagramCode = upperTrigram.binary + lowerTrigram.binary;
+  console.log(`数字 ${number} 生成的卦象：`);
+  console.log(`上卦：${upperTrigram.name}（${upperTrigram.binary}）`);
+  console.log(`下卦：${lowerTrigram.name}（${lowerTrigram.binary}）`);
+  console.log(`卦象代码：${hexagramCode}`);
+  console.log(`卦象名称：${hexagramData[hexagramCode]?.name || '未知卦象'}`);
+  console.log('---');
+}
+
+// 测试1-10的数字
+console.log('测试数字1-10的卦象生成：');
+for (let i = 1; i <= 10; i++) {
+  testNumberHexagram(i);
+}
+
+// 测试所有数字的卦象生成
+function testAllNumbers() {
+  const missingHexagrams = new Map<string, { number: number, upperTrigram: BaguaInfo, lowerTrigram: BaguaInfo }>();
+  
+  console.log('\n测试结果：');
+  console.log('数字\t上卦\t下卦\t卦象代码\t卦象名称');
+  console.log('----------------------------------------');
+  
+  for (let num = 1; num <= 50; num++) {
+    const upperNumber = Math.ceil(num / 7) % 8 || 8;
+    const lowerNumber = num % 8 || 8;
+    
+    const baguas = Object.values(baguaData);
+    const upperTrigram = baguas[upperNumber - 1];
+    const lowerTrigram = baguas[lowerNumber - 1];
+    
+    const hexagramCode = upperTrigram.binary + lowerTrigram.binary;
+    const hexagramName = hexagramData[hexagramCode]?.name || '未知卦象';
+    
+    console.log(`${num}\t${upperTrigram.name}\t${lowerTrigram.name}\t${hexagramCode}\t${hexagramName}`);
+    
+    if (!hexagramData[hexagramCode]) {
+      missingHexagrams.set(hexagramCode, {
+        number: num,
+        upperTrigram,
+        lowerTrigram
+      });
+    }
+  }
+  
+  if (missingHexagrams.size > 0) {
+    console.log('\n缺失的卦象：');
+    console.log('数字\t卦象\t\t卦象代码');
+    console.log('----------------------------------------');
+    missingHexagrams.forEach((info, code) => {
+      console.log(`${info.number}\t${info.upperTrigram.name}${info.lowerTrigram.name}\t\t${code}`);
+    });
+  }
+  
+  return missingHexagrams;
+}
+
+// 执行测试
+console.log('开始测试所有数字（1-50）的卦象生成...');
+const missingHexagramsFromTest = testAllNumbers();
+console.log(`\n共发现 ${missingHexagramsFromTest.size} 个缺失的卦象`);
