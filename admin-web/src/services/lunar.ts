@@ -112,6 +112,49 @@ const zhiToShichen: Record<string, string> = {
   '申': '申时', '酉': '酉时', '戌': '戌时', '亥': '亥时'
 };
 
+// 纳音五行对应表
+const naYinWuXing: { [key: string]: string } = {
+  '甲子': '海中金', '乙丑': '海中金',
+  '丙寅': '炉中火', '丁卯': '炉中火',
+  '戊辰': '大林木', '己巳': '大林木',
+  '庚午': '路旁土', '辛未': '路旁土',
+  '壬申': '剑锋金', '癸酉': '剑锋金',
+  '甲戌': '山头火', '乙亥': '山头火',
+  '丙子': '涧下水', '丁丑': '涧下水',
+  '戊寅': '城头土', '己卯': '城头土',
+  '庚辰': '白蜡金', '辛巳': '白蜡金',
+  '壬午': '杨柳木', '癸未': '杨柳木',
+  '甲申': '泉中水', '乙酉': '泉中水',
+  '丙戌': '屋上土', '丁亥': '屋上土',
+  '戊子': '霹雳火', '己丑': '霹雳火',
+  '庚寅': '松柏木', '辛卯': '松柏木',
+  '壬辰': '长流水', '癸巳': '长流水',
+  '甲午': '沙中金', '乙未': '沙中金',
+  '丙申': '山下火', '丁酉': '山下火',
+  '戊戌': '平地木', '己亥': '平地木',
+  '庚子': '壁上土', '辛丑': '壁上土',
+  '壬寅': '金箔金', '癸卯': '金箔金',
+  '甲辰': '覆灯火', '乙巳': '覆灯火',
+  '丙午': '天河水', '丁未': '天河水',
+  '戊申': '大驿土', '己酉': '大驿土',
+  '庚戌': '钗钏金', '辛亥': '钗钏金',
+  '壬子': '桑柘木', '癸丑': '桑柘木',
+  '甲寅': '大溪水', '乙卯': '大溪水',
+  '丙辰': '沙中土', '丁巳': '沙中土',
+  '戊午': '天上火', '己未': '天上火',
+  '庚申': '石榴木', '辛酉': '石榴木',
+  '壬戌': '大海水', '癸亥': '大海水'
+};
+
+// 六亲映射表（以日干五行为主）
+const liuQinMap: { [key: string]: { [key: string]: string } } = {
+  '木': { '木': '兄弟', '火': '子孙', '土': '妻财', '金': '官鬼', '水': '父母' },
+  '火': { '木': '父母', '火': '兄弟', '土': '子孙', '金': '妻财', '水': '官鬼' },
+  '土': { '木': '官鬼', '火': '父母', '土': '兄弟', '金': '子孙', '水': '妻财' },
+  '金': { '木': '妻财', '火': '官鬼', '土': '父母', '金': '兄弟', '水': '子孙' },
+  '水': { '木': '子孙', '火': '妻财', '土': '官鬼', '金': '父母', '水': '兄弟' }
+};
+
 export function getLunarInfo(date: Date): LunarInfo {
   const lunar = Lunar.fromDate(date);
   const currentJieQi = lunar.getPrevJieQi(true);  // 获取当前节气
@@ -137,6 +180,65 @@ export function getLunarInfo(date: Date): LunarInfo {
   const hourInGanZhi = hourGan + hourZhi;
   const hourInChinese = zhiToShichen[hourZhi] || '';
 
+  // 计算八字
+  const yearGanZhi = splitGanZhi(lunar.getYearInGanZhi());
+  const monthGanZhi = splitGanZhi(lunar.getMonthInGanZhi());
+  const dayGanZhi = splitGanZhi(lunar.getDayInGanZhi());
+  const hourGanZhi = splitGanZhi(hourInGanZhi);
+
+  // 计算五行统计
+  const wuXing = {
+    '木': 0, '火': 0, '土': 0, '金': 0, '水': 0
+  };
+
+  // 统计天干五行
+  [yearGanZhi.gan, monthGanZhi.gan, dayGanZhi.gan, hourGanZhi.gan].forEach(gan => {
+    const element = ganWuXing[gan];
+    if (element) wuXing[element]++;
+  });
+
+  // 统计地支五行
+  [yearGanZhi.zhi, monthGanZhi.zhi, dayGanZhi.zhi, hourGanZhi.zhi].forEach(zhi => {
+    const element = zhiWuXing[zhi];
+    if (element) wuXing[element]++;
+  });
+
+  // 计算纳音五行
+  const naYin = {
+    year: naYinWuXing[lunar.getYearInGanZhi()] || '',
+    month: naYinWuXing[lunar.getMonthInGanZhi()] || '',
+    day: naYinWuXing[lunar.getDayInGanZhi()] || '',
+    hour: naYinWuXing[hourInGanZhi] || ''
+  };
+
+  // 计算十神和六亲
+  const yearTiangan = lunar.getYearGan();
+  const monthTiangan = lunar.getMonthGan();
+  const dayTiangan = lunar.getDayGan();
+  const hourTiangan = lunar.getTimeGan();
+
+  const yearDizhi = lunar.getYearZhi();
+  const monthDizhi = lunar.getMonthZhi();
+  const dayDizhi = lunar.getDayZhi();
+  const hourDizhi = lunar.getTimeZhi();
+
+  // 使用六尾API获取十神
+  const shiShen = {
+    year: lunar.getBaZiShiShenGan(lunar.getYearGan()),
+    month: lunar.getBaZiShiShenGan(lunar.getMonthGan()),
+    day: '比肩', // 日柱天干与日主相同，固定为比肩
+    hour: lunar.getBaZiShiShenGan(lunar.getTimeGan())
+  };
+
+  // 计算六亲（以日干五行为主）
+  const dayGanWuXing = ganWuXing[dayTiangan];
+  const liuQin = {
+    year: liuQinMap[dayGanWuXing][zhiWuXing[yearDizhi]] || '',
+    month: liuQinMap[dayGanWuXing][zhiWuXing[monthDizhi]] || '',
+    day: liuQinMap[dayGanWuXing][zhiWuXing[dayDizhi]] || '',
+    hour: liuQinMap[dayGanWuXing][zhiWuXing[hourDizhi]] || ''
+  };
+
   return {
     year: lunar.getYear(),
     month: lunar.getMonth(),
@@ -153,21 +255,14 @@ export function getLunarInfo(date: Date): LunarInfo {
     constellation: getZodiacSign(date),
     term: lunar.getJieQi(),
     festivals: lunar.getFestivals(),
-    wuXing: {
-      '木': 0, '火': 0, '土': 0, '金': 0, '水': 0
-    },
+    wuXing,
     ganZhi: {
-      year: splitGanZhi(lunar.getYearInGanZhi()),
-      month: splitGanZhi(lunar.getMonthInGanZhi()),
-      day: splitGanZhi(lunar.getDayInGanZhi()),
-      hour: splitGanZhi(hourInGanZhi)
+      year: yearGanZhi,
+      month: monthGanZhi,
+      day: dayGanZhi,
+      hour: hourGanZhi
     },
-    naYin: {
-      year: '',
-      month: '',
-      day: '',
-      hour: ''
-    },
+    naYin,
     taiYuan: '',
     mingGong: '',
     shenGong: '',
@@ -181,12 +276,8 @@ export function getLunarInfo(date: Date): LunarInfo {
       day: '',
       hour: ''
     },
-    shiShen: {
-      year: '',
-      month: '',
-      day: '',
-      hour: ''
-    },
+    shiShen,
+    liuQin,
     jieQi: {
       current: currentJieQi.getName(),
       currentDate: currentJieQiDate,
@@ -196,12 +287,6 @@ export function getLunarInfo(date: Date): LunarInfo {
       nextDate: nextJieQiDate,
       nextDays: nextDays,
       nextHours: nextHours
-    },
-    liuQin: {
-      year: '',
-      month: '',
-      day: '',
-      hour: ''
     }
   };
 }

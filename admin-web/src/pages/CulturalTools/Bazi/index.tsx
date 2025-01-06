@@ -96,20 +96,33 @@ const BaziPage: React.FC = () => {
       );
       console.log('ChengGu result:', chengGu);
       
-      setLunarInfo({
+      // 合并所有信息
+      const completeInfo = {
         ...lunar,
-        chengGu
-      });
+        chengGu,
+        gender, // 添加性别信息
+        // 确保所有必要的属性都存在
+        naYin: lunar.naYin || {},
+        wuXing: lunar.wuXing || {},
+        jiShen: lunar.jiShen || [],
+        xiongSha: lunar.xiongSha || [],
+        shiShen: lunar.shiShen || {},
+        liuQin: lunar.liuQin || {},
+        taiYuan: lunar.taiYuan || '',
+        mingGong: lunar.mingGong || '',
+        shenGong: lunar.shenGong || '',
+        taiXi: lunar.taiXi || '',
+        mingGua: lunar.mingGua || ''
+      };
+      
+      setLunarInfo(completeInfo);
 
       // 添加到历史记录
       saveHistory({
         id: Date.now().toString(),
         datetime: selectedDateTime.format('YYYY-MM-DD HH:mm'),
         gender,
-        lunarInfo: {
-          ...lunar,
-          chengGu
-        },
+        lunarInfo: completeInfo,
         timestamp: Date.now(),
       });
     }
@@ -185,7 +198,7 @@ const BaziPage: React.FC = () => {
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>农历：</Text>
                   <Text>
-                    {lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese} {lunarInfo.hourInChinese}时
+                    {lunarInfo.yearInChinese}年 {lunarInfo.monthInChinese}月 {lunarInfo.dayInChinese} {lunarInfo.hourInChinese}
                   </Text>
                 </div>
               </Col>
@@ -206,13 +219,13 @@ const BaziPage: React.FC = () => {
                   <Text className={styles.infoLabel}>出生节气：</Text>
                   <div>
                     <div>
-                      <Text>出生于{lunarInfo.jieQi.current}后{lunarInfo.jieQi.currentDays}天{lunarInfo.jieQi.currentHours}小时，</Text>
-                      <Text>{lunarInfo.jieQi.next}前{lunarInfo.jieQi.nextDays}天{lunarInfo.jieQi.nextHours}小时</Text>
+                      <Text>出生于{lunarInfo.jieQi.current}后{lunarInfo.jieQi.currentDays}天{lunarInfo.jieQi.currentHours}小时{lunarInfo.jieQi.currentMinutes}分，</Text>
+                      <Text>{lunarInfo.jieQi.next}前{lunarInfo.jieQi.nextDays}天{lunarInfo.jieQi.nextHours}小时{lunarInfo.jieQi.nextMinutes}分</Text>
                     </div>
                     <div style={{ marginTop: 4, color: 'rgba(255, 255, 255, 0.45)' }}>
-                      <Text>{lunarInfo.jieQi.current}：{lunarInfo.jieQi.currentDate}</Text>
+                      <Text>{lunarInfo.jieQi.current}：{dayjs(lunarInfo.jieQi.currentDate).format('YYYY-MM-DD HH:mm:ss')}</Text>
                       <Text style={{ margin: '0 8px' }}>|</Text>
-                      <Text>{lunarInfo.jieQi.next}：{lunarInfo.jieQi.nextDate}</Text>
+                      <Text>{lunarInfo.jieQi.next}：{dayjs(lunarInfo.jieQi.nextDate).format('YYYY-MM-DD HH:mm:ss')}</Text>
                     </div>
                   </div>
                 </div>
@@ -245,25 +258,33 @@ const BaziPage: React.FC = () => {
               <Col span={6}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>年柱纳音：</Text>
-                  <Text>{lunarInfo.naYin.year}</Text>
+                  <Tag color={wuXingColors[lunarInfo.naYin.year.slice(-1)]}>
+                    {lunarInfo.naYin.year}
+                  </Tag>
                 </div>
               </Col>
               <Col span={6}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>月柱纳音：</Text>
-                  <Text>{lunarInfo.naYin.month}</Text>
+                  <Tag color={wuXingColors[lunarInfo.naYin.month.slice(-1)]}>
+                    {lunarInfo.naYin.month}
+                  </Tag>
                 </div>
               </Col>
               <Col span={6}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>日柱纳音：</Text>
-                  <Text>{lunarInfo.naYin.day}</Text>
+                  <Tag color={wuXingColors[lunarInfo.naYin.day.slice(-1)]}>
+                    {lunarInfo.naYin.day}
+                  </Tag>
                 </div>
               </Col>
               <Col span={6}>
                 <div className={styles.infoItem}>
                   <Text className={styles.infoLabel}>时柱纳音：</Text>
-                  <Text>{lunarInfo.naYin.hour}</Text>
+                  <Tag color={wuXingColors[lunarInfo.naYin.hour.slice(-1)]}>
+                    {lunarInfo.naYin.hour}
+                  </Tag>
                 </div>
               </Col>
             </Row>
@@ -399,19 +420,19 @@ const BaziPage: React.FC = () => {
                   <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>年柱：</Text>
-                      <Text>{lunarInfo.shiShen.year}</Text>
+                      <Tag color="blue">{lunarInfo?.shiShen?.year || '--'}</Tag>
                     </div>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>月柱：</Text>
-                      <Text>{lunarInfo.shiShen.month}</Text>
+                      <Tag color="blue">{lunarInfo?.shiShen?.month || '--'}</Tag>
                     </div>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>日柱：</Text>
-                      <Text>{lunarInfo.shiShen.day}</Text>
+                      <Tag color="blue">{lunarInfo?.shiShen?.day || '--'}</Tag>
                     </div>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>时柱：</Text>
-                      <Text>{lunarInfo.shiShen.hour}</Text>
+                      <Tag color="blue">{lunarInfo?.shiShen?.hour || '--'}</Tag>
                     </div>
                   </div>
                 </div>
@@ -422,19 +443,19 @@ const BaziPage: React.FC = () => {
                   <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>年柱：</Text>
-                      <Text>{lunarInfo.liuQin.year}</Text>
+                      <Tag color="green">{lunarInfo?.liuQin?.year || '--'}</Tag>
                     </div>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>月柱：</Text>
-                      <Text>{lunarInfo.liuQin.month}</Text>
+                      <Tag color="green">{lunarInfo?.liuQin?.month || '--'}</Tag>
                     </div>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>日柱：</Text>
-                      <Text>{lunarInfo.liuQin.day}</Text>
+                      <Tag color="green">{lunarInfo?.liuQin?.day || '--'}</Tag>
                     </div>
                     <div className={styles.infoItem}>
                       <Text className={styles.infoLabel}>时柱：</Text>
-                      <Text>{lunarInfo.liuQin.hour}</Text>
+                      <Tag color="green">{lunarInfo?.liuQin?.hour || '--'}</Tag>
                     </div>
                   </div>
                 </div>
