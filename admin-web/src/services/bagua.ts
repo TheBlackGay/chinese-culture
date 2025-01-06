@@ -1074,20 +1074,28 @@ export function getHexagramByTime(time?: string | Date): HexagramResult {
   };
 }
 
-// 根据数字起卦（1-50）
+// 根据数字起卦（1-64）
 export function getHexagramByNumber(number: number): HexagramResult {
-  if (number < 1 || number > 50) {
-    throw new Error('数字必须在1-50之间');
+  if (number < 1 || number > 64) {
+    throw new Error('数字必须在1-64之间');
   }
   
-  // 使用数字的不同部分生成上下卦
-  const upperNumber = Math.ceil(number / 7) % 8 || 8; // 使用除以7的结果
-  const lowerNumber = number % 8 || 8; // 使用除以8的余数
+  // 将数字转换为6位二进制数（从1开始，所以减1）
+  const binaryStr = (number - 1).toString(2).padStart(6, '0');
   
-  const upperTrigram = generateTrigramByNumber(upperNumber);
-  const lowerTrigram = generateTrigramByNumber(lowerNumber);
+  // 分割上下卦
+  const upperBinary = binaryStr.slice(0, 3);
+  const lowerBinary = binaryStr.slice(3);
   
-  // 生成变爻
+  // 查找对应的卦象
+  const upperTrigram = Object.values(baguaData).find(bagua => bagua.binary === upperBinary);
+  const lowerTrigram = Object.values(baguaData).find(bagua => bagua.binary === lowerBinary);
+  
+  if (!upperTrigram || !lowerTrigram) {
+    throw new Error('无效的卦象组合');
+  }
+  
+  // 生成变爻（可以根据数字的特性生成）
   const changingLines = generateChangingLinesByNumber(number);
   
   return {
@@ -1096,6 +1104,22 @@ export function getHexagramByNumber(number: number): HexagramResult {
     changingLines,
     number
   };
+}
+
+// 辅助函数：根据数字生成变爻
+function generateChangingLinesByNumber(number: number): number[] {
+  const lines: number[] = [];
+  
+  // 使用数字的二进制位来决定变爻
+  const binaryStr = number.toString(2);
+  for (let i = 0; i < 6; i++) {
+    if (binaryStr[i] === '1') {
+      lines.push(i + 1);
+    }
+  }
+  
+  // 如果没有变爻，则选择数字对应的爻位
+  return lines.length > 0 ? lines : [(number % 6) + 1];
 }
 
 // 直接选择卦象
@@ -1157,14 +1181,6 @@ function generateTrigramByTime(timeValue: number): BaguaInfo {
   return baguas[normalizedValue];
 }
 
-// 辅助函数：根据数字生成卦象
-function generateTrigramByNumber(number: number): BaguaInfo {
-  const baguas = Object.values(baguaData);
-  console.log('生成卦象数字：', number);
-  console.log('对应卦象：', baguas[number - 1]);
-  return baguas[number - 1];
-}
-
 // 辅助函数：生成变爻
 function generateChangingLines(seed: number): number[] {
   const result: number[] = [];
@@ -1174,33 +1190,6 @@ function generateChangingLines(seed: number): number[] {
     }
   }
   return result;
-}
-
-// 辅助函数：根据数字生成变爻
-function generateChangingLinesByNumber(number: number): number[] {
-  const lines: number[] = [];
-  
-  // 使用数字的不同特征生成变爻
-  if (number % 2 === 0) {
-    lines.push(1); // 初爻
-  }
-  if (number % 3 === 0) {
-    lines.push(3); // 三爻
-  }
-  if (number % 5 === 0) {
-    lines.push(5); // 五爻
-  }
-  if (number % 7 === 0) {
-    lines.push(2); // 二爻
-  }
-  if (number % 11 === 0) {
-    lines.push(4); // 四爻
-  }
-  if (number % 13 === 0) {
-    lines.push(6); // 上爻
-  }
-  
-  return lines.length > 0 ? lines : [(number % 6) + 1];
 }
 
 // 辅助函数：分析五行关系

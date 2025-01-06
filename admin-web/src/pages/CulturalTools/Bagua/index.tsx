@@ -22,7 +22,7 @@ const baguaInfo = [
 // 起卦方式
 const diviningMethods = [
   { label: '时间卦', value: 'time', description: '根据当前时间自动生成卦象' },
-  { label: '数字卦', value: 'number', description: '选择一个1-50之间的数字生成卦象' },
+  { label: '数字卦', value: 'number', description: '选择一个1-64之间的数字生成卦象（对应六十四卦）' },
   { label: '铜钱卦', value: 'coin', description: '使用三枚铜钱，投掷六次，逐爻生成卦象' },
   { label: '心里卦', value: 'mind', description: '凭直觉选择上下卦组合' }
 ];
@@ -167,10 +167,13 @@ const BaguaPage: React.FC = () => {
               <Input
                 type="number"
                 min={1}
-                max={50}
-                placeholder="请输入1-50之间的数字"
+                max={64}
+                placeholder="请输入1-64之间的数字"
                 onChange={(e) => setSelectedNumber(Number(e.target.value))}
               />
+              <div style={{ marginTop: 8, color: '#666' }}>
+                数字范围1-64，对应六十四卦的每一卦
+              </div>
             </div>
           )}
           {method === 'coin' && (
