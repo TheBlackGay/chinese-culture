@@ -25,6 +25,7 @@
     "lunar-typescript": "^1.7.6"
   },
   "devDependencies": {
+    "@types/node": "^22.10.5",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
     "husky": "^9",
@@ -32,7 +33,8 @@
     "prettier": "^2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",
     "prettier-plugin-packagejson": "^2.4.3",
-    "typescript": "^5.0.3"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
   },
   "name": "admin-web",
   "version": "1.0.0",

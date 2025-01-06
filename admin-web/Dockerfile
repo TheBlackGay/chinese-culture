@@ -1,5 +1,5 @@
 # 构建阶段
-FROM node:18-alpine as builder
+FROM --platform=$BUILDPLATFORM node:18-alpine as builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ COPY . .
 RUN pnpm build
 
 # 运行阶段
-FROM nginx:alpine
+FROM --platform=$TARGETPLATFORM nginx:alpine
 
 # 复制构建产物到 Nginx 目录
 COPY --from=builder /app/dist /usr/share/nginx/html
