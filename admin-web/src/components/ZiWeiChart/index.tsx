@@ -4,17 +4,22 @@ import styles from './index.less';
 
 interface Star {
   name: string;
-  brightness?: string;
-  color?: 'blue' | 'green' | 'red' | 'yellow';
+  status?: string;  // 星耀状态（庙、旺、平等）
+  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'cyan';
 }
 
 interface Palace {
-  name: string;
-  flowYear?: string;
-  smallLimit?: string;
-  heavenlyStem: string;
-  earthlyBranch: string;
-  stars?: Star[];
+  name: string;  // 宫位名称
+  position?: string;  // 宫位方位（临官、帝旺等）
+  flowYear?: string;  // 流年
+  smallLimit?: string;  // 小限
+  range?: string;  // 宫位区间
+  attributes?: string[];  // 宫位属性（病符、指背等）
+  heavenlyStem: string;  // 天干
+  earthlyBranch: string;  // 地支
+  majorStars?: Star[];  // 主星
+  minorStars?: Star[];  // 辅星
+  otherStars?: Star[];  // 杂耀
 }
 
 interface ZiWeiResult {
@@ -48,8 +53,54 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   const renderStar = (star: Star) => (
     <span key={star.name} className={`${styles.star} ${star.color ? styles[star.color] : ''}`}>
       {star.name}
-      {star.brightness && <span className={styles.starNote}>{star.brightness}</span>}
+      {star.status && <span className={styles.starStatus}>{star.status}</span>}
     </span>
+  );
+
+  const renderPalace = (palace: Palace, index: number) => (
+    <div key={index} className={`${styles.palace} ${styles['p' + (index + 1)]}`}>
+      {/* 顶部区域 - 星耀 */}
+      <div className={styles.starsArea}>
+        <div className={styles.starList}>
+          {palace.majorStars?.map(renderStar)}
+          {palace.minorStars?.map(renderStar)}
+          {palace.otherStars?.map(renderStar)}
+        </div>
+      </div>
+
+      {/* 中间区域 - 流年小限 */}
+      <div className={styles.yearInfo}>
+        <div className={styles.flowYear}>流年: {palace.flowYear || '-'}</div>
+        <div className={styles.smallLimit}>小限: {palace.smallLimit || '-'}</div>
+        {palace.range && <div className={styles.range}>{palace.range}</div>}
+      </div>
+
+      {/* 底部区域 - 宫位信息 */}
+      <div className={styles.palaceInfo}>
+        {/* 宫位属性 */}
+        {palace.attributes && (
+          <div className={styles.attributes}>
+            {palace.attributes.map((attr, idx) => (
+              <span key={idx} className={styles.attribute}>{attr}</span>
+            ))}
+          </div>
+        )}
+        
+        {/* 天干地支 */}
+        <div className={styles.stemBranch}>
+          <span className={styles.stem}>{palace.heavenlyStem}</span>
+          <span className={styles.branch}>{palace.earthlyBranch}</span>
+        </div>
+
+        {/* 宫位名称和方位 */}
+        <div className={styles.nameArea}>
+          <span className={styles.palaceName}>{palace.name}</span>
+          {palace.position && (
+            <span className={styles.position}>{palace.position}</span>
+          )}
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -57,25 +108,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
       <div className={styles.ziWeiContent}>
         <div className={styles.palaceGrid}>
           {/* 12宫位 */}
-          {data.palaces.map((palace, index) => (
-            <div key={index} className={`${styles.palace} ${styles['p' + (index + 1)]}`}>
-              <div className={styles.palaceName}>{palace.name}</div>
-              
-              <div className={styles.yearInfo}>
-                <div>流年: {palace.flowYear || '-'}</div>
-                <div>小限: {palace.smallLimit || '-'}</div>
-              </div>
-
-              <div className={styles.stemBranch}>
-                <span>{palace.heavenlyStem}</span>
-                <span>{palace.earthlyBranch}</span>
-              </div>
-
-              <div className={styles.starList}>
-                {palace.stars?.map((star, idx) => renderStar(star)) || null}
-              </div>
-            </div>
-          ))}
+          {data.palaces.map((palace, index) => renderPalace(palace, index))}
 
           {/* 中宫信息 */}
           {data.centerInfo && (

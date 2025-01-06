@@ -1,90 +1,204 @@
 .resultCard {
   background: #141414;
   border-radius: 8px;
-  padding: 24px;
+  padding: 16px;
 }
 
 .ziWeiContent {
   position: relative;
-  aspect-ratio: 1;
+  width: 100%;
+  
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 100%; // 保持整体为正方形
+  }
   
   .palaceGrid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
     gap: 1px;
     background: #1a1a1a;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 1px;
     
     .palace {
       background: #141414;
       border: 1px solid #303030;
-      padding: 8px;
+      padding: 6px;
       position: relative;
       display: flex;
       flex-direction: column;
       font-size: 12px;
 
-      &.p1 { grid-area: 1 / 1 / 2 / 2; }
-      &.p2 { grid-area: 1 / 2 / 2 / 3; }
-      &.p3 { grid-area: 1 / 3 / 2 / 4; }
-      &.p4 { grid-area: 1 / 4 / 2 / 5; }
-      &.p5 { grid-area: 2 / 4 / 3 / 5; }
-      &.p6 { grid-area: 3 / 4 / 4 / 5; }
-      &.p7 { grid-area: 4 / 4 / 5 / 5; }
-      &.p8 { grid-area: 4 / 3 / 5 / 4; }
-      &.p9 { grid-area: 4 / 2 / 5 / 3; }
-      &.p10 { grid-area: 4 / 1 / 5 / 2; }
-      &.p11 { grid-area: 3 / 1 / 4 / 2; }
-      &.p12 { grid-area: 2 / 1 / 3 / 2; }
-
-      &.center {
-        grid-area: 2 / 2 / 4 / 4;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 2;
-      }
-
-      .palaceName {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        font-weight: bold;
-        color: #f5222d;
-      }
-
-      .yearInfo {
-        margin-top: 24px;
-        color: rgba(255, 255, 255, 0.65);
-        font-size: 11px;
+      // 顶部区域 - 星耀
+      .starsArea {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 8px;
+        padding-top: 4px;
         
-        div {
+        .starList {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          writing-mode: vertical-lr;
+          text-orientation: upright;
+          
+          .star {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            line-height: 1;
+            white-space: nowrap;
+            letter-spacing: 2px;
+            
+            &.blue { color: #1890ff; }
+            &.green { color: #52c41a; }
+            &.red { color: #f5222d; }
+            &.yellow { color: #faad14; }
+            &.purple { color: #722ed1; }
+            &.cyan { color: #13c2c2; }
+            
+            .starStatus {
+              font-size: 10px;
+              margin-top: 1px;
+              opacity: 0.8;
+              writing-mode: vertical-lr;
+              text-orientation: upright;
+            }
+          }
+        }
+      }
+
+      // 中间区域 - 流年小限
+      .yearInfo {
+        margin: 4px 0;
+        color: rgba(255, 255, 255, 0.65);
+        font-size: 10px;
+        line-height: 1.2;
+        text-align: center;
+        
+        .flowYear, .smallLimit {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
-      }
-
-      .stemBranch {
-        display: flex;
-        gap: 8px;
-        margin: 4px 0;
-        justify-content: center;
         
-        span {
-          display: inline-block;
-          padding: 2px 6px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid #303030;
-          border-radius: 2px;
+        .range {
+          text-align: center;
+          font-size: 18px;
+          font-weight: bold;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 4px 0;
+          line-height: 1;
         }
       }
 
-      .starList {
+      // 底部区域 - 宫位信息
+      .palaceInfo {
+        .attributes {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 2px;
+          margin-bottom: 2px;
+          justify-content: center;
+          
+          .attribute {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 10px;
+            line-height: 1.2;
+            writing-mode: vertical-lr;
+            text-orientation: upright;
+            letter-spacing: 1px;
+          }
+        }
+        
+        .stemBranch {
+          display: flex;
+          gap: 4px;
+          justify-content: center;
+          margin-bottom: 2px;
+          
+          .stem, .branch {
+            display: inline-block;
+            padding: 0 2px;
+            font-size: 11px;
+            line-height: 1.4;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #303030;
+            border-radius: 2px;
+          }
+        }
+        
+        .nameArea {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 2px;
+          
+          .palaceName {
+            background: #f5222d;
+            color: #fff;
+            padding: 0 4px;
+            border-radius: 2px;
+            font-size: 11px;
+            line-height: 1.4;
+          }
+          
+          .position {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 10px;
+            line-height: 1.2;
+            writing-mode: vertical-lr;
+            text-orientation: upright;
+          }
+        }
+      }
+
+      // 宫位布局
+      &.p1 { grid-area: 1 / 1 / 2 / 2; }  // 财帛
+      &.p2 { grid-area: 1 / 2 / 2 / 3; }  // 子女
+      &.p3 { grid-area: 1 / 3 / 2 / 4; }  // 兄弟
+      &.p4 { grid-area: 1 / 4 / 2 / 5; }  // 命宫
+      &.p5 { grid-area: 2 / 4 / 3 / 5; }  // 父母
+      &.p6 { grid-area: 3 / 4 / 4 / 5; }  // 夫妻
+      &.p7 { grid-area: 4 / 4 / 5 / 5; }  // 官禄
+      &.p8 { grid-area: 4 / 3 / 5 / 4; }  // 田宅
+      &.p9 { grid-area: 4 / 2 / 5 / 3; }  // 福德
+      &.p10 { grid-area: 4 / 1 / 5 / 2; } // 仆役
+      &.p11 { grid-area: 3 / 1 / 4 / 2; } // 迁移
+      &.p12 { grid-area: 2 / 1 / 3 / 2; } // 疾厄
+
+      // 中宫
+      &.center {
+        grid-area: 2 / 2 / 4 / 4;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 2;
+        padding: 12px;
         display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        margin-top: 8px;
+        flex-direction: column;
+        gap: 3px;
+        
+        div {
+          font-size: 11px;
+          line-height: 1.3;
+          color: rgba(255, 255, 255, 0.85);
+          
+          .gender {
+            color: #f5222d;
+            font-weight: bold;
+          }
+        }
       }
     }
   }
