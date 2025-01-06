@@ -176,17 +176,13 @@ const BaguaPage: React.FC = () => {
           {method === 'coin' && (
             <div className={styles.stepContent}>
               <div className={styles.coinSection}>
-                <Title level={5}>铜钱卦 - 第{currentThrow + 1}次投掷</Title>
+                <Title level={5} style={{ margin: '0 0 8px 0', color: '#CD853F' }}>铜钱卦 - 第{currentThrow + 1}次投掷</Title>
                 
                 <div className={styles.coinsContainer}>
                   {coinStates.map((isFlipped, index) => (
                     <div key={index} className={`${styles.coin} ${isFlipped ? styles.flipped : ''}`}>
-                      <div className={`${styles.coinFace} ${styles.front}`}>
-                        <span>乾</span>
-                      </div>
-                      <div className={`${styles.coinFace} ${styles.back}`}>
-                        <span>坤</span>
-                      </div>
+                      <div className={`${styles.coinFace} ${styles.front}`} />
+                      <div className={`${styles.coinFace} ${styles.back}`} />
                     </div>
                   ))}
                 </div>
@@ -207,17 +203,19 @@ const BaguaPage: React.FC = () => {
                   </Button>
                 </div>
 
-                <div className={styles.coinResult}>
-                  {coinResults.map((result, index) => (
-                    <div key={index} className={styles.yaoResult}>
-                      <span>第{index + 1}爻：</span>
-                      <span>{result.filter(r => r === 1).length}正{result.filter(r => r === 0).length}反</span>
-                      <span>{getYaoType(result)}</span>
-                    </div>
-                  ))}
-                </div>
+                {coinResults.length > 0 && (
+                  <div className={styles.coinResult}>
+                    {coinResults.map((result, index) => (
+                      <div key={index} className={styles.yaoResult}>
+                        <span>第{index + 1}爻：</span>
+                        <span>{result.filter(r => r === 1).length}正{result.filter(r => r === 0).length}反</span>
+                        <span>{getYaoType(result)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-                <div style={{ marginTop: 16, color: '#8b4513', fontSize: '14px' }}>
+                <div className={styles.ruleDescription}>
                   <div>铜钱规则说明：</div>
                   <div>三枚铜钱同时投掷，每次记录结果。正面（乾）记为阳，反面（坤）记为阴。</div>
                   <div>三正为老阳，二正一反为少阳，一正二反为少阴，三反为老阴。</div>
