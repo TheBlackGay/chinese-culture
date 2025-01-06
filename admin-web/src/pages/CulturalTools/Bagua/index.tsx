@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, Button, Typography, Row, Col, Space, Steps, Input, Radio, Modal, Divider } from 'antd';
+import { Card, Button, Typography, Row, Col, Space, Steps, Input, Radio, Modal, Divider, Tag } from 'antd';
+import { getHexagramByTime, getHexagramByNumber, getHexagramBySelection, interpretHexagram } from '@/services/bagua';
 import styles from './index.less';
 
 const { Title, Text, Paragraph } = Typography;
@@ -32,6 +33,7 @@ const BaguaPage: React.FC = () => {
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [selectedBagua, setSelectedBagua] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [hexagramResult, setHexagramResult] = useState<any>(null);
 
   // 步骤内容
   const steps = [
@@ -156,6 +158,125 @@ const BaguaPage: React.FC = () => {
     setCurrentStep(currentStep - 1);
   };
 
+  // 处理起卦
+  const handleDivination = () => {
+    let hexagram;
+    try {
+      switch (method) {
+        case 'time':
+          hexagram = getHexagramByTime(new Date());
+          break;
+        case 'number':
+          if (selectedNumber) {
+            hexagram = getHexagramByNumber(selectedNumber);
+          }
+          break;
+        case 'mind':
+          if (selectedBagua) {
+            hexagram = getHexagramBySelection(selectedBagua);
+          }
+          break;
+        default:
+          throw new Error('请选择起卦方式');
+      }
+
+      if (hexagram) {
+        const interpretation = interpretHexagram(hexagram);
+        console.log('卦象解读结果：', interpretation);
+        setHexagramResult({
+          hexagram,
+          interpretation,
+          question
+        });
+        setIsModalVisible(true);
+      }
+    } catch (error) {
+      console.error('起卦失败：', error);
+      Modal.error({
+        title: '起卦失败',
+        content: error.message || '请检查输入是否正确',
+      });
+    }
+  };
+
+  // 渲染卦象结果
+  const renderHexagramResult = () => {
+    if (!hexagramResult?.interpretation) return null;
+
+    const { interpretation, question } = hexagramResult;
+    return (
+      <div className={styles.resultContent}>
+        <div className={styles.questionSection}>
+          <Text strong>所问事项：</Text>
+          <Text>{question}</Text>
+        </div>
+        
+        <Divider />
+        
+        <div className={styles.hexagramSection}>
+          <Row gutter={[24, 24]}>
+            <Col span={12}>
+              <Card title="上卦" bordered={false}>
+                <div className={styles.trigramInfo}>
+                  <div className={styles.symbol}>{interpretation.upperTrigram.symbol}</div>
+                  <div className={styles.details}>
+                    <div>{interpretation.upperTrigram.name}（{interpretation.upperTrigram.nature}）</div>
+                    <div>五行属性：{interpretation.upperTrigram.attribute}</div>
+                    <div>{interpretation.upperTrigram.meaning}</div>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+            <Col span={12}>
+              <Card title="下卦" bordered={false}>
+                <div className={styles.trigramInfo}>
+                  <div className={styles.symbol}>{interpretation.lowerTrigram.symbol}</div>
+                  <div className={styles.details}>
+                    <div>{interpretation.lowerTrigram.name}（{interpretation.lowerTrigram.nature}）</div>
+                    <div>五行属性：{interpretation.lowerTrigram.attribute}</div>
+                    <div>{interpretation.lowerTrigram.meaning}</div>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+        
+        <Divider />
+        
+        <div className={styles.analysisSection}>
+          <Title level={4}>卦象解读</Title>
+          <div className={styles.analysisItem}>
+            <Text strong>卦名：</Text>
+            <Text>{interpretation.name}</Text>
+          </div>
+          <div className={styles.analysisItem}>
+            <Text strong>卦意：</Text>
+            <Text>{interpretation.meaning}</Text>
+          </div>
+          <div className={styles.analysisItem}>
+            <Text strong>五行关系：</Text>
+            <Text>{interpretation.wuxingAnalysis}</Text>
+          </div>
+          {interpretation.yaoAnalysis && interpretation.yaoAnalysis.length > 0 && (
+            <div className={styles.analysisItem}>
+              <Text strong>变爻：</Text>
+              <div className={styles.lineAnalysis}>
+                {interpretation.yaoAnalysis.map((analysis: string, index: number) => (
+                  <Tag key={index} color="blue">{analysis}</Tag>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className={styles.analysisItem}>
+            <Text strong>总体解读：</Text>
+            <Paragraph>{interpretation.overall}</Paragraph>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <PageContainer>
       <Card>
@@ -183,6 +304,11 @@ const BaguaPage: React.FC = () => {
                 下一步
               </Button>
             )}
+            {currentStep === steps.length - 1 && (
+              <Button type="primary" onClick={handleDivination}>
+                开始占卜
+              </Button>
+            )}
           </div>
         </Space>
       </Card>
@@ -194,11 +320,13 @@ const BaguaPage: React.FC = () => {
         onOk={() => setIsModalVisible(false)}
         onCancel={() => setIsModalVisible(false)}
         width={800}
+        footer={[
+          <Button key="close" type="primary" onClick={() => setIsModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
       >
-        <div className={styles.resultContent}>
-          {/* 这里后续添加卦象解读的具体内容 */}
-          <p>卦象解读结果将在这里显示...</p>
-        </div>
+        {renderHexagramResult()}
       </Modal>
     </PageContainer>
   );

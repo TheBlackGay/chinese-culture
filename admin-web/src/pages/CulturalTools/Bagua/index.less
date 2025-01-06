@@ -25,7 +25,7 @@
   
   div {
     margin-bottom: 4px;
-    color: rgba(0, 0, 0, 0.65);
+    color: rgba(255, 255, 255, 0.65);
   }
 }
 
@@ -55,11 +55,64 @@
   text-align: center;
 }
 
+// 卦象结果样式
 .resultContent {
   padding: 24px;
   background: rgba(255, 255, 255, 0.04);
   border-radius: 8px;
-  margin-top: 16px;
+}
+
+.questionSection {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+
+.hexagramSection {
+  margin: 24px 0;
+  
+  .trigramInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    .symbol {
+      font-size: 64px;
+      color: #1890ff;
+      line-height: 1;
+    }
+    
+    .details {
+      flex: 1;
+      
+      div {
+        margin-bottom: 8px;
+        color: rgba(255, 255, 255, 0.85);
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.analysisSection {
+  .analysisItem {
+    margin-bottom: 16px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .lineAnalysis {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 
 // 暗色主题适配
