@@ -1044,7 +1044,20 @@ const hexagramData: { [key: string]: HexagramInfo } = {
 };
 
 // 根据时间起卦
-export function getHexagramByTime(date: Date = new Date()): HexagramResult {
+export function getHexagramByTime(time?: string | Date): HexagramResult {
+  let date: Date;
+  
+  if (typeof time === 'string') {
+    // 尝试解析输入的时间字符串
+    const parsedDate = new Date(time);
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error('无效的时间格式，请使用 YYYY-MM-DD HH:mm:ss 格式');
+    }
+    date = parsedDate;
+  } else {
+    date = time || new Date();
+  }
+  
   const hour = date.getHours();
   const minute = date.getMinutes();
   const second = date.getSeconds();
@@ -1086,17 +1099,19 @@ export function getHexagramByNumber(number: number): HexagramResult {
 }
 
 // 直接选择卦象
-export function getHexagramBySelection(baguaName: string): HexagramResult {
-  const selectedBagua = Object.values(baguaData).find(bagua => bagua.name === baguaName);
-  if (!selectedBagua) {
+export function getHexagramBySelection(upperBaguaName: string, lowerBaguaName: string): HexagramResult {
+  const upperBagua = Object.values(baguaData).find(bagua => bagua.name === upperBaguaName);
+  const lowerBagua = Object.values(baguaData).find(bagua => bagua.name === lowerBaguaName);
+  
+  if (!upperBagua || !lowerBagua) {
     throw new Error('无效的卦象名称');
   }
   
   return {
-    upperTrigram: selectedBagua,
-    lowerTrigram: selectedBagua,
+    upperTrigram: upperBagua,
+    lowerTrigram: lowerBagua,
     changingLines: [],
-    selected: baguaName
+    selected: `${upperBaguaName}${lowerBaguaName}`
   };
 }
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, Button, Typography, Row, Col, Space, Steps, Input, Radio, Modal, Divider, Tag } from 'antd';
+import { Card, Button, Typography, Row, Col, Space, Steps, Input, Radio, Modal, Divider, Tag, DatePicker, message } from 'antd';
 import { getHexagramByTime, getHexagramByNumber, getHexagramBySelection, interpretHexagram } from '@/services/bagua';
 import styles from './index.less';
 
@@ -31,9 +31,11 @@ const BaguaPage: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [method, setMethod] = useState<string>('');
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
-  const [selectedBagua, setSelectedBagua] = useState<string | null>(null);
+  const [selectedUpperBagua, setSelectedUpperBagua] = useState<string | null>(null);
+  const [selectedLowerBagua, setSelectedLowerBagua] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [hexagramResult, setHexagramResult] = useState<any>(null);
+  const [selectedTime, setSelectedTime] = useState<string>('');
 
   // 步骤内容
   const steps = [
@@ -81,9 +83,17 @@ const BaguaPage: React.FC = () => {
       content: (
         <div className={styles.stepContent}>
           {method === 'time' && (
-            <Button type="primary" onClick={() => setIsModalVisible(true)}>
-              开始起卦
-            </Button>
+            <div className={styles.stepContent}>
+              <DatePicker
+                showTime
+                placeholder="选择或输入时间"
+                onChange={(date, dateString) => setSelectedTime(dateString as string)}
+                style={{ width: 200 }}
+              />
+              <div style={{ marginTop: 8, color: '#666' }}>
+                不选择时间则使用当前时间
+              </div>
+            </div>
           )}
           {method === 'number' && (
             <div>
@@ -94,40 +104,46 @@ const BaguaPage: React.FC = () => {
                 placeholder="请输入1-50之间的数字"
                 onChange={(e) => setSelectedNumber(Number(e.target.value))}
               />
-              <Button 
-                type="primary" 
-                style={{ marginTop: 16 }}
-                disabled={!selectedNumber || selectedNumber < 1 || selectedNumber > 50}
-                onClick={() => setIsModalVisible(true)}
-              >
-                确认数字
-              </Button>
             </div>
           )}
           {method === 'mind' && (
-            <Row gutter={[16, 16]}>
-              {baguaInfo.map((bagua) => (
-                <Col key={bagua.name} xs={24} sm={12} md={8} lg={6}>
-                  <Card
-                    hoverable
-                    onClick={() => setSelectedBagua(bagua.name)}
-                    className={styles.baguaCard}
-                    style={{ 
-                      borderColor: selectedBagua === bagua.name ? '#1890ff' : undefined,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div className={styles.baguaSymbol}>{bagua.symbol}</div>
-                    <div className={styles.baguaContent}>
-                      <Title level={5}>{bagua.name}卦 ({bagua.nature})</Title>
-                      <div>属性：{bagua.attribute}</div>
-                      <div>方位：{bagua.direction}</div>
-                      <div>含义：{bagua.meaning}</div>
-                    </div>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
+            <div className={styles.stepContent}>
+              <div className={styles.baguaSelection}>
+                <div className={styles.selectionGroup}>
+                  <Title level={5}>选择上卦</Title>
+                  <Radio.Group onChange={(e) => setSelectedUpperBagua(e.target.value)} value={selectedUpperBagua}>
+                    <Space direction="vertical">
+                      {baguaInfo.map((bagua) => (
+                        <Radio key={bagua.name} value={bagua.name}>
+                          <Space>
+                            <span className={styles.baguaSymbol}>{bagua.symbol}</span>
+                            <span>{bagua.name}卦（{bagua.nature}）- {bagua.meaning}</span>
+                          </Space>
+                        </Radio>
+                      ))}
+                    </Space>
+                  </Radio.Group>
+                </div>
+
+                <Divider />
+
+                <div className={styles.selectionGroup}>
+                  <Title level={5}>选择下卦</Title>
+                  <Radio.Group onChange={(e) => setSelectedLowerBagua(e.target.value)} value={selectedLowerBagua}>
+                    <Space direction="vertical">
+                      {baguaInfo.map((bagua) => (
+                        <Radio key={bagua.name} value={bagua.name}>
+                          <Space>
+                            <span className={styles.baguaSymbol}>{bagua.symbol}</span>
+                            <span>{bagua.name}卦（{bagua.nature}）- {bagua.meaning}</span>
+                          </Space>
+                        </Radio>
+                      ))}
+                    </Space>
+                  </Radio.Group>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       ),
@@ -164,7 +180,7 @@ const BaguaPage: React.FC = () => {
     try {
       switch (method) {
         case 'time':
-          hexagram = getHexagramByTime(new Date());
+          hexagram = selectedTime ? getHexagramByTime(selectedTime) : getHexagramByTime();
           break;
         case 'number':
           if (selectedNumber) {
@@ -172,8 +188,10 @@ const BaguaPage: React.FC = () => {
           }
           break;
         case 'mind':
-          if (selectedBagua) {
-            hexagram = getHexagramBySelection(selectedBagua);
+          if (selectedUpperBagua && selectedLowerBagua) {
+            hexagram = getHexagramBySelection(selectedUpperBagua, selectedLowerBagua);
+          } else {
+            throw new Error('请选择上卦和下卦');
           }
           break;
         default:
@@ -194,7 +212,7 @@ const BaguaPage: React.FC = () => {
       console.error('起卦失败：', error);
       Modal.error({
         title: '起卦失败',
-        content: error.message || '请检查输入是否正确',
+        content: (error as Error).message || '请检查输入是否正确',
       });
     }
   };
