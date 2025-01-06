@@ -1364,3 +1364,42 @@ function testAllNumbers() {
 console.log('开始测试所有数字（1-50）的卦象生成...');
 const missingHexagramsFromTest = testAllNumbers();
 console.log(`\n共发现 ${missingHexagramsFromTest.size} 个缺失的卦象`);
+
+// 根据铜钱卦结果生成卦象
+export function getHexagramByCoin(coinResults: number[][]): HexagramResult {
+  if (coinResults.length !== 6) {
+    throw new Error('需要6次投掷结果');
+  }
+  
+  // 将铜钱结果转换为二进制字符串
+  const binaryString = coinResults.map(result => {
+    const positiveCount = result.filter(r => r === 1).length;
+    // 二正一反或三正为阳（1），一正二反或三反为阴（0）
+    return positiveCount >= 2 ? '1' : '0';
+  }).join('');
+  
+  // 分割上下卦
+  const upperBinary = binaryString.slice(0, 3);
+  const lowerBinary = binaryString.slice(3);
+  
+  // 查找对应的卦象
+  const upperTrigram = Object.values(baguaData).find(bagua => bagua.binary === upperBinary);
+  const lowerTrigram = Object.values(baguaData).find(bagua => bagua.binary === lowerBinary);
+  
+  if (!upperTrigram || !lowerTrigram) {
+    throw new Error('无效的卦象组合');
+  }
+  
+  // 确定变爻
+  const changingLines = coinResults.map((result, index) => {
+    const positiveCount = result.filter(r => r === 1).length;
+    // 三正（老阳）或三反（老阴）为变爻
+    return positiveCount === 3 || positiveCount === 0 ? index + 1 : null;
+  }).filter((line): line is number => line !== null);
+  
+  return {
+    upperTrigram,
+    lowerTrigram,
+    changingLines
+  };
+}

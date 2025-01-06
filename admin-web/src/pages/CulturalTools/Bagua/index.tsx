@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
 import { Card, Button, Typography, Row, Col, Space, Steps, Input, Radio, Modal, Divider, Tag, DatePicker, message } from 'antd';
-import { getHexagramByTime, getHexagramByNumber, getHexagramBySelection, interpretHexagram } from '@/services/bagua';
+import { getHexagramByTime, getHexagramByNumber, getHexagramBySelection, interpretHexagram, getHexagramByCoin } from '@/services/bagua';
 import styles from './index.less';
 
 const { Title, Text, Paragraph } = Typography;
@@ -23,10 +23,12 @@ const baguaInfo = [
 const diviningMethods = [
   { label: '时间卦', value: 'time', description: '根据当前时间自动生成卦象' },
   { label: '数字卦', value: 'number', description: '选择一个1-50之间的数字生成卦象' },
-  { label: '心里卦', value: 'mind', description: '凭直觉选择一个卦象' }
+  { label: '铜钱卦', value: 'coin', description: '使用三枚铜钱，投掷六次，逐爻生成卦象' },
+  { label: '心里卦', value: 'mind', description: '凭直觉选择上下卦组合' }
 ];
 
 const BaguaPage: React.FC = () => {
+  // 所有状态声明
   const [currentStep, setCurrentStep] = useState(0);
   const [question, setQuestion] = useState('');
   const [method, setMethod] = useState<string>('');
@@ -36,6 +38,71 @@ const BaguaPage: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [hexagramResult, setHexagramResult] = useState<any>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [coinResults, setCoinResults] = useState<number[][]>([]);
+  const [currentThrow, setCurrentThrow] = useState(0);
+  const [coinStates, setCoinStates] = useState<boolean[]>([false, false, false]);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // 获取爻的类型
+  const getYaoType = (result: number[]) => {
+    const positiveCount = result.filter(r => r === 1).length;
+    switch (positiveCount) {
+      case 3:
+        return '老阳 (九) ━━━ ○';
+      case 2:
+        return '少阳 (七) ━━━';
+      case 1:
+        return '少阴 (八) ━ ━';
+      case 0:
+        return '老阴 (六) ━ ━ ×';
+      default:
+        return '';
+    }
+  };
+
+  // 处理铜钱投掷
+  const handleCoinThrow = () => {
+    console.log('投掷铜钱被点击');
+    if (currentThrow >= 6 || isAnimating) {
+      console.log('当前投掷次数或动画状态不允许投掷');
+      return;
+    }
+    
+    setIsAnimating(true);
+    console.log('开始动画');
+    
+    // 随机生成新的铜钱状态
+    const newCoinStates = [
+      Math.random() < 0.5,
+      Math.random() < 0.5,
+      Math.random() < 0.5
+    ];
+    console.log('新的铜钱状态:', newCoinStates);
+    
+    // 动画效果
+    setTimeout(() => {
+      setCoinStates(newCoinStates);
+      console.log('设置铜钱状态');
+      
+      // 记录结果（1表示正面/阳，0表示反面/阴）
+      const throwResult = newCoinStates.map(state => state ? 0 : 1);
+      console.log('投掷结果:', throwResult);
+      
+      setCoinResults(prevResults => [...prevResults, throwResult]);
+      setCurrentThrow(prev => prev + 1);
+      setIsAnimating(false);
+      console.log('动画完成');
+    }, 600);
+  };
+
+  // 重置函数
+  const handleReset = () => {
+    if (isAnimating) return;
+    setCoinStates([false, false, false]);
+    setCoinResults([]);
+    setCurrentThrow(0);
+    console.log('重置完成');
+  };
 
   // 步骤内容
   const steps = [
@@ -104,6 +171,59 @@ const BaguaPage: React.FC = () => {
                 placeholder="请输入1-50之间的数字"
                 onChange={(e) => setSelectedNumber(Number(e.target.value))}
               />
+            </div>
+          )}
+          {method === 'coin' && (
+            <div className={styles.stepContent}>
+              <div className={styles.coinSection}>
+                <Title level={5}>铜钱卦 - 第{currentThrow + 1}次投掷</Title>
+                
+                <div className={styles.coinsContainer}>
+                  {coinStates.map((isFlipped, index) => (
+                    <div key={index} className={`${styles.coin} ${isFlipped ? styles.flipped : ''}`}>
+                      <div className={`${styles.coinFace} ${styles.front}`}>
+                        <span>乾</span>
+                      </div>
+                      <div className={`${styles.coinFace} ${styles.back}`}>
+                        <span>坤</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.coinResult}>
+                  {coinResults.map((result, index) => (
+                    <div key={index} className={styles.yaoResult}>
+                      <span>第{index + 1}爻：</span>
+                      <span>{result.filter(r => r === 1).length}正{result.filter(r => r === 0).length}反</span>
+                      <span>{getYaoType(result)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className={styles.actionButtons}>
+                  <Button 
+                    type="primary"
+                    onClick={handleCoinThrow}
+                    disabled={currentThrow >= 6 || isAnimating}
+                  >
+                    投掷铜钱
+                  </Button>
+                  <Button 
+                    onClick={handleReset}
+                    disabled={isAnimating || currentThrow === 0}
+                  >
+                    重新开始
+                  </Button>
+                </div>
+
+                <div style={{ marginTop: 16, color: '#8b4513', fontSize: '14px' }}>
+                  <div>铜钱规则说明：</div>
+                  <div>三枚铜钱同时投掷，每次记录结果。正面（乾）记为阳，反面（坤）记为阴。</div>
+                  <div>三正为老阳，二正一反为少阳，一正二反为少阴，三反为老阴。</div>
+                  <div>需要投掷六次，从下往上记录卦象。</div>
+                </div>
+              </div>
             </div>
           )}
           {method === 'mind' && (
@@ -185,6 +305,13 @@ const BaguaPage: React.FC = () => {
         case 'number':
           if (selectedNumber) {
             hexagram = getHexagramByNumber(selectedNumber);
+          }
+          break;
+        case 'coin':
+          if (coinResults.length === 6) {
+            hexagram = getHexagramByCoin(coinResults);
+          } else {
+            throw new Error('请完成6次铜钱投掷');
           }
           break;
         case 'mind':
