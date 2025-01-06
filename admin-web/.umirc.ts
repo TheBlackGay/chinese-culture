@@ -42,6 +42,11 @@ export default defineConfig({
           name: '八字计算',
           component: './CulturalTools/Bazi',
         },
+        {
+          path: '/cultural-tools/bagua',
+          name: '八卦占卜',
+          component: './CulturalTools/Bagua',
+        },
       ],
     },
   ],
