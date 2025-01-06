@@ -6,9 +6,9 @@ import dayjs from 'dayjs';
 import { getBaZi, getLunarInfo, getTrueSolarTime } from '@/services/lunar';
 import { calculateChengGu } from '@/services/chengGu';
 import styles from './index.less';
-import { CaretRightOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, ExclamationCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 const { TabPane } = Tabs;
 
 // 五行顺序和颜色映射
@@ -379,7 +379,31 @@ const BaziPage: React.FC = () => {
             {/* 五行分布 */}
             <Col span={8}>
               <div className={styles.infoBlock}>
-                <Text className={styles.infoTitle}>五行分布</Text>
+                <div className={styles.infoTitle}>
+                  五行分布
+                  <Tooltip title={
+                    <div>
+                      <p>五行相生：</p>
+                      <ul>
+                        <li>木生火：木助火势</li>
+                        <li>火生土：火灰成土</li>
+                        <li>土生金：土中藏金</li>
+                        <li>金生水：金融成水</li>
+                        <li>水生木：水养育木</li>
+                      </ul>
+                      <p>五行相克：</p>
+                      <ul>
+                        <li>木克土：木根破土</li>
+                        <li>土克水：土堤防水</li>
+                        <li>水克火：水能灭火</li>
+                        <li>火克金：火能熔金</li>
+                        <li>金克木：金能断木</li>
+                      </ul>
+                    </div>
+                  }>
+                    <QuestionCircleOutlined style={{ marginLeft: 8 }} />
+                  </Tooltip>
+                </div>
                 <div className={styles.wuxingContent}>
                   {wuXingConfig.map(({ element, color, description }) => (
                     <div key={element} className={styles.wuxingProgressItem}>
