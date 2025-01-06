@@ -814,6 +814,20 @@ const hexagramData: { [key: string]: HexagramInfo } = {
       5: '帝乙归妹，其君之袂，不如其娣之袂良，月几望，吉',
       6: '女承筐无实，士刲羊无血，无攸利'
     }
+  },
+  '000110': {
+    name: '地风升',
+    meaning: '升进、上升',
+    description: '风在地上升起，象征事物向上发展。提示当前形势日益向好，但需循序渐进。',
+    analysis: '事业蒸蒸日上；感情逐步深入；投资稳步增长；健康状况改善。',
+    yaoChanges: {
+      1: '允升，大吉',
+      2: '孚乃利用禴，无咎',
+      3: '升虚邑',
+      4: '王用亨于岐山，吉无咎',
+      5: '贞吉，升阶',
+      6: '冥升，利于不息之贞'
+    }
   }
 };
 
@@ -841,15 +855,20 @@ export function getHexagramByNumber(number: number): HexagramResult {
     throw new Error('数字必须在1-50之间');
   }
   
-  // 使用数字的各个位生成卦象
-  const normalizedNumber = number % 8 || 8; // 确保结果在1-8之间
-  const upperTrigram = generateTrigramByNumber(normalizedNumber);
-  const lowerTrigram = generateTrigramByNumber((normalizedNumber + 4) % 8 || 8);
+  // 使用数字的不同部分生成上下卦
+  const upperNumber = Math.ceil(number / 7) % 8 || 8; // 使用除以7的结果
+  const lowerNumber = number % 8 || 8; // 使用除以8的余数
+  
+  const upperTrigram = generateTrigramByNumber(upperNumber);
+  const lowerTrigram = generateTrigramByNumber(lowerNumber);
+  
+  // 生成变爻
+  const changingLines = generateChangingLinesByNumber(number);
   
   return {
     upperTrigram,
     lowerTrigram,
-    changingLines: generateChangingLinesByNumber(number),
+    changingLines,
     number
   };
 }
@@ -914,6 +933,8 @@ function generateTrigramByTime(timeValue: number): BaguaInfo {
 // 辅助函数：根据数字生成卦象
 function generateTrigramByNumber(number: number): BaguaInfo {
   const baguas = Object.values(baguaData);
+  console.log('生成卦象数字：', number);
+  console.log('对应卦象：', baguas[number - 1]);
   return baguas[number - 1];
 }
 
@@ -930,7 +951,29 @@ function generateChangingLines(seed: number): number[] {
 
 // 辅助函数：根据数字生成变爻
 function generateChangingLinesByNumber(number: number): number[] {
-  return [(number % 6) + 1];
+  const lines: number[] = [];
+  
+  // 使用数字的不同特征生成变爻
+  if (number % 2 === 0) {
+    lines.push(1); // 初爻
+  }
+  if (number % 3 === 0) {
+    lines.push(3); // 三爻
+  }
+  if (number % 5 === 0) {
+    lines.push(5); // 五爻
+  }
+  if (number % 7 === 0) {
+    lines.push(2); // 二爻
+  }
+  if (number % 11 === 0) {
+    lines.push(4); // 四爻
+  }
+  if (number % 13 === 0) {
+    lines.push(6); // 上爻
+  }
+  
+  return lines.length > 0 ? lines : [(number % 6) + 1];
 }
 
 // 辅助函数：分析五行关系
