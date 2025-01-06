@@ -47,6 +47,11 @@ export default defineConfig({
           name: '八卦占卜',
           component: './CulturalTools/Bagua',
         },
+        {
+          path: '/cultural-tools/liuren',
+          name: '大六壬',
+          component: './CulturalTools/Liuren',
+        },
       ],
     },
   ],
