@@ -121,14 +121,19 @@ export const calculateZiWei = (
     console.log('horoscope:', JSON.stringify(horoscope, null, 2));
 
     // 获取宫位数据
-    const palaces: Palace[] = [];
+    let tempPalaces: Palace[] = new Array(12);
+    let palaces: Palace[] = new Array(12);
     
-    // 遍历宫位
+    // 1. 先获取所有宫位数据
     for (let i = 0; i < 12; i++) {
-      // 使用 palace() 方法获取宫位数据
       const palace = horoscope.palace(i);
       
-      // 创建一个不包含循环引用的宫位对象
+      if (!palace) {
+        console.warn(`Missing palace data for index ${i}`);
+        continue;
+      }
+
+      // 创建宫位对象
       const simplePalace = {
         index: palace.index,
         name: palace.name,
@@ -144,11 +149,6 @@ export const calculateZiWei = (
         mutagen: palace.mutagen || []
       };
 
-      if (!palace) {
-        console.warn(`Missing palace data for index ${i}`);
-        continue;
-      }
-
       // 处理各类星耀
       const majorStars = processStars(simplePalace.majorStars, '主星');
       const minorStars = processStars(simplePalace.minorStars, '辅星');
@@ -157,10 +157,10 @@ export const calculateZiWei = (
       // 合并所有星耀
       const stars = [...majorStars, ...minorStars, ...adjectiveStars];
 
-      // 构建宫位数据
-      palaces.push({
+      // 先把宫位数据存储到临时数组
+      tempPalaces[i] = {
         name: simplePalace.name,
-        type: simplePalace.name,
+        type: simplePalace.name as PalaceType,
         position: i + 1,
         heavenlyStem: simplePalace.heavenlyStem,
         earthlyBranch: simplePalace.earthlyBranch,
@@ -170,10 +170,51 @@ export const calculateZiWei = (
         transformations: simplePalace.mutagen,
         changsheng12: simplePalace.changsheng12,
         boshi12: simplePalace.boshi12
-      });
+      };
     }
 
-    console.log('final palaces:', palaces); // 添加调试信息
+    // 2. 定义地支的显示位置（4x4布局）
+    const branchToDisplayPosition: { [key: string]: { row: number; col: number; position: number } } = {
+      '寅': { row: 3, col: 0, position: 3 },  // 左下角
+      '卯': { row: 2, col: 0, position: 4 },
+      '辰': { row: 1, col: 0, position: 5 },
+      '巳': { row: 0, col: 0, position: 6 },  // 左上角
+      '午': { row: 0, col: 1, position: 7 },
+      '未': { row: 0, col: 2, position: 8 },
+      '申': { row: 0, col: 3, position: 9 },  // 右上角
+      '酉': { row: 1, col: 3, position: 10 },
+      '戌': { row: 2, col: 3, position: 11 },
+      '亥': { row: 3, col: 3, position: 12 }, // 右下角
+      '子': { row: 3, col: 2, position: 1 },
+      '丑': { row: 3, col: 1, position: 2 }
+    };
+
+    // 3. 根据地支重新排列宫位
+    for (let i = 0; i < 12; i++) {
+      const palace = tempPalaces[i];
+      if (!palace) continue;
+
+      // 获取显示位置和序号
+      const displayInfo = branchToDisplayPosition[palace.earthlyBranch];
+      
+      // 放到对应位置
+      palaces[i] = {
+        ...palace,
+        position: displayInfo.position,  // 使用地支对应的序号
+        displayPosition: {
+          row: displayInfo.row,
+          col: displayInfo.col
+        }
+      };
+    }
+
+    // 4. 按照位置序号排序
+    palaces.sort((a, b) => {
+      if (!a || !b) return 0;
+      return a.position - b.position;
+    });
+
+    console.log('final palaces:', palaces);
 
     // 获取当前运限信息
     const horoscopeInfo = horoscope.horoscope();
