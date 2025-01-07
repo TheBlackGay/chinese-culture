@@ -1,205 +1,151 @@
-.resultCard {
-  background: #141414;
-  border-radius: 8px;
-  padding: 16px;
+.chart-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.ziWeiContent {
+.chart-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.chart-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 2px;
+  background-color: #f0f0f0;
+  padding: 2px;
+  border-radius: 4px;
+  aspect-ratio: 1/1;
   position: relative;
-  width: 100%;
+  transform-origin: center center;
+}
+
+.palace {
+  background-color: white;
+  border-radius: 2px;
+  position: relative;
+  border: 1px solid #e8e8e8;
+
+  // 宫位布局 - 从命宫开始顺时针排列
+  &.p1 { grid-area: 1 / 4 / 2 / 5; }  // 命宫
+  &.p2 { grid-area: 2 / 4 / 3 / 5; }  // 父母
+  &.p3 { grid-area: 3 / 4 / 4 / 5; }  // 福德
+  &.p4 { grid-area: 4 / 4 / 5 / 5; }  // 田宅
+  &.p5 { grid-area: 4 / 3 / 5 / 4; }  // 官禄
+  &.p6 { grid-area: 4 / 2 / 5 / 3; }  // 仆役
+  &.p7 { grid-area: 4 / 1 / 5 / 2; }  // 迁移
+  &.p8 { grid-area: 3 / 1 / 4 / 2; }  // 疾厄
+  &.p9 { grid-area: 2 / 1 / 3 / 2; }  // 财帛
+  &.p10 { grid-area: 1 / 1 / 2 / 2; } // 子女
+  &.p11 { grid-area: 1 / 2 / 2 / 3; } // 夫妻
+  &.p12 { grid-area: 1 / 3 / 2 / 4; } // 兄弟
+
+  &-content {
+    padding: 8px;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    transform-origin: center center;
+  }
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  &-name {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+  }
+
+  &-stems {
+    font-size: 12px;
+    color: #666;
+    background: #f5f5f5;
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+
+  &-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  &-stars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+}
+
+.star {
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-size: 12px;
+  white-space: nowrap;
+  line-height: 1.2;
   
-  &::before {
-    content: '';
-    display: block;
-    padding-top: 100%; // 保持整体为正方形
+  &-major {
+    background-color: #f0f7ff;
+    color: #1890ff;
   }
   
-  .palaceGrid {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    gap: 1px;
-    background: #1a1a1a;
-    border-radius: 4px;
-    padding: 1px;
-    
-    .palace {
-      background: #141414;
-      border: 1px solid #303030;
-      padding: 6px;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      font-size: 12px;
+  &-minor {
+    background-color: #f6ffed;
+    color: #52c41a;
+  }
+  
+  &-other {
+    background-color: #fff7e6;
+    color: #fa8c16;
+  }
+}
 
-      // 顶部区域 - 星耀
-      .starsArea {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        gap: 8px;
-        padding-top: 4px;
-        
-        .starList {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-          writing-mode: vertical-lr;
-          text-orientation: upright;
-          
-          .star {
-            display: inline-flex;
-            align-items: center;
-            font-size: 11px;
-            line-height: 1;
-            white-space: nowrap;
-            letter-spacing: 2px;
-            
-            &.blue { color: #1890ff; }
-            &.green { color: #52c41a; }
-            &.red { color: #f5222d; }
-            &.yellow { color: #faad14; }
-            &.purple { color: #722ed1; }
-            &.cyan { color: #13c2c2; }
-            
-            .starStatus {
-              font-size: 10px;
-              margin-top: 1px;
-              opacity: 0.8;
-              writing-mode: vertical-lr;
-              text-orientation: upright;
-            }
-          }
-        }
-      }
+.transformations {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #666;
+}
 
-      // 中间区域 - 流年小限
-      .yearInfo {
-        margin: 4px 0;
-        color: rgba(255, 255, 255, 0.65);
-        font-size: 10px;
-        line-height: 1.2;
-        text-align: center;
-        
-        .flowYear, .smallLimit {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        
-        .range {
-          text-align: center;
-          font-size: 18px;
-          font-weight: bold;
-          color: rgba(255, 255, 255, 0.85);
-          margin: 4px 0;
-          line-height: 1;
-        }
-      }
+.center-info {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  background-color: #fafafa;
+  border: 1px solid #e8e8e8;
+  z-index: 1;
 
-      // 底部区域 - 宫位信息
-      .palaceInfo {
-        .attributes {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 2px;
-          margin-bottom: 2px;
-          justify-content: center;
-          
-          .attribute {
-            color: rgba(255, 255, 255, 0.65);
-            font-size: 10px;
-            line-height: 1.2;
-            writing-mode: vertical-lr;
-            text-orientation: upright;
-            letter-spacing: 1px;
-          }
-        }
-        
-        .stemBranch {
-          display: flex;
-          gap: 4px;
-          justify-content: center;
-          margin-bottom: 2px;
-          
-          .stem, .branch {
-            display: inline-block;
-            padding: 0 2px;
-            font-size: 11px;
-            line-height: 1.4;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid #303030;
-            border-radius: 2px;
-          }
-        }
-        
-        .nameArea {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 2px;
-          
-          .palaceName {
-            background: #f5222d;
-            color: #fff;
-            padding: 0 4px;
-            border-radius: 2px;
-            font-size: 11px;
-            line-height: 1.4;
-          }
-          
-          .position {
-            color: rgba(255, 255, 255, 0.45);
-            font-size: 10px;
-            line-height: 1.2;
-            writing-mode: vertical-lr;
-            text-orientation: upright;
-          }
-        }
-      }
-
-      // 宫位布局
-      &.p1 { grid-area: 1 / 1 / 2 / 2; }  // 财帛
-      &.p2 { grid-area: 1 / 2 / 2 / 3; }  // 子女
-      &.p3 { grid-area: 1 / 3 / 2 / 4; }  // 兄弟
-      &.p4 { grid-area: 1 / 4 / 2 / 5; }  // 命宫
-      &.p5 { grid-area: 2 / 4 / 3 / 5; }  // 父母
-      &.p6 { grid-area: 3 / 4 / 4 / 5; }  // 夫妻
-      &.p7 { grid-area: 4 / 4 / 5 / 5; }  // 官禄
-      &.p8 { grid-area: 4 / 3 / 5 / 4; }  // 田宅
-      &.p9 { grid-area: 4 / 2 / 5 / 3; }  // 福德
-      &.p10 { grid-area: 4 / 1 / 5 / 2; } // 仆役
-      &.p11 { grid-area: 3 / 1 / 4 / 2; } // 迁移
-      &.p12 { grid-area: 2 / 1 / 3 / 2; } // 疾厄
-
-      // 中宫
-      &.center {
-        grid-area: 2 / 2 / 4 / 4;
-        background: rgba(0, 0, 0, 0.9);
-        z-index: 2;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        
-        div {
-          font-size: 11px;
-          line-height: 1.3;
-          color: rgba(255, 255, 255, 0.85);
-          
-          .gender {
-            color: #f5222d;
-            font-weight: bold;
-          }
-        }
-      }
-    }
+  &-content {
+    padding: 12px;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    transform-origin: center center;
+  }
+  
+  h3 {
+    margin: 0;
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  p {
+    margin: 2px 0;
+    color: #666;
+    font-size: 12px;
   }
 } 

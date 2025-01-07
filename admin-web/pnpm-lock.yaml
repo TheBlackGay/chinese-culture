@@ -27,7 +27,7 @@ importers:
         specifier: ^1.11.13
         version: 1.11.13
       iztro:
-        specifier: ^2.3.3
+        specifier: ^2.4.4
         version: 2.4.4
       lunar-typescript:
         specifier: ^1.7.6

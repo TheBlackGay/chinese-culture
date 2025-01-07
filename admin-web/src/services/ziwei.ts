@@ -1,4 +1,58 @@
 import { astro } from 'iztro';
+import type { Star, Palace, ZiWeiResult, PalaceType } from '@/types/iztro';
+import { MAJOR_STARS, MINOR_STARS, OTHER_STARS } from '@/constants/ziwei-stars';
+
+// 将小时转换为时辰序号(0-11)
+function getTimeIndex(hour: number): number {
+  // 23:00-01:00 子时 (0)
+  if (hour >= 23 || hour < 1) return 0;
+  // 01:00-03:00 丑时 (1)
+  if (hour >= 1 && hour < 3) return 1;
+  // 03:00-05:00 寅时 (2)
+  if (hour >= 3 && hour < 5) return 2;
+  // 05:00-07:00 卯时 (3)
+  if (hour >= 5 && hour < 7) return 3;
+  // 07:00-09:00 辰时 (4)
+  if (hour >= 7 && hour < 9) return 4;
+  // 09:00-11:00 巳时 (5)
+  if (hour >= 9 && hour < 11) return 5;
+  // 11:00-13:00 午时 (6)
+  if (hour >= 11 && hour < 13) return 6;
+  // 13:00-15:00 未时 (7)
+  if (hour >= 13 && hour < 15) return 7;
+  // 15:00-17:00 申时 (8)
+  if (hour >= 15 && hour < 17) return 8;
+  // 17:00-19:00 酉时 (9)
+  if (hour >= 17 && hour < 19) return 9;
+  // 19:00-21:00 戌时 (10)
+  if (hour >= 19 && hour < 21) return 10;
+  // 21:00-23:00 亥时 (11)
+  return 11;
+}
+
+// 获取宫位类型
+function getPalaceType(index: number): PalaceType {
+  const types: PalaceType[] = [
+    '命宫', '兄弟', '夫妻', '子女',
+    '财帛', '疾厄', '迁移', '交友',
+    '官禄', '田宅', '福德', '父母'
+  ];
+  return types[index];
+}
+
+// 获取星耀信息
+function getStarInfo(name: string): Star | null {
+  const starData = MAJOR_STARS[name] || MINOR_STARS[name] || OTHER_STARS[name];
+  if (!starData) return null;
+  
+  return {
+    name,
+    type: starData.type,
+    category: starData.category,
+    wuxing: starData.wuxing,
+    description: starData.description
+  };
+}
 
 /**
  * 计算紫微斗数
@@ -15,60 +69,105 @@ export const calculateZiWei = (
   birthDay: number,
   birthHour: number,
   gender: 'male' | 'female'
-) => {
+): ZiWeiResult => {
   try {
-    // 格式化月份和日期为两位数
-    const formattedMonth = birthMonth.toString().padStart(2, '0');
-    const formattedDay = birthDay.toString().padStart(2, '0');
+    // 格式化日期
+    const formattedMonth = String(birthMonth).padStart(2, '0');
+    const formattedDay = String(birthDay).padStart(2, '0');
     
-    // 将小时转换为时辰序号(0-11)
-    // 23:00-01:00 子时 (0)
-    // 01:00-03:00 丑时 (1)
-    // 03:00-05:00 寅时 (2)
-    // ...以此类推
-    let timeIndex = Math.floor((birthHour + 1) / 2);
-    if (birthHour === 23) timeIndex = 0;
+    // 计算时辰
+    const timeIndex = getTimeIndex(birthHour);
     
-    // 使用阳历计算紫微斗数
-    const astrolabe = astro.bySolar(
-      `${birthYear}-${formattedMonth}-${formattedDay}`, 
-      timeIndex, 
+    // 使用 iztro 计算命盘
+    const horoscope = astro.bySolar(
+      `${birthYear}-${formattedMonth}-${formattedDay}`,
+      timeIndex,
       gender === 'male' ? '男' : '女',
-      true, // 使用经过修正的真太阳时
-      'zh-CN' // 使用简体中文
+      true,
+      'zh-CN'
     );
 
-    // 获取当前运限信息
-    const horoscope = astrolabe.horoscope(new Date());
+    console.log('horoscope:', horoscope); // 添加调试信息
+
+    // 获取宫位数据
+    const palaces: Palace[] = [];
     
+    // 遍历宫位
+    const palaceData = horoscope.palace;
+    console.log('palaceData:', palaceData); // 添加调试信息
+
+    if (palaceData) {
+      // 确保我们有12个宫位
+      for (let i = 0; i < 12; i++) {
+        // 获取宫位数据
+        const palace = typeof palaceData === 'function' ? palaceData(i) : palaceData[i];
+        console.log(`palace ${i}:`, palace); // 添加调试信息
+
+        if (!palace) {
+          console.warn(`Missing palace data for index ${i}`);
+          continue;
+        }
+
+        // 获取星耀信息
+        const stars = (palace.stars || [])
+          .map((name: string) => {
+            const star = getStarInfo(name);
+            if (!star) {
+              console.warn(`Unknown star: ${name}`);
+            }
+            return star;
+          })
+          .filter((star): star is Star => star !== null);
+
+        // 构建宫位数据
+        palaces.push({
+          name: palace.name || `宫位${i + 1}`,
+          type: getPalaceType(i),
+          position: i + 1,
+          heavenlyStem: palace.heavenlyStem || '',
+          earthlyBranch: palace.earthlyBranch || '',
+          stars,
+          transformations: palace.transformations || [],
+        });
+      }
+    } else {
+      console.error('No palace data available');
+    }
+
+    console.log('final palaces:', palaces); // 添加调试信息
+
     return {
-      ...astrolabe,
-      horoscope,
       // 基本信息
-      solarDate: astrolabe.solarDate,        // 阳历日期
-      lunarDate: astrolabe.lunarDate,        // 农历日期
-      chineseDate: astrolabe.chineseDate,    // 四柱
-      time: astrolabe.time,                  // 时辰
-      timeRange: astrolabe.timeRange,        // 时辰对应的时间段
-      sign: astrolabe.sign,                  // 星座
-      zodiac: astrolabe.zodiac,              // 生肖
-      soul: astrolabe.soul,                  // 命主
-      body: astrolabe.body,                  // 身主
-      fiveElementsClass: astrolabe.fiveElementsClass,  // 五行局
+      solarDate: horoscope.solarDate,
+      lunarDate: horoscope.lunarDate,
+      gender: gender === 'male' ? '男' : '女',
+      time: horoscope.time,
+      timeRange: horoscope.timeRange,
+      sign: horoscope.sign,
+      zodiac: horoscope.zodiac,
       
-      // 宫位信息
-      palaces: astrolabe.palaces.map(palace => ({
-        name: palace.name,                   // 宫名
-        isBodyPalace: palace.isBodyPalace,   // 是否身宫
-        isOriginalPalace: palace.isOriginalPalace, // 是否来因宫
-        heavenlyStem: palace.heavenlyStem,   // 宫位天干
-        earthlyBranch: palace.earthlyBranch, // 宫位地支
-        majorStars: palace.majorStars,       // 主星
-        minorStars: palace.minorStars,       // 辅星
-        adjectiveStars: palace.adjectiveStars // 杂耀
-      }))
+      // 命盘信息
+      palaces,
+      
+      // 命主身主
+      soul: horoscope.soul,
+      body: horoscope.body,
+      
+      // 五行局
+      fiveElementsClass: horoscope.fiveElementsClass,
+      
+      // 中宫信息
+      centerInfo: {
+        birthTime: `${birthYear}-${formattedMonth}-${formattedDay} ${birthHour}:00`,
+        clockTime: `${birthHour}:00`,
+        lunarBirthDay: horoscope.lunarDate,
+        fate: horoscope.soul,
+        bodyFate: horoscope.body,
+        fiveElements: horoscope.fiveElementsClass,
+        startAge: '未知', // TODO: 计算起运年龄
+        direction: '未知', // TODO: 计算流年方向
+      }
     };
-    
   } catch (error) {
     console.error('计算紫微斗数出错:', error);
     throw error;
