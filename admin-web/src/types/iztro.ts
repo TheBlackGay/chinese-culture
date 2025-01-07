@@ -1,3 +1,17 @@
+// 运限范围类型
+export type Scope = 'origin' | 'decadal' | 'yearly' | 'monthly' | 'daily' | 'hourly';
+
+// 运限信息类型
+export interface HoroscopeItem {
+  index: number;
+  heavenlyStem: string;
+  earthlyBranch: string;
+  age?: number;
+  palaceNames: string[];
+  mutagen: string[];
+  stars: Star[][];
+}
+
 // 星耀类型
 export interface Star {
   name: string;
@@ -5,6 +19,8 @@ export interface Star {
   category: '吉星' | '凶星' | '中性';
   wuxing: '金' | '木' | '水' | '火' | '土';
   description: string;
+  brightness?: '庙' | '旺' | '得' | '利' | '平' | '不' | '陷';
+  scope: Scope;
 }
 
 // 宫位类型
@@ -20,8 +36,12 @@ export interface Palace {
   position: number;
   heavenlyStem: string;
   earthlyBranch: string;
+  isBodyPalace: boolean;
+  isOriginalPalace: boolean;
   stars: Star[];
-  transformations?: string[];
+  transformations: string[];
+  changsheng12?: string;
+  boshi12?: string;
 }
 
 // 紫微斗数结果
@@ -56,4 +76,11 @@ export interface ZiWeiResult {
     startAge: string;
     direction: string;
   };
+
+  // 运限信息
+  decadal?: HoroscopeItem;
+  yearly?: HoroscopeItem;
+  monthly?: HoroscopeItem;
+  daily?: HoroscopeItem;
+  hourly?: HoroscopeItem;
 } 
