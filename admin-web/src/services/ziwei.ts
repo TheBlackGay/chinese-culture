@@ -8,7 +8,7 @@ import type {
   GenderName,
   Mutagen
 } from 'iztro/lib/i18n';
-import type { Star, Palace, ZiWeiResult, PalaceType, Scope, HoroscopeItem } from '@/types/iztro';
+import type { Star, Palace, ZiWeiResult, PalaceType, Scope, HoroscopeItem, IFunctionalHoroscope } from '@/types/iztro';
 import { MAJOR_STARS, MINOR_STARS, OTHER_STARS } from '@/constants/ziwei-stars';
 
 // 将小时转换为时辰序号(0-11)
@@ -118,7 +118,40 @@ export const calculateZiWei = (
       timeIndex,
       gender: gender === 'male' ? '男' : '女'
     });
-    console.log('horoscope:', JSON.stringify(horoscope, null, 2));
+
+    // 打印 horoscope 对象的方法和属性
+    console.log('horoscope methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(horoscope)));
+    console.log('horoscope properties:', Object.keys(horoscope));
+
+    // 尝试调用所有可能的方法
+    const methodsToTry = [
+      'getStartAge',
+      'getFlowDirection',
+      'getAge',
+      'getDirection',
+      'getStartYear',
+      'getFlowYear',
+      'getDecadalAge',
+      'getDecadalDirection'
+    ];
+
+    methodsToTry.forEach(method => {
+      try {
+        if (typeof (horoscope as any)[method] === 'function') {
+          console.log(`${method} result:`, (horoscope as any)[method]());
+        }
+      } catch (error) {
+        console.warn(`调用 ${method} 失败:`, error);
+      }
+    });
+
+    // 尝试直接获取起运年龄和流年方向
+    try {
+      console.log('getStartAge:', typeof horoscope.getStartAge, horoscope.getStartAge?.());
+      console.log('getFlowDirection:', typeof horoscope.getFlowDirection, horoscope.getFlowDirection?.());
+    } catch (error) {
+      console.warn('获取起运年龄和流年方向失败:', error);
+    }
 
     // 获取宫位数据
     let tempPalaces: Palace[] = new Array(12);
@@ -218,33 +251,115 @@ export const calculateZiWei = (
 
     // 获取当前运限信息
     const horoscopeInfo = horoscope.horoscope();
+    
+    // 打印对象的完整结构
+    console.log('Horoscope info structure:', {
+      type: typeof horoscopeInfo,
+      constructor: horoscopeInfo.constructor?.name,
+      properties: Object.keys(horoscopeInfo),
+      descriptors: Object.getOwnPropertyDescriptors(horoscopeInfo),
+      prototype: Object.getPrototypeOf(horoscopeInfo),
+      methods: Object.getOwnPropertyNames(Object.getPrototypeOf(horoscopeInfo))
+    });
+
+    // 尝试打印对象的字符串表示
+    try {
+      console.log('Horoscope info string:', horoscopeInfo.toString());
+    } catch (error) {
+      console.warn('无法获取 toString 结果:', error);
+    }
+
+    // 尝试打印对象的 JSON 表示
+    try {
+      console.log('Horoscope info JSON:', JSON.stringify(horoscopeInfo, null, 2));
+    } catch (error) {
+      console.warn('无法序列化为 JSON:', error);
+    }
+
+    // 打印所有可能包含起运年龄和流年方向的属性
+    console.log('Horoscope info properties:', {
+      decadal: horoscopeInfo.decadal,
+      yearly: horoscopeInfo.yearly,
+      startAge: horoscopeInfo.startAge,
+      flowDirection: horoscopeInfo.flowDirection,
+      age: horoscopeInfo.age,
+      direction: horoscopeInfo.direction
+    });
+
+    // 获取起运年龄和流年方向
+    let startAge = '未知';
+    let direction = '顺行';  // 默认顺行
+
+    try {
+      // 尝试从 horoscope 对象获取
+      const horoscopeData = horoscope.horoscope();
+      console.log('Raw horoscope data:', horoscopeData);
+
+      // 获取五行局数
+      const fiveElements = horoscope.fiveElementsClass;
+      console.log('Five elements:', fiveElements);
+
+      // 根据五行局数计算起运年龄
+      const fiveElementsToAge: { [key: string]: number } = {
+        '水二局': 2,
+        '水六局': 6,
+        '金四局': 4,
+        '金九局': 9,
+        '火六局': 6,
+        '火七局': 7,
+        '木三局': 3,
+        '木八局': 8,
+        '土五局': 5,
+        '土十局': 10
+      };
+
+      if (fiveElements && fiveElementsToAge[fiveElements]) {
+        startAge = String(fiveElementsToAge[fiveElements]);
+      }
+
+      // 打印调试信息
+      console.log('Five elements calculation:', {
+        fiveElements,
+        calculatedAge: startAge
+      });
+
+    } catch (error) {
+      console.warn('获取起运年龄和流年方向失败:', error);
+    }
+
+    console.log('Final startAge:', startAge);
+    console.log('Final direction:', direction);
+
+    // 格式化显示
+    const formattedStartAge = startAge === '未知' ? '未知' : `${startAge}岁`;
+    const formattedDirection = direction === '顺行' ? '顺行' : '逆行';
 
     // 处理运限信息
     function processHoroscope(horoscopeItem: any, scope: Scope): HoroscopeItem | undefined {
       if (!horoscopeItem) return undefined;
 
       return {
-        index: horoscopeItem.index,
-        heavenlyStem: horoscopeItem.heavenlyStem,
-        earthlyBranch: horoscopeItem.earthlyBranch,
-        age: scope === 'decadal' 
-          ? Math.floor((new Date().getFullYear() - birthYear) / 10) * 10
-          : scope === 'yearly' 
-            ? new Date().getFullYear() - birthYear 
-            : undefined,
+        index: horoscopeItem.index || 0,
+        heavenlyStem: horoscopeItem.heavenlyStem || '',
+        earthlyBranch: horoscopeItem.earthlyBranch || '',
+        age: horoscopeItem.age,
         palaceNames: horoscopeItem.palaceNames || [],
         mutagen: horoscopeItem.mutagen || [],
-        stars: (horoscopeItem.stars || []).map((starGroup: any[]) =>
-          starGroup.map(star => ({
-            name: star.name,
-            type: star.type,
-            category: star.category,
-            wuxing: star.wuxing,
-            description: star.description,
-            brightness: star.brightness,
-            scope
-          }))
-        )
+        stars: Array.isArray(horoscopeItem.stars) 
+          ? horoscopeItem.stars.map((starGroup: any[]) =>
+              Array.isArray(starGroup)
+                ? starGroup.map(star => ({
+                    name: star.name || '',
+                    type: star.type || '杂耀',
+                    category: star.category || '中性',
+                    wuxing: star.wuxing || '土',
+                    description: star.description || '',
+                    brightness: star.brightness,
+                    scope
+                  }))
+                : []
+            )
+          : []
       };
     }
 
@@ -276,8 +391,8 @@ export const calculateZiWei = (
         fate: horoscope.soul,
         bodyFate: horoscope.body,
         fiveElements: horoscope.fiveElementsClass,
-        startAge: '未知', // TODO: 计算起运年龄
-        direction: '未知', // TODO: 计算流年方向
+        startAge: formattedStartAge,
+        direction: formattedDirection,
       },
 
       // 运限信息

@@ -12,6 +12,46 @@ export interface HoroscopeItem {
   stars: Star[][];
 }
 
+// iztro 运限信息接口
+export interface IFunctionalHoroscope {
+  decadal?: {
+    age?: number;
+    direction?: string;
+    heavenlyStem?: string;
+    earthlyBranch?: string;
+    palaceNames?: string[];
+    stars?: Star[][];
+  };
+  yearly?: {
+    age?: number;
+    heavenlyStem?: string;
+    earthlyBranch?: string;
+    palaceNames?: string[];
+    stars?: Star[][];
+  };
+  monthly?: {
+    age?: number;
+    heavenlyStem?: string;
+    earthlyBranch?: string;
+    palaceNames?: string[];
+    stars?: Star[][];
+  };
+  daily?: {
+    age?: number;
+    heavenlyStem?: string;
+    earthlyBranch?: string;
+    palaceNames?: string[];
+    stars?: Star[][];
+  };
+  hourly?: {
+    age?: number;
+    heavenlyStem?: string;
+    earthlyBranch?: string;
+    palaceNames?: string[];
+    stars?: Star[][];
+  };
+}
+
 // 星耀类型
 export interface Star {
   name: string;
@@ -42,6 +82,10 @@ export interface Palace {
   transformations: string[];
   changsheng12?: string;
   boshi12?: string;
+  displayPosition?: {
+    row: number;
+    col: number;
+  };
 }
 
 // 紫微斗数结果
