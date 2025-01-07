@@ -59,16 +59,14 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
     const { centerInfo } = data;
     return (
       <div className="center-info">
-        <div className="center-content" style={{ transform: `rotate(${-chartRotation}deg)` }}>
-          <h3>中宫</h3>
-          <p>阳历：{centerInfo.birthTime}</p>
-          <p>农历：{centerInfo.lunarBirthDay}</p>
-          <p>命主：{centerInfo.fate}</p>
-          <p>身主：{centerInfo.bodyFate}</p>
-          <p>五行局：{centerInfo.fiveElements}</p>
-          <p>起运：{centerInfo.startAge}</p>
-          <p>流年：{centerInfo.direction}</p>
-        </div>
+        <h3>中宫</h3>
+        <p>阳历：{centerInfo.birthTime}</p>
+        <p>农历：{centerInfo.lunarBirthDay}</p>
+        <p>命主：{centerInfo.fate}</p>
+        <p>身主：{centerInfo.bodyFate}</p>
+        <p>五行局：{centerInfo.fiveElements}</p>
+        <p>起运：{centerInfo.startAge}</p>
+        <p>流年：{centerInfo.direction}</p>
       </div>
     );
   };
@@ -78,11 +76,13 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
       <div className="chart-header">
         <Button onClick={handleRotate}>旋转命盘</Button>
       </div>
-      <div 
-        className="chart-body" 
-        style={{ transform: `rotate(${chartRotation}deg)` }}
-      >
-        {data.palaces?.map((palace, index) => renderPalace(palace, index))}
+      <div className="chart-wrapper">
+        <div 
+          className="chart-body" 
+          style={{ transform: `rotate(${chartRotation}deg)` }}
+        >
+          {data.palaces?.map((palace, index) => renderPalace(palace, index))}
+        </div>
         {renderCenterInfo()}
       </div>
     </Card>

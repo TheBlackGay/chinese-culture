@@ -33,9 +33,9 @@ function getTimeIndex(hour: number): number {
 // 获取宫位类型
 function getPalaceType(index: number): PalaceType {
   const types: PalaceType[] = [
-    '命宫', '兄弟', '夫妻', '子女',
-    '财帛', '疾厄', '迁移', '交友',
-    '官禄', '田宅', '福德', '父母'
+    '命宫', '父母', '福德', '田宅',
+    '官禄', '交友', '迁移', '疾厄',
+    '财帛', '子女', '夫妻', '兄弟'
   ];
   return types[index];
 }
