@@ -60,12 +60,13 @@
     display: flex;
     flex-direction: column;
     transform-origin: center center;
+    position: relative;
   }
 
   &-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 4px;
   }
 
@@ -73,14 +74,22 @@
     font-size: 14px;
     color: #333;
     font-weight: bold;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
   }
 
   &-stems {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
     font-size: 12px;
     color: #666;
+    writing-mode: vertical-lr;
+    text-orientation: upright;
     background: #f5f5f5;
-    padding: 1px 4px;
+    padding: 4px 2px;
     border-radius: 2px;
+    line-height: 1;
   }
 
   &-body {
@@ -93,31 +102,41 @@
 
   &-stars {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 2px;
+    writing-mode: vertical-lr;
+    text-orientation: upright;
   }
-}
 
-.star {
-  padding: 1px 3px;
-  border-radius: 2px;
-  font-size: 12px;
-  white-space: nowrap;
-  line-height: 1.2;
-  
-  &-major {
-    background-color: #f0f7ff;
-    color: #1890ff;
+  .star {
+    padding: 2px;
+    border-radius: 2px;
+    font-size: 12px;
+    line-height: 1;
+    text-align: center;
+    
+    &-major {
+      background-color: #f0f7ff;
+      color: #1890ff;
+    }
+    
+    &-minor {
+      background-color: #f6ffed;
+      color: #52c41a;
+    }
+    
+    &-other {
+      background-color: #fff7e6;
+      color: #fa8c16;
+    }
   }
-  
-  &-minor {
-    background-color: #f6ffed;
-    color: #52c41a;
-  }
-  
-  &-other {
-    background-color: #fff7e6;
-    color: #fa8c16;
+
+  .transformations {
+    margin-top: 2px;
+    font-size: 11px;
+    color: #666;
+    writing-mode: vertical-lr;
+    text-orientation: upright;
   }
 }
 

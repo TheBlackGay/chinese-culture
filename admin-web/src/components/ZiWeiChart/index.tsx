@@ -35,9 +35,6 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
         <div className="palace-content" style={{ transform: `rotate(${-chartRotation}deg)` }}>
           <div className="palace-header">
             <span className="palace-name">{palace.type}</span>
-            <span className="palace-stems">
-              {palace.heavenlyStem}{palace.earthlyBranch}
-            </span>
           </div>
           <div className="palace-body">
             <div className="palace-stars">
@@ -49,6 +46,9 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
               </div>
             )}
           </div>
+          <span className="palace-stems">
+            {palace.heavenlyStem}{palace.earthlyBranch}
+          </span>
         </div>
       </div>
     );
