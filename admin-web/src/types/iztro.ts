@@ -7,9 +7,15 @@ export interface HoroscopeItem {
   heavenlyStem: string;
   earthlyBranch: string;
   age?: number;
+  startAge?: number;
+  endAge?: number;
   palaceNames: string[];
   mutagen: string[];
   stars: Star[][];
+  position?: number;
+  flowDirection?: string;
+  flowYear?: number;
+  direction?: string;
 }
 
 // iztro 运限信息接口
@@ -21,6 +27,11 @@ export interface IFunctionalHoroscope {
     earthlyBranch?: string;
     palaceNames?: string[];
     stars?: Star[][];
+    startAge?: number;  // 起运年龄
+    endAge?: number;    // 结束年龄
+    flowDirection?: string;  // 流年方向
+    flowYear?: number;  // 流年
+    position?: number;  // 宫位
   };
   yearly?: {
     age?: number;
@@ -28,6 +39,7 @@ export interface IFunctionalHoroscope {
     earthlyBranch?: string;
     palaceNames?: string[];
     stars?: Star[][];
+    position?: number;
   };
   monthly?: {
     age?: number;
@@ -35,6 +47,7 @@ export interface IFunctionalHoroscope {
     earthlyBranch?: string;
     palaceNames?: string[];
     stars?: Star[][];
+    position?: number;
   };
   daily?: {
     age?: number;
@@ -42,6 +55,7 @@ export interface IFunctionalHoroscope {
     earthlyBranch?: string;
     palaceNames?: string[];
     stars?: Star[][];
+    position?: number;
   };
   hourly?: {
     age?: number;
@@ -49,7 +63,27 @@ export interface IFunctionalHoroscope {
     earthlyBranch?: string;
     palaceNames?: string[];
     stars?: Star[][];
+    position?: number;
   };
+  // 基本信息
+  solarDate?: string;  // 阳历日期
+  lunarDate?: string;  // 农历日期
+  time?: string;       // 时辰
+  timeRange?: string;  // 时辰范围
+  sign?: string;       // 星座
+  zodiac?: string;     // 生肖
+  gender?: '男' | '女';  // 性别
+
+  // 命盘信息
+  soul?: string;       // 命主
+  body?: string;       // 身主
+  fiveElementsClass?: string;  // 五行局
+
+  // 运限信息
+  startAge?: number;   // 起运年龄
+  flowDirection?: string;  // 流年方向
+  age?: number;        // 当前年龄
+  direction?: string;  // 运行方向
 }
 
 // 星耀类型

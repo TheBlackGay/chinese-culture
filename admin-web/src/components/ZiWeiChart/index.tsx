@@ -64,8 +64,8 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
         <div className="palace-content" style={{ transform: `rotate(${-chartRotation}deg)` }}>
           <div className="palace-header">
             <span className="palace-name">{palace.type}</span>
-            {palace.isBodyPalace && <span className="palace-mark">身宫</span>}
-            {palace.isOriginalPalace && <span className="palace-mark">命宫</span>}
+            {/*{palace.isBodyPalace && <span className="palace-mark">身宫</span>}*/}
+            {/*{palace.name === data.soul && <span className="palace-mark">命宫</span>}*/}
           </div>
           <div className="palace-body">
             <div className="palace-stars">
@@ -76,6 +76,18 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
                 {palace.transformations.join('、')}
               </div>
             )}
+            {/* 显示大限信息 */}
+            {data.decadal && data.decadal.palaceNames?.includes(palace.name) && (
+              <div className="decadal-info" title="大限">
+                大限: {data.decadal.startAge}～{data.decadal.endAge}岁
+                {data.decadal.flowDirection && (
+                  <div className="flow-direction">
+                    {data.decadal.flowDirection}
+                  </div>
+                )}
+              </div>
+            )}
+            {palace.isBodyPalace && <div className="body-palace-mark">身宫</div>}
             {palace.changsheng12 && (
               <div className="changsheng12" title="长生十二神">
                 {palace.changsheng12}

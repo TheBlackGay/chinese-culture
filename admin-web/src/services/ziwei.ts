@@ -338,11 +338,17 @@ export const calculateZiWei = (
     function processHoroscope(horoscopeItem: any, scope: Scope): HoroscopeItem | undefined {
       if (!horoscopeItem) return undefined;
 
+      // 计算大限的起始和结束年龄
+      const startAge = horoscopeItem.startAge || horoscopeItem.age;
+      const endAge = horoscopeItem.endAge || (startAge + 9);
+
       return {
         index: horoscopeItem.index || 0,
         heavenlyStem: horoscopeItem.heavenlyStem || '',
         earthlyBranch: horoscopeItem.earthlyBranch || '',
         age: horoscopeItem.age,
+        startAge,
+        endAge,
         palaceNames: horoscopeItem.palaceNames || [],
         mutagen: horoscopeItem.mutagen || [],
         stars: Array.isArray(horoscopeItem.stars) 
@@ -359,7 +365,11 @@ export const calculateZiWei = (
                   }))
                 : []
             )
-          : []
+          : [],
+        position: horoscopeItem.position,
+        flowDirection: horoscopeItem.flowDirection,
+        flowYear: horoscopeItem.flowYear,
+        direction: horoscopeItem.direction
       };
     }
 
