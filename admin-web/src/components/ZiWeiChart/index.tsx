@@ -41,14 +41,6 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
       };
       return brightnessMap[brightness] || '';
     };
-
-    // 打印星耀信息用于调试
-    console.log('Star info:', {
-      name: star.name,
-      type: star.type,
-      brightness: star.brightness,
-      category: star.category
-    });
     
     return (
       <span key={star.name} className={starClass} title={star.description}>
@@ -80,6 +72,11 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
             {palace.transformations && palace.transformations.length > 0 && (
               <div className="transformations">
                 {palace.transformations.join('、')}
+              </div>
+            )}
+            {palace.changsheng12 && (
+              <div className="changsheng12" title="长生十二神">
+                {palace.changsheng12}
               </div>
             )}
           </div>

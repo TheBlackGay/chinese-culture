@@ -80,7 +80,7 @@ export interface Palace {
   isOriginalPalace: boolean;
   stars: Star[];
   transformations: string[];
-  changsheng12?: string;
+  changsheng12: string;
   boshi12?: string;
   displayPosition?: {
     row: number;
