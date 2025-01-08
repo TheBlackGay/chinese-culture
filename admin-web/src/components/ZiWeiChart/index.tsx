@@ -85,7 +85,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
             {/* 显示小限信息 */}
             {palace.ages && palace.ages.length > 0 && (
               <div className="ages-info">
-                {palace.ages.join('、')}
+                流年：{palace.ages.join('、')}
               </div>
             )}
             {palace.isBodyPalace && <div className="body-palace-mark">身宫</div>}
