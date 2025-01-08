@@ -77,14 +77,15 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
               </div>
             )}
             {/* 显示大限信息 */}
-            {data.decadal && data.decadal.palaceNames?.includes(palace.name) && (
+            {palace.decadal && (
               <div className="decadal-info">
-                {data.decadal.startAge}～{data.decadal.endAge}
-                {data.decadal.flowDirection && (
-                  <div className="flow-direction">
-                    {data.decadal.flowDirection}
-                  </div>
-                )}
+                {palace.decadal.range[0]}～{palace.decadal.range[1]}
+              </div>
+            )}
+            {/* 显示小限信息 */}
+            {palace.ages && palace.ages.length > 0 && (
+              <div className="ages-info">
+                {palace.ages.join('、')}
               </div>
             )}
             {palace.isBodyPalace && <div className="body-palace-mark">身宫</div>}

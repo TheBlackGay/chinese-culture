@@ -1,3 +1,5 @@
+import {Decadal} from "iztro/lib/data/types/astro";
+
 const { astro } = require('iztro');
 
 interface Palace {
@@ -13,6 +15,10 @@ interface Palace {
   changsheng12: string;
   boshi12: string;
   mutagen: string[];
+  // 大限
+  decadal: Decadal;
+  // 小限
+  ages: number[];
 }
 
 interface Horoscope {
@@ -69,8 +75,8 @@ function processHoroscope(horoscope: Horoscope): Horoscope {
 
   // 尝试获取其他可能的属性
   console.log('5. 其他可能的属性：');
-  const otherProps = Object.keys(horoscope).filter(key => 
-    !['palaces', 'solarDate', 'lunarDate', 'time', 'timeRange', 'sign', 
+  const otherProps = Object.keys(horoscope).filter(key =>
+    !['palaces', 'solarDate', 'lunarDate', 'time', 'timeRange', 'sign',
       'zodiac', 'gender', 'soul', 'body', 'fiveElementsClass'].includes(key)
   );
   otherProps.forEach(prop => {
@@ -127,4 +133,4 @@ function processHoroscope(horoscope: Horoscope): Horoscope {
 
 module.exports = {
   processHoroscope
-}; 
+};

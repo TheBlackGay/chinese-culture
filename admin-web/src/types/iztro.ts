@@ -1,4 +1,6 @@
 // 运限范围类型
+import {Decadal} from "iztro/lib/data/types/astro";
+
 export type Scope = 'origin' | 'decadal' | 'yearly' | 'monthly' | 'daily' | 'hourly';
 
 // 运限信息类型
@@ -98,7 +100,7 @@ export interface Star {
 }
 
 // 宫位类型
-export type PalaceType = 
+export type PalaceType =
   | '命宫' | '兄弟' | '夫妻' | '子女'
   | '财帛' | '疾厄' | '迁移' | '交友'
   | '官禄' | '田宅' | '福德' | '父母';
@@ -120,6 +122,8 @@ export interface Palace {
     row: number;
     col: number;
   };
+  decadal: Decadal,
+  ages: number[]
 }
 
 // 紫微斗数结果
@@ -132,17 +136,17 @@ export interface ZiWeiResult {
   timeRange: string;
   sign: string;
   zodiac: string;
-  
+
   // 命盘信息
   palaces: Palace[];
-  
+
   // 命主身主
   soul: string;
   body: string;
-  
+
   // 五行局
   fiveElementsClass: string;
-  
+
   // 中宫信息
   centerInfo: {
     birthTime: string;
@@ -161,4 +165,4 @@ export interface ZiWeiResult {
   monthly?: HoroscopeItem;
   daily?: HoroscopeItem;
   hourly?: HoroscopeItem;
-} 
+}
