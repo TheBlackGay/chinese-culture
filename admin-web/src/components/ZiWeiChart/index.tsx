@@ -19,11 +19,11 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   const renderStar = (star: Star) => {
     // 特殊星耀列表
     const purpleStars = ['煞星', '地空', '地劫'];
-    
+
     // 判断是否是需要显示为紫色的星耀
     const isPurpleStar = purpleStars.includes(star.name);
-    
-    const starClass = isPurpleStar 
+
+    const starClass = isPurpleStar
       ? 'star star-purple'
       : `star star-${star.type === '主星' ? 'major' : star.type === '辅星' ? 'minor' : 'other'}`;
 
@@ -41,7 +41,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
       };
       return brightnessMap[brightness] || '';
     };
-    
+
     return (
       <span key={star.name} className={starClass} title={star.description}>
         {star.name}
@@ -57,13 +57,15 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   // 渲染宫位
   const renderPalace = (palace: Palace, index: number) => {
     return (
-      <div 
+      <div
         key={index}
-        className={`palace p${index + 1}`} 
+        className={`palace p${index + 1}`}
       >
         <div className="palace-content" style={{ transform: `rotate(${-chartRotation}deg)` }}>
           <div className="palace-header">
             <span className="palace-name">{palace.type}</span>
+            {palace.isBodyPalace && <span className="palace-mark">身宫</span>}
+            {palace.isOriginalPalace && <span className="palace-mark">命宫</span>}
           </div>
           <div className="palace-body">
             <div className="palace-stars">
@@ -79,6 +81,11 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
                 {palace.changsheng12}
               </div>
             )}
+            {palace.boshi12 && (
+              <div className="boshi12" title="博士十二神">
+                {palace.boshi12}
+              </div>
+            )}
           </div>
           <span className="palace-stems">
             {palace.heavenlyStem}{palace.earthlyBranch}
@@ -90,17 +97,18 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
 
   // 渲染中宫信息
   const renderCenterInfo = () => {
-    const { centerInfo } = data;
     return (
       <div className="center-info">
-        <h3>中宫</h3>
-        <p>阳历：{centerInfo.birthTime}</p>
-        <p>农历：{centerInfo.lunarBirthDay}</p>
-        <p>命主：{centerInfo.fate}</p>
-        <p>身主：{centerInfo.bodyFate}</p>
-        <p>五行局：{centerInfo.fiveElements}</p>
-        <p>起运：{centerInfo.startAge}</p>
-        <p>流年：{centerInfo.direction}</p>
+        <div>阳历：{data.solarDate}</div>
+        <div>农历：{data.lunarDate}</div>
+        <div>时辰：{data.time}</div>
+        <div>时辰范围：{data.timeRange}</div>
+        <div>星座：{data.sign}</div>
+        <div>生肖：{data.zodiac}</div>
+        <div>性别：{data.gender}</div>
+        <div>命主：{data.soul}</div>
+        <div>身主：{data.body}</div>
+        <div>五行局：{data.fiveElementsClass}</div>
       </div>
     );
   };
@@ -111,8 +119,8 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
         <Button onClick={handleRotate}>旋转命盘</Button>
       </div>
       <div className="chart-wrapper">
-        <div 
-          className="chart-body" 
+        <div
+          className="chart-body"
           style={{ transform: `rotate(${chartRotation}deg)` }}
         >
           {data.palaces?.map((palace, index) => renderPalace(palace, index))}
@@ -123,4 +131,4 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   );
 };
 
-export default ZiWeiChart; 
+export default ZiWeiChart;
