@@ -41,6 +41,14 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
       };
       return brightnessMap[brightness] || '';
     };
+
+    // 打印星耀信息用于调试
+    console.log('Star info:', {
+      name: star.name,
+      type: star.type,
+      brightness: star.brightness,
+      category: star.category
+    });
     
     return (
       <span key={star.name} className={starClass} title={star.description}>

@@ -26,8 +26,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 2px;
-  background-color: #f0f0f0;
+  gap: 1px;
+  background-color: #434141;
   padding: 2px;
   border-radius: 4px;
   transform-origin: center center;
@@ -35,9 +35,9 @@
 
 .palace {
   background-color: white;
-  border-radius: 2px;
+  border-radius: 0px;
   position: relative;
-  border: 1px solid #e8e8e8;
+  border: 0px solid #e8e8e8;
 
   // 宫位布局 - 从左下角的寅宫开始，按地支顺序排列
   &.p3 { grid-area: 4 / 1 / 5 / 2; }  // 寅宫 - 左下角
@@ -54,7 +54,7 @@
   &.p2 { grid-area: 4 / 2 / 5 / 3; }  // 丑宫 - 下中左
 
   &-content {
-    padding: 8px;
+    padding: 2px;
     height: 100%;
     box-sizing: border-box;
     display: flex;
