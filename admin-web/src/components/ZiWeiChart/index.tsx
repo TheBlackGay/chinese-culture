@@ -17,7 +17,16 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
 
   // 渲染星耀
   const renderStar = (star: Star) => {
-    const starClass = `star star-${star.type === '主星' ? 'major' : star.type === '辅星' ? 'minor' : 'other'}`;
+    // 特殊星耀列表
+    const purpleStars = ['煞星', '地空', '地劫'];
+    
+    // 判断是否是需要显示为紫色的星耀
+    const isPurpleStar = purpleStars.includes(star.name);
+    
+    const starClass = isPurpleStar 
+      ? 'star star-purple'
+      : `star star-${star.type === '主星' ? 'major' : star.type === '辅星' ? 'minor' : 'other'}`;
+    
     return (
       <span key={star.name} className={starClass} title={star.description}>
         {star.name}
