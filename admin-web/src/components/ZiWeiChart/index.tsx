@@ -26,10 +26,30 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
     const starClass = isPurpleStar 
       ? 'star star-purple'
       : `star star-${star.type === '主星' ? 'major' : star.type === '辅星' ? 'minor' : 'other'}`;
+
+    // 获取亮度的中文显示
+    const getBrightnessText = (brightness?: string) => {
+      if (!brightness) return '';
+      const brightnessMap: { [key: string]: string } = {
+        '庙': '庙',
+        '旺': '旺',
+        '得': '得',
+        '利': '利',
+        '平': '平',
+        '不': '不',
+        '陷': '陷'
+      };
+      return brightnessMap[brightness] || '';
+    };
     
     return (
       <span key={star.name} className={starClass} title={star.description}>
         {star.name}
+        {star.brightness && (
+          <small className="star-brightness">
+            {getBrightnessText(star.brightness)}
+          </small>
+        )}
       </span>
     );
   };
