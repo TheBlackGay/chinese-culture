@@ -78,8 +78,8 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
             )}
             {/* 显示大限信息 */}
             {data.decadal && data.decadal.palaceNames?.includes(palace.name) && (
-              <div className="decadal-info" title="大限">
-                大限: {data.decadal.startAge}～{data.decadal.endAge}岁
+              <div className="decadal-info">
+                {data.decadal.startAge}～{data.decadal.endAge}
                 {data.decadal.flowDirection && (
                   <div className="flow-direction">
                     {data.decadal.flowDirection}

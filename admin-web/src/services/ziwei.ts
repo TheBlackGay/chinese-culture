@@ -340,7 +340,15 @@ export const calculateZiWei = (
 
       // 计算大限的起始和结束年龄
       const startAge = horoscopeItem.startAge || horoscopeItem.age;
-      const endAge = horoscopeItem.endAge || (startAge + 9);
+      const endAge = horoscopeItem.endAge || (startAge ? startAge + 9 : undefined);
+
+      // 打印调试信息
+      console.log('Processing horoscope item:', {
+        original: horoscopeItem,
+        startAge,
+        endAge,
+        palaceNames: horoscopeItem.palaceNames
+      });
 
       return {
         index: horoscopeItem.index || 0,
