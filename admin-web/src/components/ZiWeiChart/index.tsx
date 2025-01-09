@@ -30,12 +30,16 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   const renderStar = (star: Star) => {
     // 特殊星耀列表
     const purpleStars = ['煞星', '地空', '地劫'];
+    const orangeStars = ['文昌', '天钺', '天马', '文曲', '左辅', '右弼', '天魁', '禄存'];
 
-    // 判断是否是需要显示为紫色的星耀
+    // 判断是否是需要显示为紫色或橙色的星耀
     const isPurpleStar = purpleStars.includes(star.name);
+    const isOrangeStar = orangeStars.includes(star.name);
 
     const starClass = isPurpleStar
       ? 'star star-purple'
+      : isOrangeStar
+      ? 'star star-orange'
       : `star star-${star.type === '主星' ? 'major' : star.type === '辅星' ? 'minor' : 'other'}`;
 
     // 获取亮度的中文显示
