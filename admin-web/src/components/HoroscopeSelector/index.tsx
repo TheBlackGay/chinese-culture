@@ -117,7 +117,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
 
       return {
         key: `decadal-${num}`,
-        value: `${decadalStartAge}～${decadalEndAge}岁\n${ganZhi}限`,
+        value: `${decadalStartAge}～${decadalEndAge}\n${ganZhi}限`,
         type: 'decadal',
         decadalValue: num,
         startAge: decadalStartAge,
@@ -350,7 +350,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     const { startAge, endAge } = getMingGongAgeRange();
     const maxDecadalIndex = 30;
 
-    return [
+    const tableData = [
       {
         key: 'decadal',
         label: '大限',
@@ -366,33 +366,49 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         data: getYearData(yearNumbers),
         canPrevPage: pageOffsets.year > 0,
         canNextPage: selectedTime.decadal !== undefined
-      },
-      {
+      }
+    ];
+
+    // 只有选择了流年才显示流月
+    if (selectedTime.year !== undefined) {
+      tableData.push({
         key: 'month',
         label: '流月',
         type: 'month',
         data: getMonthData(monthNumbers),
         canPrevPage: pageOffsets.month > 0,
         canNextPage: selectedTime.year && (pageOffsets.month + 1) * 10 < 12
-      },
-      ...getDayData(dayNumbers).map((row, index) => ({
-        key: `day-${index}`,
-        label: '流日',
-        type: 'day',
-        data: row,
-        canPrevPage: pageOffsets.day > 0,
-        canNextPage: selectedTime.month && selectedTime.year &&
-          (pageOffsets.day + 1) * 10 < new Date(selectedTime.year, selectedTime.month, 0).getDate()
-      })),
-      {
+      });
+    }
+
+    // 只有选择了流月才显示流日
+    if (selectedTime.month !== undefined) {
+      tableData.push(
+        ...getDayData(dayNumbers).map((row, index) => ({
+          key: `day-${index}`,
+          label: '流日',
+          type: 'day',
+          data: row,
+          canPrevPage: pageOffsets.day > 0,
+          canNextPage: selectedTime.month && selectedTime.year &&
+            (pageOffsets.day + 1) * 10 < new Date(selectedTime.year, selectedTime.month, 0).getDate()
+        }))
+      );
+    }
+
+    // 只有选择了流日才显示流时
+    if (selectedTime.day !== undefined) {
+      tableData.push({
         key: 'hour',
         label: '流时',
         type: 'hour',
         data: getHourData(),
         canPrevPage: false,
         canNextPage: false
-      }
-    ];
+      });
+    }
+
+    return tableData;
   };
 
   // 生成列配置
