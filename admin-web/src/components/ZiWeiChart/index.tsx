@@ -166,6 +166,28 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
       }
     });
 
+    // 连接三方宫位
+    if (result.threeWays.length === 2) {
+      const firstPalace = data.palaces.find(p => p.type === result.threeWays[0]);
+      const secondPalace = data.palaces.find(p => p.type === result.threeWays[1]);
+      const firstRect = connectionPoints[result.threeWays[0]];
+      const secondRect = connectionPoints[result.threeWays[1]];
+
+      if (firstPalace && secondPalace && firstRect && secondRect) {
+        const point1 = getConnectionPoint(firstPalace, firstRect, chartRect);
+        const point2 = getConnectionPoint(secondPalace, secondRect, chartRect);
+        paths.push(
+          <path
+            key="three-connection"
+            d={`M ${point1.x} ${point1.y} L ${point2.x} ${point2.y}`}
+            stroke="#ff4d4f"
+            strokeWidth="1.5"
+            fill="none"
+          />
+        );
+      }
+    }
+
     return (
       <div className="connection-lines">
         <svg>
