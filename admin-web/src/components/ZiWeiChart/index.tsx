@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, Button, Tooltip } from 'antd';
 import type { Star, Palace, ZiWeiResult } from '@/types/iztro';
 import HoroscopeSelector from '../HoroscopeSelector';
@@ -19,6 +19,107 @@ interface ZiWeiChartProps {
 const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
   const [chartRotation, setChartRotation] = useState(0);
   const [selectedPalace, setSelectedPalace] = useState<string | null>('命宫');
+  const [connectionPoints, setConnectionPoints] = useState<{[key: string]: DOMRect}>({});
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  // 更新连接点位置
+  useEffect(() => {
+    if (!chartRef.current || !selectedPalace) return;
+
+    const points: {[key: string]: DOMRect} = {};
+    const palaces = chartRef.current.querySelectorAll('.palace');
+    
+    palaces.forEach((palace) => {
+      const palaceType = palace.querySelector('.palace-name')?.textContent;
+      if (palaceType) {
+        points[palaceType] = palace.getBoundingClientRect();
+      }
+    });
+
+    setConnectionPoints(points);
+  }, [selectedPalace, chartRotation]);
+
+  // 渲染连接线
+  const renderConnectionLines = () => {
+    if (!selectedPalace || !connectionPoints[selectedPalace]) return null;
+
+    const result = getThreeAndFourPalaces(selectedPalace);
+    if (!result) return null;
+
+    const chartRect = chartRef.current?.getBoundingClientRect();
+    if (!chartRect) return null;
+
+    const getCenter = (rect: DOMRect) => ({
+      x: rect.left + rect.width / 2 - chartRect.left,
+      y: rect.top + rect.height / 2 - chartRect.top
+    });
+
+    const selectedRect = connectionPoints[selectedPalace];
+    const selectedCenter = getCenter(selectedRect);
+
+    const lines = [];
+    
+    // 添加到三方宫位的线
+    result.threeWays.forEach((palace, index) => {
+      const rect = connectionPoints[palace];
+      if (rect) {
+        const center = getCenter(rect);
+        lines.push(
+          <line
+            key={`three-${index}`}
+            x1={selectedCenter.x}
+            y1={selectedCenter.y}
+            x2={center.x}
+            y2={center.y}
+          />
+        );
+      }
+    });
+
+    // 添加到对宫的线
+    result.fourCorrect.forEach((palace, index) => {
+      const rect = connectionPoints[palace];
+      if (rect) {
+        const center = getCenter(rect);
+        lines.push(
+          <line
+            key={`four-${index}`}
+            x1={selectedCenter.x}
+            y1={selectedCenter.y}
+            x2={center.x}
+            y2={center.y}
+          />
+        );
+      }
+    });
+
+    // 连接三方宫位
+    const threeWayRects = result.threeWays
+      .map(palace => connectionPoints[palace])
+      .filter(Boolean);
+    
+    if (threeWayRects.length === 2) {
+      const center1 = getCenter(threeWayRects[0]);
+      const center2 = getCenter(threeWayRects[1]);
+      lines.push(
+        <line
+          key="three-connection"
+          x1={center1.x}
+          y1={center1.y}
+          x2={center2.x}
+          y2={center2.y}
+        />
+      );
+    }
+
+    return (
+      <div className="connection-lines">
+        <svg>
+          {lines}
+        </svg>
+      </div>
+    );
+  };
 
   // 计算三方四正
   const getThreeAndFourPalaces = (palace: string) => {
@@ -209,16 +310,17 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
       <div className="ziwei-chart">
         <Card className="chart-container">
           <div className="chart-header">
-            {/*<Button onClick={handleRotate}>旋转命盘</Button>*/}
             <div>紫微斗数开发中，可能有不准</div>
           </div>
           <div className="chart-wrapper">
             <div
+              ref={chartRef}
               className="chart-body"
               style={{ transform: `rotate(${chartRotation}deg)` }}
             >
               {data.palaces?.map((palace, index) => renderPalace(palace, index))}
             </div>
+            {renderConnectionLines()}
             {renderCenterInfo()}
           </div>
         </Card>
