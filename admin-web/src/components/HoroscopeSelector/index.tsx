@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import type { Palace } from '@/types/iztro';
 import './index.less';
 
 interface HoroscopeSelectorProps {
@@ -78,9 +79,11 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   // 计算命宫大限开始年龄和最大年龄
   const getMingGongAgeRange = () => {
     // TODO: 这里应该根据实际命宫计算，暂时固定为6岁开始，75岁结束
+    let startAge = getMingGongStartAge();
+
     return {
-      startAge: 6,
-      endAge: 75
+      startAge: startAge,
+      endAge: startAge + 120
     };
   };
 
@@ -91,13 +94,13 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   // 生成大限数据
   const getDecadalData = (numbers: number[]) => {
     const { startAge, endAge } = getMingGongAgeRange();
-    const maxDecadalIndex = Math.floor((endAge - startAge) / 10);
+    const maxDecadalIndex = 12;
 
     return numbers.map(num => {
       if (num === 0) {
         return {
           key: `decadal-${num}`,
-          value: `1～${startAge - 1}岁\n童限`,
+          value: `1～${startAge}\n童限`,
           type: 'decadal',
           decadalValue: num,
           startAge: 1,
@@ -108,7 +111,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       // 如果超出最大大限范围，返回null
       if (num > maxDecadalIndex) return null;
 
-      const decadalStartAge = startAge + (num - 1) * 10;
+      const decadalStartAge = startAge + (num - 1) * 10 + 1;
       const decadalEndAge = Math.min(decadalStartAge + 9, endAge);
       const ganZhi = getDecadalGanZhi(num);
 
@@ -345,7 +348,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     const dayNumbers = getPageNumbers(pageOffsets.day);
 
     const { startAge, endAge } = getMingGongAgeRange();
-    const maxDecadalIndex = Math.floor((endAge - startAge) / 10);
+    const maxDecadalIndex = 30;
 
     return [
       {
@@ -448,7 +451,15 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
 
   // 获取命宫起始年龄
   const getMingGongStartAge = () => {
-    return 6; // 这里应该根据实际命宫计算，暂时固定为6岁
+    console.log("mingGongData:", mingGongData);
+    console.log("palaces:", palaces);
+
+    if (!mingGongData?.decadal?.range[0]) {
+      console.warn('Missing mingGong ages data');
+      return 99; // 默认值
+    }
+
+    return mingGongData.decadal.range[0] -1;
   };
 
   return (

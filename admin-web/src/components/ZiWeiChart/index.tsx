@@ -202,6 +202,8 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             startYear={parseInt(data.solarDate.split('-')[0])}
             currentYear={new Date().getFullYear()}
             onTimeChange={onTimeChange}
+            mingGongData={data.palaces.find(p => p.type === '命宫')}
+            palaces={data.palaces}
           />
         </div>
       )}
