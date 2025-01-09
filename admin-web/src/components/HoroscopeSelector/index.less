@@ -1,18 +1,18 @@
 .horoscope-selector {
   .ant-table {
     background: transparent;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     table-layout: fixed;
 
     .ant-table-thead > tr > th {
       background: #1f1f1f;
       color: #ffffff;
       border-bottom: 1px solid #303030;
-      padding: 8px;
+      padding: 4px;
       font-size: 14px;
       text-align: center;
-      height: 40px;
-      width: 160px;
+      height: 200px;
+      width: 1600px;
     }
 
     .ant-table-tbody > tr > td {
@@ -21,8 +21,8 @@
       border-bottom: 1px solid #303030;
       padding: 4px;
       text-align: center;
-      height: 60px;
-      width: 160px;
+      height: 10px;
+      width: 2000px;
       vertical-align: middle;
 
       &:hover {
@@ -65,12 +65,16 @@
     }
   }
 
-  [class*="day-"] {
-    font-size: 14px;
+  //[class*="day-"] {
+  //  font-size: 14px;
+  //}
+
+  .day-0-cell {
+    font-size: 9px;
   }
 
   .hour-cell {
-    font-size: 14px;
+    font-size: 7px;
   }
 
   .cell-content {
@@ -78,7 +82,7 @@
     padding: 4px 8px;
     border-radius: 4px;
     transition: all 0.3s;
-    height: 52px;
+    height: 12px;
     min-height: 52px;
     max-height: 52px;
     display: flex;
