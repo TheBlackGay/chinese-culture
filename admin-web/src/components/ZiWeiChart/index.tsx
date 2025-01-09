@@ -39,6 +39,78 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     setConnectionPoints(points);
   }, [selectedPalace, chartRotation]);
 
+  // 根据地支获取连接点位置
+  const getConnectionPoint = (palace: Palace, rect: DOMRect, chartRect: DOMRect) => {
+    const { earthlyBranch } = palace;
+    const { left, top, width, height } = rect;
+    
+    // 转换成相对于chart的坐标
+    const relativeLeft = left - chartRect.left;
+    const relativeTop = top - chartRect.top;
+
+    // 根据地支返回连接点坐标
+    switch (earthlyBranch) {
+      case '子':
+      case '丑':
+        // 上边框中心
+        return {
+          x: relativeLeft + width / 2,
+          y: relativeTop
+        };
+      case '寅':
+        // 右上角
+        return {
+          x: relativeLeft + width,
+          y: relativeTop
+        };
+      case '卯':
+      case '辰':
+        // 右边框中心
+        return {
+          x: relativeLeft + width,
+          y: relativeTop + height / 2
+        };
+      case '巳':
+        // 右下角
+        return {
+          x: relativeLeft + width,
+          y: relativeTop + height
+        };
+      case '午':
+      case '未':
+        // 下边框中心
+        return {
+          x: relativeLeft + width / 2,
+          y: relativeTop + height
+        };
+      case '申':
+        // 左下角
+        return {
+          x: relativeLeft,
+          y: relativeTop + height
+        };
+      case '酉':
+      case '戌':
+        // 左边框中心
+        return {
+          x: relativeLeft,
+          y: relativeTop + height / 2
+        };
+      case '亥':
+        // 左上角
+        return {
+          x: relativeLeft,
+          y: relativeTop
+        };
+      default:
+        // 默认返回中心点
+        return {
+          x: relativeLeft + width / 2,
+          y: relativeTop + height / 2
+        };
+    }
+  };
+
   // 渲染连接线
   const renderConnectionLines = () => {
     if (!selectedPalace || !connectionPoints[selectedPalace]) return null;
@@ -49,73 +121,69 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     const chartRect = chartRef.current?.getBoundingClientRect();
     if (!chartRect) return null;
 
-    const getCenter = (rect: DOMRect) => ({
-      x: rect.left + rect.width / 2 - chartRect.left,
-      y: rect.top + rect.height / 2 - chartRect.top
-    });
-
+    const selectedPalaceData = data.palaces.find(p => p.type === selectedPalace);
     const selectedRect = connectionPoints[selectedPalace];
-    const selectedCenter = getCenter(selectedRect);
+    if (!selectedPalaceData) return null;
 
-    const lines = [];
-    
-    // 添加到三方宫位的线
+    const paths: JSX.Element[] = [];
+
+    // 获取选中宫位的连接点
+    const fromPoint = getConnectionPoint(selectedPalaceData, selectedRect, chartRect);
+
+    // 绘制到三方宫位的线
     result.threeWays.forEach((palace, index) => {
-      const rect = connectionPoints[palace];
-      if (rect) {
-        const center = getCenter(rect);
-        lines.push(
-          <line
+      const targetPalace = data.palaces.find(p => p.type === palace);
+      const targetRect = connectionPoints[palace];
+      if (targetPalace && targetRect) {
+        const toPoint = getConnectionPoint(targetPalace, targetRect, chartRect);
+        paths.push(
+          <path
             key={`three-${index}`}
-            x1={selectedCenter.x}
-            y1={selectedCenter.y}
-            x2={center.x}
-            y2={center.y}
+            d={`M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`}
+            stroke="#ff4d4f"
+            strokeWidth="1.5"
+            markerEnd="url(#arrowhead)"
+            fill="none"
           />
         );
       }
     });
 
-    // 添加到对宫的线
+    // 绘制到四正宫位的线
     result.fourCorrect.forEach((palace, index) => {
-      const rect = connectionPoints[palace];
-      if (rect) {
-        const center = getCenter(rect);
-        lines.push(
-          <line
+      const targetPalace = data.palaces.find(p => p.type === palace);
+      const targetRect = connectionPoints[palace];
+      if (targetPalace && targetRect) {
+        const toPoint = getConnectionPoint(targetPalace, targetRect, chartRect);
+        paths.push(
+          <path
             key={`four-${index}`}
-            x1={selectedCenter.x}
-            y1={selectedCenter.y}
-            x2={center.x}
-            y2={center.y}
+            d={`M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`}
+            stroke="#ff4d4f"
+            strokeWidth="1.5"
+            markerEnd="url(#arrowhead)"
+            fill="none"
           />
         );
       }
     });
-
-    // 连接三方宫位
-    const threeWayRects = result.threeWays
-      .map(palace => connectionPoints[palace])
-      .filter(Boolean);
-    
-    if (threeWayRects.length === 2) {
-      const center1 = getCenter(threeWayRects[0]);
-      const center2 = getCenter(threeWayRects[1]);
-      lines.push(
-        <line
-          key="three-connection"
-          x1={center1.x}
-          y1={center1.y}
-          x2={center2.x}
-          y2={center2.y}
-        />
-      );
-    }
 
     return (
       <div className="connection-lines">
         <svg>
-          {lines}
+          <defs>
+            <marker
+              id="arrowhead"
+              markerWidth="10"
+              markerHeight="7"
+              refX="9"
+              refY="3.5"
+              orient="auto"
+            >
+              <polygon points="0 0, 10 3.5, 0 7" fill="#ff4d4f" />
+            </marker>
+          </defs>
+          {paths}
         </svg>
       </div>
     );
