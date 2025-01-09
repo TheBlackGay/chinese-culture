@@ -10,10 +10,21 @@ interface ZiWeiChartProps {
 const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   const [chartRotation, setChartRotation] = useState(0);
 
+  // 如果没有数据，显示加载中或空状态
+  if (!data) {
+    return (
+      <Card className="chart-container">
+        <div style={{ textAlign: 'center', padding: '20px', color: '#fff' }}>
+          暂无命盘数据
+        </div>
+      </Card>
+    );
+  }
+
   // 处理旋转
-  const handleRotate = () => {
-    setChartRotation((prev) => (prev + 90) % 360);
-  };
+  // const handleRotate = () => {
+  //   setChartRotation((prev) => (prev + 90) % 360);
+  // };
 
   // 渲染星耀
   const renderStar = (star: Star) => {
@@ -62,10 +73,10 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
         )}
         {star.transformation && (
           <small
-            className={`star-transform transform-${star.transformation}`}
-            title={`来源: ${star.transformation}`}
+            className={`star-transform transform-${star.transformation.type}`}
+            title={`来源: ${star.transformation.source}`}
           >
-            {star.transformation}
+            {star.transformation.type}
           </small>
         )}
       </span>
@@ -147,7 +158,8 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   return (
     <Card className="chart-container">
       <div className="chart-header">
-        <Button onClick={handleRotate}>旋转命盘</Button>
+        {/*<Button onClick={handleRotate}>旋转命盘</Button>*/}
+        <div>紫微斗数开发中，可能有不准</div>
       </div>
       <div className="chart-wrapper">
         <div

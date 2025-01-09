@@ -75,9 +75,25 @@ const BaziPage: React.FC = () => {
 
   // 从历史记录加载数据
   const loadFromHistory = (record: HistoryRecord) => {
-    setSelectedDateTime(dayjs(record.datetime));
+    const dateTime = dayjs(record.datetime);
+    setSelectedDateTime(dateTime);
     setGender(record.gender);
     setLunarInfo(record.lunarInfo);
+
+    // 触发计算
+    const date = dateTime.toDate();
+    const bazi = getBaZi(date, dateTime.hour());
+    setBaziResult(bazi);
+    
+    // 计算紫微斗数
+    const ziwei = calculateZiWei(
+      dateTime.year(),
+      dateTime.month() + 1,
+      dateTime.date(),
+      dateTime.hour(),
+      record.gender
+    );
+    setZiWeiResult(ziwei);
   };
 
   const handleCalculate = () => {
