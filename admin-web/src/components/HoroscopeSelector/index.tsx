@@ -166,7 +166,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         const ganZhi = getYearGanZhi(year);
         return {
           key: `year-${index}`,
-          value: `${year}\n${ganZhi}${age}岁`,
+          value: `${year}年\n${ganZhi}${age}岁`,
           type: 'year',
           yearValue: year
         };
@@ -218,7 +218,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     for (let i = 0; i < groups; i++) {
       const startDay = i * 10 + 1;
       const endDay = Math.min(startDay + 9, daysInMonth);
-      
+
       if (i === pageOffsets.day) {  // 只返回当前页的数据
         const days = Array.from(
           { length: endDay - startDay + 1 },
@@ -348,6 +348,16 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     const { startAge, endAge } = getMingGongAgeRange();
     const maxDecadalIndex = 30;
 
+    // 获取当前选中大限的数据，用于计算流年的翻页限制
+    const currentDecadalData = selectedTime.decadal !== undefined
+      ? getDecadalData(decadalNumbers).find(item => item?.decadalValue === selectedTime.decadal)
+      : null;
+
+    const yearData = getYearData(yearNumbers);
+    const maxYearPages = currentDecadalData
+      ? Math.ceil((currentDecadalData.endAge - currentDecadalData.startAge + 1) / 10)
+      : 0;
+
     const tableData = [
       {
         key: 'decadal',
@@ -361,9 +371,9 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         key: 'year',
         label: '流年',
         type: 'year',
-        data: getYearData(yearNumbers),
+        data: yearData,
         canPrevPage: pageOffsets.year > 0,
-        canNextPage: selectedTime.decadal !== undefined
+        canNextPage: selectedTime.decadal !== undefined && pageOffsets.year < maxYearPages - 1
       }
     ];
 
@@ -375,12 +385,15 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         type: 'month',
         data: getMonthData(monthNumbers),
         canPrevPage: pageOffsets.month > 0,
-        canNextPage: selectedTime.year && (pageOffsets.month + 1) * 10 < 12
+        canNextPage: (pageOffsets.month + 1) * 10 < 12
       });
     }
 
     // 只有选择了流月才显示流日
     if (selectedTime.month !== undefined) {
+      const daysInMonth = new Date(selectedTime.year!, selectedTime.month, 0).getDate();
+      const maxDayPages = Math.ceil(daysInMonth / 10);
+
       tableData.push(
         ...getDayData(dayNumbers).map((row, index) => ({
           key: `day-${index}`,
@@ -388,8 +401,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
           type: 'day',
           data: row,
           canPrevPage: pageOffsets.day > 0,
-          canNextPage: selectedTime.month && selectedTime.year &&
-            (pageOffsets.day + 1) * 10 < new Date(selectedTime.year, selectedTime.month, 0).getDate()
+          canNextPage: pageOffsets.day < maxDayPages - 1
         }))
       );
     }
