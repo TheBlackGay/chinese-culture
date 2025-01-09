@@ -225,10 +225,19 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
           (_, index) => {
             const day = startDay + index;
             let dayText = '';
-            if (day <= 10) dayText = `初${numberToChinese(day)}`;
-            else if (day <= 20) dayText = `十${numberToChinese(day - 10)}`;
-            else if (day <= 30) dayText = `廿${numberToChinese(day - 20)}`;
-            else dayText = `三${numberToChinese(day - 30)}`;
+            if (day <= 10) {
+              dayText = `初${numberToChinese(day)}`;
+            } else if (day <= 19) {
+              dayText = `十${numberToChinese(day - 10)}`;
+            } else if (day === 20) {
+              dayText = '二十';
+            } else if (day <= 29) {
+              dayText = `廿${numberToChinese(day - 20)}`;
+            } else if (day === 30) {
+              dayText = '三十';
+            } else {
+              dayText = `三${numberToChinese(day - 30)}`;
+            }
 
             return {
               key: `day-${day}`,
@@ -394,9 +403,9 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       // 获取年、月下的天数
       // 使用下个月的第0天，等于这个月的最后一天
       const daysInMonth = new Date(selectedTime.year!, selectedTime.month, 0).getDate();
-      const maxDayPages = Math.ceil(daysInMonth / 10)+1;
+      const maxDayPages = Math.ceil(daysInMonth / 10);
 
-      console.log("year:", selectedTime.year, "month:", selectedTime.month, "daysInMonth:", daysInMonth);
+      console.log("year:", selectedTime.year, "month:", selectedTime.month, "daysInMonth:", daysInMonth, "maxDayPages:", maxDayPages);
 
       tableData.push(
         ...getDayData(dayNumbers).map((row, index) => ({
