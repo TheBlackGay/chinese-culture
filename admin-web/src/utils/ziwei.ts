@@ -14,6 +14,8 @@ interface Palace {
   adjectiveStars: any[];
   changsheng12: string;
   boshi12: string;
+  suiqian12?: string;  // 岁前十二神
+  jiangqian12?: string;  // 将前十二神
   mutagen: string[];
   // 大限
   decadal: Decadal;
@@ -69,6 +71,8 @@ function processHoroscope(horoscope: Horoscope): Horoscope {
       adjectiveStars: samplePalace.adjectiveStars,  // 杂耀
       changsheng12: samplePalace.changsheng12,    // 长生十二神
       boshi12: samplePalace.boshi12,              // 博士十二神
+      suiqian12: samplePalace.suiqian12,          // 岁前十二神
+      jiangqian12: samplePalace.jiangqian12,      // 将前十二神
       mutagen: samplePalace.mutagen,              // 四化
     });
   }
@@ -122,7 +126,10 @@ function processHoroscope(horoscope: Horoscope): Horoscope {
     adjectiveStars: palace.adjectiveStars || [],
     changsheng12: palace.changsheng12,
     boshi12: palace.boshi12,
-    mutagen: palace.mutagen || []
+    suiqian12: palace.suiqian12 || '',  // 岁前十二神
+    jiangqian12: palace.jiangqian12 || '',  // 将前十二神
+    decadal: palace.decadal,
+    ages: palace.ages
   }));
 
   return {

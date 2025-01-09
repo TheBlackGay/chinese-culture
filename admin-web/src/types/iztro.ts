@@ -118,9 +118,10 @@ export interface Palace {
   isBodyPalace: boolean;
   isOriginalPalace: boolean;
   stars: Star[];
-  // transformations: string[];
   changsheng12: string;
   boshi12?: string;
+  suiqian12?: string;  // 岁前十二神
+  jiangqian12?: string;  // 将前十二神
   displayPosition?: {
     row: number;
     col: number;

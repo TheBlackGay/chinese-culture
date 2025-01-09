@@ -181,7 +181,8 @@ export const calculateZiWei = (
       // 打印原始宫位数据，特别关注四化信息
       console.log(`Palace ${i} raw data:`, palace);
       console.log(`Palace ${i} stars:`, palace.majorStars);
-      // console.log(`Palace ${i} transformations:`, palace.mutagen);
+      console.log(`Palace ${i} suiqian12:`, palace.suiqian12);
+      console.log(`Palace ${i} jiangqian12:`, palace.jiangqian12);
 
       // 创建宫位对象
       const simplePalace = {
@@ -197,21 +198,16 @@ export const calculateZiWei = (
         })) || [],
         minorStars: palace.minorStars?.map(star => ({
           ...star,
-          // transformation: {
-          //   type: star.mutagen.sihuaLu || star.mutagen.sihuaQuan || star.mutagen.sihuaKe || star.mutagen.sihuaJi,
-          //   source: string
-          // }
+          transformation: star.mutagen
         })) || [],
         adjectiveStars: palace.adjectiveStars?.map(star => ({
           ...star,
-          // transformation: {
-          //   type: star.mutagen.sihuaLu || star.mutagen.sihuaQuan || star.mutagen.sihuaKe || star.mutagen.sihuaJi,
-          //   source: string
-          // }
+          transformation: star.mutagen
         })) || [],
         changsheng12: palace.changsheng12,
         boshi12: palace.boshi12,
-        // transformations: palace.transformations || {},
+        suiqian12: palace.suiqian12,  // 岁前十二神
+        jiangqian12: palace.jiangqian12,  // 将前十二神
         decadal: palace.decadal,
         ages: palace.ages
       };
@@ -242,6 +238,8 @@ export const calculateZiWei = (
         // ),
         changsheng12: simplePalace.changsheng12,
         boshi12: simplePalace.boshi12,
+        suiqian12: palace.suiqian12,  // 岁前十二神
+        jiangqian12: palace.jiangqian12,  // 将前十二神
         decadal: simplePalace.decadal,
         ages: simplePalace.ages
       };
@@ -389,6 +387,25 @@ export const calculateZiWei = (
         direction: horoscopeItem.direction
       };
     }
+
+    // 处理宫位信息时，只提取需要的属性
+    const processedPalaces = horoscope.palaces.map(palace => ({
+      heavenlyStem: palace.heavenlyStem,
+      earthlyBranch: palace.earthlyBranch,
+      name: palace.name,
+      index: palace.index,
+      isBodyPalace: palace.isBodyPalace || false,
+      isOriginalPalace: palace.isOriginalPalace || false,
+      majorStars: palace.majorStars || [],
+      minorStars: palace.minorStars || [],
+      adjectiveStars: palace.adjectiveStars || [],
+      changsheng12: palace.changsheng12,
+      boshi12: palace.boshi12,
+      suiqian12: palace.suiqian12 || '',  // 岁前十二神
+      jiangqian12: palace.jiangqian12 || '',  // 将前十二神
+      decadal: palace.decadal,
+      ages: palace.ages
+    }));
 
     return {
       // 基本信息

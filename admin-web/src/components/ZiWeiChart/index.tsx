@@ -128,6 +128,16 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
                 {palace.boshi12}
               </div>
             )}
+            {palace.suiqian12 && (
+              <div className="suiqian12" title={`岁前十二神: ${palace.suiqian12}`}>
+                {palace.suiqian12}
+              </div>
+            )}
+            {palace.jiangqian12 && (
+              <div className="jiangqian12" title={`将前十二神: ${palace.jiangqian12}`}>
+                {palace.jiangqian12}
+              </div>
+            )}
           </div>
           <span className="palace-stems">
             {palace.heavenlyStem}{palace.earthlyBranch}
