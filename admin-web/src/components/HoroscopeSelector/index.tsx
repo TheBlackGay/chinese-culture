@@ -104,7 +104,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
           type: 'decadal',
           decadalValue: num,
           startAge: 1,
-          endAge: startAge - 1
+          endAge: startAge
         };
       }
 
@@ -141,21 +141,39 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
 
   // 生成流年数据
   const getYearData = (numbers: number[]) => {
-    const decadalData = selectedTime.decadal !== undefined
-      ? getDecadalData(getPageNumbers(0))[selectedTime.decadal]
-      : getDefaultDecadalData();
+    // 如果没有选择大限，返回空数组
+    if (selectedTime.decadal === undefined) return [];
+
+    // 获取当前选中大限的数据
+    const decadalNumbers = getPageNumbers(pageOffsets.decadal);
+    const decadalData = getDecadalData(decadalNumbers).find(
+      item => item?.decadalValue === selectedTime.decadal
+    );
 
     if (!decadalData) return [];
 
-    const yearStartAge = decadalData.startAge;
-    const yearEndAge = decadalData.endAge;
-    const yearStartYear = getYearByAge(yearStartAge);
-    const yearEndYear = getYearByAge(yearEndAge);
+    const yearStartYear = getYearByAge(decadalData.startAge);
+    const yearEndYear = getYearByAge(decadalData.endAge);
     const yearRange = Array.from(
       { length: yearEndYear - yearStartYear + 1 },
       (_, i) => yearStartYear + i
     );
 
+    // 如果是童限，直接返回所有年份
+    if (selectedTime.decadal === 0) {
+      return yearRange.map((year, index) => {
+        const age = year - startYear + 1;
+        const ganZhi = getYearGanZhi(year);
+        return {
+          key: `year-${index}`,
+          value: `${year}\n${ganZhi}${age}岁`,
+          type: 'year',
+          yearValue: year
+        };
+      });
+    }
+
+    // 其他大限使用分页
     return numbers.map(num => {
       const year = yearRange[num + pageOffsets.year];
       if (!year) return null;
@@ -163,7 +181,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       const ganZhi = getYearGanZhi(year);
       return {
         key: `year-${num}`,
-        value: `${year}年\n${ganZhi}${age}岁`,
+        value: `${year}\n${ganZhi}${age}岁`,
         type: 'year',
         yearValue: year
       };
