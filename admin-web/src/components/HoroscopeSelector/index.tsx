@@ -391,8 +391,12 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
 
     // 只有选择了流月才显示流日
     if (selectedTime.month !== undefined) {
+      // 获取年、月下的天数
+      // 使用下个月的第0天，等于这个月的最后一天
       const daysInMonth = new Date(selectedTime.year!, selectedTime.month, 0).getDate();
-      const maxDayPages = Math.ceil(daysInMonth / 10);
+      const maxDayPages = Math.ceil(daysInMonth / 10)+1;
+
+      console.log("year:", selectedTime.year, "month:", selectedTime.month, "daysInMonth:", daysInMonth);
 
       tableData.push(
         ...getDayData(dayNumbers).map((row, index) => ({
