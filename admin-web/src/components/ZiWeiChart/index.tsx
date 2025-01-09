@@ -140,8 +140,9 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
           <path
             key={`three-${index}`}
             d={`M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`}
-            stroke="#ff4d4f"
-            strokeWidth="1.5"
+            stroke="#ffffff"
+            strokeWidth="0.5"
+            strokeDasharray="5,5"
             fill="none"
           />
         );
@@ -158,8 +159,9 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
           <path
             key={`four-${index}`}
             d={`M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`}
-            stroke="#ff4d4f"
-            strokeWidth="1.5"
+            stroke="#ffffff"
+            strokeWidth="0.5"
+            strokeDasharray="5,5"
             fill="none"
           />
         );
@@ -180,8 +182,9 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
           <path
             key="three-connection"
             d={`M ${point1.x} ${point1.y} L ${point2.x} ${point2.y}`}
-            stroke="#ff4d4f"
-            strokeWidth="1.5"
+            stroke="#ffffff"
+            strokeWidth="0.5"
+            strokeDasharray="5,5"
             fill="none"
           />
         );
@@ -191,18 +194,6 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     return (
       <div className="connection-lines">
         <svg>
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="#ff4d4f" />
-            </marker>
-          </defs>
           {paths}
         </svg>
       </div>
