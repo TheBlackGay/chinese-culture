@@ -181,7 +181,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       const ganZhi = getYearGanZhi(year);
       return {
         key: `year-${num}`,
-        value: `${year}\n${ganZhi}${age}岁`,
+        value: `${year}年\n${ganZhi}${age}岁`,
         type: 'year',
         yearValue: year
       };
@@ -257,11 +257,14 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   // 生成流时数据
   const getHourData = () => {
     const timeNames = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-    return timeNames.map((name, index) => ({
-      key: `hour-${index}`,
+    const offset = pageOffsets.hour * 10;
+    const currentPageTimes = timeNames.slice(offset, offset + 10);
+
+    return currentPageTimes.map((name, index) => ({
+      key: `hour-${index + offset}`,
       value: `${name}时`,
       type: 'hour',
-      hourValue: index
+      hourValue: index + offset
     }));
   };
 
@@ -357,16 +360,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     const { startAge, endAge } = getMingGongAgeRange();
     const maxDecadalIndex = 30;
 
-    // 获取当前选中大限的数据，用于计算流年的翻页限制
-    const currentDecadalData = selectedTime.decadal !== undefined
-      ? getDecadalData(decadalNumbers).find(item => item?.decadalValue === selectedTime.decadal)
-      : null;
-
-    const yearData = getYearData(yearNumbers);
-    const maxYearPages = currentDecadalData
-      ? Math.ceil((currentDecadalData.endAge - currentDecadalData.startAge + 1) / 10)
-      : 0;
-
+    // 基础表格数据只包含大限
     const tableData = [
       {
         key: 'decadal',
@@ -375,16 +369,29 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         data: getDecadalData(decadalNumbers),
         canPrevPage: pageOffsets.decadal > 0,
         canNextPage: (pageOffsets.decadal + 1) * 10 <= maxDecadalIndex
-      },
-      {
+      }
+    ];
+
+    // 只有选择了大限才显示流年
+    if (selectedTime.decadal !== undefined) {
+      const currentDecadalData = getDecadalData(decadalNumbers).find(
+        item => item?.decadalValue === selectedTime.decadal
+      );
+
+      const yearData = getYearData(yearNumbers);
+      const maxYearPages = currentDecadalData
+        ? Math.ceil((currentDecadalData.endAge - currentDecadalData.startAge + 1) / 10)
+        : 0;
+
+      tableData.push({
         key: 'year',
         label: '流年',
         type: 'year',
         data: yearData,
         canPrevPage: pageOffsets.year > 0,
         canNextPage: selectedTime.decadal !== undefined && pageOffsets.year < maxYearPages - 1
-      }
-    ];
+      });
+    }
 
     // 只有选择了流年才显示流月
     if (selectedTime.year !== undefined) {
@@ -400,12 +407,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
 
     // 只有选择了流月才显示流日
     if (selectedTime.month !== undefined) {
-      // 获取年、月下的天数
-      // 使用下个月的第0天，等于这个月的最后一天
       const daysInMonth = new Date(selectedTime.year!, selectedTime.month, 0).getDate();
       const maxDayPages = Math.ceil(daysInMonth / 10);
-
-      console.log("year:", selectedTime.year, "month:", selectedTime.month, "daysInMonth:", daysInMonth, "maxDayPages:", maxDayPages);
 
       tableData.push(
         ...getDayData(dayNumbers).map((row, index) => ({
@@ -426,8 +429,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         label: '流时',
         type: 'hour',
         data: getHourData(),
-        canPrevPage: false,
-        canNextPage: false
+        canPrevPage: pageOffsets.hour > 0,
+        canNextPage: (pageOffsets.hour + 1) * 10 < 12
       });
     }
 
