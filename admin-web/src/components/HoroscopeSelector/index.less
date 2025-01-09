@@ -1,41 +1,29 @@
 .horoscope-selector {
   .ant-table {
     background: transparent;
-    margin-bottom: 4px;
+    margin: 0;
     table-layout: fixed;
+    border-spacing: 1px;
+    border-collapse: separate;
 
     .ant-table-thead > tr > th {
-      background: #1f1f1f;
-      color: #ffffff;
-      border-bottom: 1px solid #303030;
-      padding: 4px;
-      font-size: 14px;
-      text-align: center;
-      height: 200px;
-      width: 1600px;
+      padding: 0;
+      background: transparent;
+      border: none;
     }
 
     .ant-table-tbody > tr > td {
+      padding: 0;
       background: transparent;
-      color: #ffffff;
-      border-bottom: 1px solid #303030;
-      padding: 4px;
-      text-align: center;
-      height: 10px;
-      width: 2000px;
-      vertical-align: middle;
-
-      &:hover {
-        background: #1f1f1f;
-      }
+      border: none;
+      height: 36px;
 
       &.label-column {
-        background: #1f1f1f;
-        font-weight: 500;
+        color: #ffffff;
+        font-size: 12px;
         text-align: right;
-        padding-right: 16px;
-        width: 80px;
-        font-size: 14px;
+        padding-right: 8px;
+        width: 40px;
       }
     }
 
@@ -44,56 +32,22 @@
     }
   }
 
-  .decadal-cell {
-    font-size: 9px;
-    .sub-text {
-      font-size: 9px;
-    }
-  }
-
-  .year-cell {
-    font-size:9px;
-    .sub-text {
-      font-size: 9px;
-    }
-  }
-
-  .month-cell {
-    font-size: 9px;
-    .sub-text {
-      font-size: 9px;
-    }
-  }
-
-  //[class*="day-"] {
-  //  font-size: 14px;
-  //}
-
-  .day-0-cell {
-    font-size: 9px;
-  }
-
-  .hour-cell {
-    font-size: 7px;
-  }
-
   .cell-content {
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.3s;
-    height: 12px;
-    min-height: 52px;
-    max-height: 52px;
+    height: 36px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    white-space: pre-line;
-    overflow: hidden;
+    background: #1f1f1f;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.2;
+    color: #ffffff;
+    transition: all 0.2s;
 
     &:hover {
-      background: rgba(24, 144, 255, 0.1);
+      background: #2d2d2d;
     }
 
     &.selected {
@@ -106,8 +60,8 @@
     }
 
     .sub-text {
-      opacity: 0.8;
-      margin-top: 2px;
+      font-size: 11px;
+      opacity: 0.85;
     }
   }
 
@@ -115,30 +69,28 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 8px;
-    width: 80px;
+    width: 40px;
 
     .ant-btn {
-      color: #ffffff;
-      width: 28px;
-      height: 28px;
+      width: 18px;
+      height: 18px;
       padding: 0;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: #1f1f1f;
+      border: none;
+      border-radius: 2px;
 
       &:hover {
-        color: #1890ff;
-        background: rgba(24, 144, 255, 0.1);
+        background: #2d2d2d;
       }
 
       &[disabled] {
-        color: rgba(255, 255, 255, 0.25);
+        background: #1f1f1f;
+        opacity: 0.5;
         cursor: not-allowed;
-
-        &:hover {
-          background: transparent;
-        }
       }
     }
   }
