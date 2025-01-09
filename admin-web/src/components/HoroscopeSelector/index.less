@@ -16,7 +16,7 @@
       padding: 0;
       background: transparent;
       border: none;
-      height: 28px;
+      height: 24px;
 
       &.label-column {
         color: #ffffff;
@@ -33,7 +33,7 @@
   }
 
   .cell-content {
-    height: 28px;
+    height: 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -45,7 +45,21 @@
     line-height: 1;
     color: #ffffff;
     transition: all 0.15s;
-    gap: 1px;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+
+    div {
+      line-height: 1;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sub-text {
+      font-size: 10px;
+      opacity: 0.85;
+      margin-top: 1px;
+    }
 
     &:hover {
       background: #2d2d2d;
@@ -59,22 +73,20 @@
         background: #40a9ff;
       }
     }
-
-    .sub-text {
-      font-size: 10px;
-      opacity: 0.85;
-    }
   }
 
   .page-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 36px;
+    width: 32px;
+    padding: 0;
+    margin: 0;
 
     .ant-btn {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
       padding: 0;
       color: #ffffff;
       display: flex;
@@ -83,6 +95,11 @@
       background: #1f1f1f;
       border: none;
       border-radius: 1px;
+
+      .anticon {
+        font-size: 10px;
+        line-height: 1;
+      }
 
       &:hover {
         background: #2d2d2d;
