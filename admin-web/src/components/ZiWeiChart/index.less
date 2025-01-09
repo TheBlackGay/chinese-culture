@@ -29,6 +29,34 @@
   box-sizing: border-box;
   top:-37px;
   border: none;
+
+  .palace {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+    
+    &-selected {
+      background-color: rgba(24, 144, 255, 0.1);
+      border: 2px solid #1890ff;
+    }
+
+    &-related {
+      background-color: rgba(24, 144, 255, 0.05);
+      border: 1px dashed #1890ff;
+    }
+
+    &-arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #1890ff;
+      font-size: 24px;
+      font-weight: bold;
+      pointer-events: none;
+      animation: pulse 1.5s infinite;
+    }
+  }
 }
 
 .chart-header {
@@ -422,4 +450,19 @@
   text-orientation: upright;
   line-height: 1.2;
   z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }

@@ -2,37 +2,49 @@ import React, { useState } from 'react';
 import { Card, Button, Tooltip } from 'antd';
 import type { Star, Palace, ZiWeiResult } from '@/types/iztro';
 import HoroscopeSelector from '../HoroscopeSelector';
+import classNames from 'classnames';
 import './index.less';
 
 interface ZiWeiChartProps {
   data: ZiWeiResult;
   onTimeChange?: (params: {
-    decadal?: number;  // 大限
-    year?: number;    // 流年
-    month?: number;   // 流月
-    day?: number;     // 流日
-    hour?: number;    // 流时
+    decadal?: number;
+    year?: number;
+    month?: number;
+    day?: number;
+    hour?: number;
   }) => void;
 }
 
 const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
   const [chartRotation, setChartRotation] = useState(0);
+  const [selectedPalace, setSelectedPalace] = useState<string | null>('命宫');
 
-  // 如果没有数据，显示加载中或空状态
-  if (!data) {
-    return (
-      <Card className="chart-container">
-        <div style={{ textAlign: 'center', padding: '20px', color: '#fff' }}>
-          暂无命盘数据
-        </div>
-      </Card>
-    );
-  }
+  // 计算三方四正
+  const getThreeAndFourPalaces = (palace: string) => {
+    const palaceIndex = data.palaces.findIndex(p => p.type === palace);
+    if (palaceIndex === -1) return null;
 
-  // 处理旋转
-  // const handleRotate = () => {
-  //   setChartRotation((prev) => (prev + 90) % 360);
-  // };
+    return {
+      // 三方：本宫前4位和后4位的宫位
+      threeWays: [
+        data.palaces[(palaceIndex + 4) % 12].type,
+        data.palaces[(palaceIndex + 8) % 12].type
+      ],
+      // 四正：只取对宫（相隔6个宫位）
+      fourCorrect: [
+        data.palaces[(palaceIndex + 6) % 12].type, // 对宫
+      ]
+    };
+  };
+
+  // 判断宫位是否在三方四正中
+  const isInThreeAndFour = (palaceType: string) => {
+    if (!selectedPalace) return false;
+    const result = getThreeAndFourPalaces(selectedPalace);
+    if (!result) return false;
+    return [...result.threeWays, ...result.fourCorrect].includes(palaceType);
+  };
 
   // 渲染星耀
   const renderStar = (star: Star) => {
@@ -97,33 +109,31 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
 
   // 渲染宫位
   const renderPalace = (palace: Palace, index: number) => {
+    const isSelected = palace.type === selectedPalace;
+    const isRelated = isInThreeAndFour(palace.type);
+    
     return (
       <div
         key={index}
-        className={`palace p${index + 1}`}
+        className={classNames(`palace p${index + 1}`, {
+          'palace-selected': isSelected,
+          'palace-related': isRelated
+        })}
+        onClick={() => setSelectedPalace(palace.type)}
       >
         <div className="palace-content" style={{ transform: `rotate(${-chartRotation}deg)` }}>
           <div className="palace-header">
             <span className="palace-name">{palace.type}</span>
-            {/*{palace.isBodyPalace && <span className="palace-mark">身宫</span>}*/}
-            {/*{palace.name === data.soul && <span className="palace-mark">命宫</span>}*/}
           </div>
           <div className="palace-body">
             <div className="palace-stars">
               {palace.stars?.map(renderStar)}
             </div>
-            {/*{palace.transformations && palace.transformations.length > 0 && (*/}
-            {/*  <div className="transformations">*/}
-            {/*    {palace.transformations.join('、')}*/}
-            {/*  </div>*/}
-            {/*)}*/}
-            {/* 显示大限信息 */}
             {palace.decadal && (
               <div className="decadal-info">
                 {palace.decadal.range[0]}～{palace.decadal.range[1]}
               </div>
             )}
-            {/* 显示小限信息 */}
             {palace.ages && palace.ages.length > 0 && (
               <div className="ages-info">
                 小限：{palace.ages.join('、')}
@@ -154,10 +164,27 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
           <span className="palace-stems">
             {palace.heavenlyStem}{palace.earthlyBranch}
           </span>
+          {isSelected && <div className="palace-arrow">→</div>}
         </div>
       </div>
     );
   };
+
+  // 如果没有数据，显示加载中或空状态
+  if (!data) {
+    return (
+      <Card className="chart-container">
+        <div style={{ textAlign: 'center', padding: '20px', color: '#fff' }}>
+          暂无命盘数据
+        </div>
+      </Card>
+    );
+  }
+
+  // 处理旋转
+  // const handleRotate = () => {
+  //   setChartRotation((prev) => (prev + 90) % 360);
+  // };
 
   // 渲染中宫信息
   const renderCenterInfo = () => {
