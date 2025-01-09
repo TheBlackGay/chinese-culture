@@ -12,6 +12,7 @@
       font-size: 14px;
       text-align: center;
       height: 40px;
+      width: 160px;
     }
 
     .ant-table-tbody > tr > td {
@@ -21,6 +22,7 @@
       padding: 4px;
       text-align: center;
       height: 60px;
+      width: 160px;
       vertical-align: middle;
 
       &:hover {
@@ -42,32 +44,30 @@
     }
   }
 
-  :global {
-    .decadal-cell {
-      font-size: 16px !important;
-      .sub-text {
-        font-size: 14px !important;
-      }
+  .decadal-cell {
+    font-size: 9px;
+    .sub-text {
+      font-size: 10px;
     }
+  }
 
-    .year-cell {
-      font-size: 15px !important;
-      .sub-text {
-        font-size: 13px !important;
-      }
+  .year-cell {
+    font-size: 15px;
+    .sub-text {
+      font-size: 13px;
     }
+  }
 
-    .month-cell {
-      font-size: 14px !important;
-    }
+  .month-cell {
+    font-size: 14px;
+  }
 
-    [class*="day-"] {
-      font-size: 14px !important;
-    }
+  [class*="day-"] {
+    font-size: 14px;
+  }
 
-    .hour-cell {
-      font-size: 14px !important;
-    }
+  .hour-cell {
+    font-size: 14px;
   }
 
   .cell-content {
@@ -75,13 +75,15 @@
     padding: 4px 8px;
     border-radius: 4px;
     transition: all 0.3s;
-    height: 100%;
+    height: 52px;
+    min-height: 52px;
+    max-height: 52px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    min-height: 52px;
     white-space: pre-line;
+    overflow: hidden;
 
     &:hover {
       background: rgba(24, 144, 255, 0.1);
@@ -107,6 +109,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 8px;
+    width: 80px;
 
     .ant-btn {
       color: #ffffff;

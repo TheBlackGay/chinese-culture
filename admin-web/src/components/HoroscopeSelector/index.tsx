@@ -7,6 +7,8 @@ import './index.less';
 interface HoroscopeSelectorProps {
   startYear: number;
   currentYear: number;
+  mingGongData?: Palace;  // 命宫数据
+  palaces?: Palace[];     // 所有宫位数据
   onTimeChange: (params: {
     decadal?: number;
     year?: number;
@@ -60,6 +62,8 @@ const getDecadalGanZhi = (decadalValue: number): string => {
 const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   startYear,
   currentYear,
+  mingGongData,
+  palaces,
   onTimeChange,
 }) => {
   const [selectedTime, setSelectedTime] = useState<TimeRange>({});
@@ -71,40 +75,53 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     hour: 0,
   });
 
-  // 计算命宫大限开始年龄
-  const getMingGongStartAge = () => {
-    return 6; // 这里应该根据实际命宫计算，暂时固定为6岁
+  // 计算命宫大限开始年龄和最大年龄
+  const getMingGongAgeRange = () => {
+    // TODO: 这里应该根据实际命宫计算，暂时固定为6岁开始，75岁结束
+    return {
+      startAge: 6,
+      endAge: 75
+    };
   };
 
   // 生成指定数量的连续数字数组
-  const getPageNumbers = (offset: number, length: number = 10) => 
+  const getPageNumbers = (offset: number, length: number = 10) =>
     Array.from({ length }, (_, i) => i + offset);
 
   // 生成大限数据
-  const getDecadalData = (numbers: number[]) => numbers.map(num => {
-    const mingGongStartAge = getMingGongStartAge();
-    if (num === 0) {
+  const getDecadalData = (numbers: number[]) => {
+    const { startAge, endAge } = getMingGongAgeRange();
+    const maxDecadalIndex = Math.floor((endAge - startAge) / 10);
+
+    return numbers.map(num => {
+      if (num === 0) {
+        return {
+          key: `decadal-${num}`,
+          value: `1～${startAge - 1}岁\n童限`,
+          type: 'decadal',
+          decadalValue: num,
+          startAge: 1,
+          endAge: startAge - 1
+        };
+      }
+
+      // 如果超出最大大限范围，返回null
+      if (num > maxDecadalIndex) return null;
+
+      const decadalStartAge = startAge + (num - 1) * 10;
+      const decadalEndAge = Math.min(decadalStartAge + 9, endAge);
+      const ganZhi = getDecadalGanZhi(num);
+
       return {
         key: `decadal-${num}`,
-        value: `童限(${numberToChinese(1)}～${numberToChinese(mingGongStartAge - 1)}岁)`,
+        value: `${decadalStartAge}～${decadalEndAge}岁\n${ganZhi}限`,
         type: 'decadal',
         decadalValue: num,
-        startAge: 1,
-        endAge: mingGongStartAge - 1
+        startAge: decadalStartAge,
+        endAge: decadalEndAge
       };
-    }
-    const startAge = mingGongStartAge + (num - 1) * 10;
-    const endAge = startAge + 9;
-    const ganZhi = getDecadalGanZhi(num);
-    return {
-      key: `decadal-${num}`,
-      value: `${numberToChinese(startAge)}～${numberToChinese(endAge)}岁\n${ganZhi}限`,
-      type: 'decadal',
-      decadalValue: num,
-      startAge,
-      endAge
-    };
-  });
+    }).filter(Boolean);
+  };
 
   // 根据年龄获取对应的年份
   const getYearByAge = (age: number) => startYear + age - 1;
@@ -125,6 +142,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       ? getDecadalData(getPageNumbers(0))[selectedTime.decadal]
       : getDefaultDecadalData();
 
+    if (!decadalData) return [];
+
     const yearStartAge = decadalData.startAge;
     const yearEndAge = decadalData.endAge;
     const yearStartYear = getYearByAge(yearStartAge);
@@ -133,7 +152,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       { length: yearEndYear - yearStartYear + 1 },
       (_, i) => yearStartYear + i
     );
-    
+
     return numbers.map(num => {
       const year = yearRange[num + pageOffsets.year];
       if (!year) return null;
@@ -141,7 +160,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       const ganZhi = getYearGanZhi(year);
       return {
         key: `year-${num}`,
-        value: `${year}年\n${ganZhi}${numberToChinese(age)}岁`,
+        value: `${year}年\n${ganZhi}${age}岁`,
         type: 'year',
         yearValue: year
       };
@@ -151,7 +170,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   // 生成流月数据
   const getMonthData = (numbers: number[]) => {
     if (!selectedTime.year) {
-      return numbers.map(num => ({
+      return numbers.slice(0, Math.min(numbers.length, 12)).map(num => ({
         key: `month-${num}`,
         value: `${numberToChinese(num + 1)}月`,
         type: 'month',
@@ -159,21 +178,24 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       }));
     }
 
+    const month = numbers[0] + pageOffsets.month + 1;
+    if (month > 12) return [];
+
     return numbers.map(num => {
-      const month = num + pageOffsets.month + 1;
-      if (month > 12) return null;
+      const currentMonth = num + pageOffsets.month + 1;
+      if (currentMonth > 12) return null;
       return {
         key: `month-${num}`,
-        value: `${numberToChinese(month)}月`,
+        value: `${numberToChinese(currentMonth)}月`,
         type: 'month',
-        monthValue: month
+        monthValue: currentMonth
       };
     }).filter(Boolean);
   };
 
   // 生成流日数据
   const getDayData = (numbers: number[]) => {
-    if (!selectedTime.month) {
+    if (!selectedTime.month || !selectedTime.year) {
       return [
         numbers.map(num => ({
           key: `day1-${num}`,
@@ -196,15 +218,17 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       ];
     }
 
-    const daysInMonth = new Date(selectedTime.year!, selectedTime.month!, 0).getDate();
+    const daysInMonth = new Date(selectedTime.year, selectedTime.month, 0).getDate();
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
     const offset = pageOffsets.day * 10;
-    
+
+    if (offset >= days.length) return [[]];
+
     return [
-      days.slice(offset, offset + 10).map((day, index) => ({
+      days.slice(offset, Math.min(offset + 10, days.length)).map(day => ({
         key: `day-${day}`,
-        value: day <= 10 ? `初${numberToChinese(day)}` : 
-               day <= 20 ? `十${numberToChinese(day - 10)}` : 
+        value: day <= 10 ? `初${numberToChinese(day)}` :
+               day <= 20 ? `十${numberToChinese(day - 10)}` :
                `廿${numberToChinese(day - 20)}`,
         type: 'day',
         dayValue: day
@@ -320,30 +344,33 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     const monthNumbers = getPageNumbers(pageOffsets.month);
     const dayNumbers = getPageNumbers(pageOffsets.day);
 
+    const { startAge, endAge } = getMingGongAgeRange();
+    const maxDecadalIndex = Math.floor((endAge - startAge) / 10);
+
     return [
-      { 
+      {
         key: 'decadal',
         label: '大限',
         type: 'decadal',
         data: getDecadalData(decadalNumbers),
         canPrevPage: pageOffsets.decadal > 0,
-        canNextPage: true
+        canNextPage: (pageOffsets.decadal + 1) * 10 <= maxDecadalIndex
       },
-      { 
+      {
         key: 'year',
         label: '流年',
         type: 'year',
         data: getYearData(yearNumbers),
         canPrevPage: pageOffsets.year > 0,
-        canNextPage: true
+        canNextPage: selectedTime.decadal !== undefined
       },
-      { 
+      {
         key: 'month',
         label: '流月',
         type: 'month',
         data: getMonthData(monthNumbers),
         canPrevPage: pageOffsets.month > 0,
-        canNextPage: selectedTime.year ? (pageOffsets.month + 1) * 10 < 12 : true
+        canNextPage: selectedTime.year && (pageOffsets.month + 1) * 10 < 12
       },
       ...getDayData(dayNumbers).map((row, index) => ({
         key: `day-${index}`,
@@ -351,9 +378,10 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         type: 'day',
         data: row,
         canPrevPage: pageOffsets.day > 0,
-        canNextPage: selectedTime.month ? (pageOffsets.day + 1) * 10 < new Date(selectedTime.year!, selectedTime.month!, 0).getDate() : true
+        canNextPage: selectedTime.month && selectedTime.year &&
+          (pageOffsets.day + 1) * 10 < new Date(selectedTime.year, selectedTime.month, 0).getDate()
       })),
-      { 
+      {
         key: 'hour',
         label: '流时',
         type: 'hour',
@@ -418,6 +446,11 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     }
   ];
 
+  // 获取命宫起始年龄
+  const getMingGongStartAge = () => {
+    return 6; // 这里应该根据实际命宫计算，暂时固定为6岁
+  };
+
   return (
     <div className="horoscope-selector">
       <Table
@@ -433,4 +466,4 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   );
 };
 
-export default HoroscopeSelector; 
+export default HoroscopeSelector;

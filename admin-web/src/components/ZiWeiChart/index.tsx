@@ -126,7 +126,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             {/* 显示小限信息 */}
             {palace.ages && palace.ages.length > 0 && (
               <div className="ages-info">
-                流年：{palace.ages.join('、')}
+                小限：{palace.ages.join('、')}
               </div>
             )}
             {palace.isBodyPalace && <div className="body-palace-mark">身宫</div>}
