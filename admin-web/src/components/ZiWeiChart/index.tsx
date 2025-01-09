@@ -56,7 +56,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
     // 构建星耀描述
     const description = [
       star.description,
-      star.transformation && `四化: ${star.transformation.type}化 (来源: ${star.transformation.source})`,
+      star.transformation && `四化: ${star.transformation}化 (来源: ${star.transformation.source})`,
       star.brightness && `星耀强度: ${star.brightness}`
     ].filter(Boolean).join('\n');
 
@@ -73,10 +73,10 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
         )}
         {star.transformation && (
           <small
-            className={`star-transform transform-${star.transformation.type}`}
-            title={`来源: ${star.transformation.source}`}
+            className={`star-transform transform-${star.transformation}`}
+            title={`来源: ${star.transformation}`}
           >
-            {star.transformation.type}
+            {star.transformation}
           </small>
         )}
       </span>
