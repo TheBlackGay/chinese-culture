@@ -72,11 +72,23 @@ function processStars(stars: any[], type: '主星' | '辅星' | '杂耀'): Star[
       console.warn(`Unknown star: ${star.name}`);
       return null;
     }
+
+    // 打印星耀的原始数据
+    console.log(`Processing star:`, JSON.stringify(star));
+
+    let transformation = star.transformation || undefined;
+    let transformationType = undefined;
+    if (transformation) {
+      transformationType = transformation.sihuaLu || transformation.sihuaQuan || transformation.sihuaKe || transformation.sihuaJi
+    }
+
     return {
       ...starInfo,
       type,
       brightness: star.brightness,
-      scope: star.scope || 'origin'
+      scope: star.scope || 'origin',
+      transformation: star.transformation || undefined,
+      transformationType: transformationType
     } as Star;
   }).filter((star): star is Star => star !== null);
 }
@@ -166,6 +178,11 @@ export const calculateZiWei = (
         continue;
       }
 
+      // 打印原始宫位数据，特别关注四化信息
+      console.log(`Palace ${i} raw data:`, palace);
+      console.log(`Palace ${i} stars:`, palace.majorStars);
+      // console.log(`Palace ${i} transformations:`, palace.mutagen);
+
       // 创建宫位对象
       const simplePalace = {
         index: palace.index,
@@ -174,12 +191,27 @@ export const calculateZiWei = (
         isOriginalPalace: palace.isOriginalPalace || false,
         heavenlyStem: palace.heavenlyStem,
         earthlyBranch: palace.earthlyBranch,
-        majorStars: palace.majorStars || [],
-        minorStars: palace.minorStars || [],
-        adjectiveStars: palace.adjectiveStars || [],
+        majorStars: palace.majorStars?.map(star => ({
+          ...star,
+          transformation: star.mutagen
+        })) || [],
+        minorStars: palace.minorStars?.map(star => ({
+          ...star,
+          // transformation: {
+          //   type: star.mutagen.sihuaLu || star.mutagen.sihuaQuan || star.mutagen.sihuaKe || star.mutagen.sihuaJi,
+          //   source: string
+          // }
+        })) || [],
+        adjectiveStars: palace.adjectiveStars?.map(star => ({
+          ...star,
+          // transformation: {
+          //   type: star.mutagen.sihuaLu || star.mutagen.sihuaQuan || star.mutagen.sihuaKe || star.mutagen.sihuaJi,
+          //   source: string
+          // }
+        })) || [],
         changsheng12: palace.changsheng12,
         boshi12: palace.boshi12,
-        mutagen: palace.mutagen || [],
+        // transformations: palace.transformations || {},
         decadal: palace.decadal,
         ages: palace.ages
       };
@@ -188,6 +220,9 @@ export const calculateZiWei = (
       const majorStars = processStars(simplePalace.majorStars, '主星');
       const minorStars = processStars(simplePalace.minorStars, '辅星');
       const adjectiveStars = processStars(simplePalace.adjectiveStars, '杂耀');
+
+      // 打印处理后的星耀数据
+      console.log(`Palace ${i} processed stars:`, { majorStars, minorStars, adjectiveStars });
 
       // 合并所有星耀
       const stars = [...majorStars, ...minorStars, ...adjectiveStars];
@@ -202,7 +237,9 @@ export const calculateZiWei = (
         isBodyPalace: simplePalace.isBodyPalace,
         isOriginalPalace: simplePalace.isOriginalPalace,
         stars,
-        transformations: simplePalace.mutagen,
+        // transformations: Object.entries(simplePalace.transformations).map(([star, trans]) =>
+        //   `${star}${(trans as any).type}化xxx`
+        // ),
         changsheng12: simplePalace.changsheng12,
         boshi12: simplePalace.boshi12,
         decadal: simplePalace.decadal,

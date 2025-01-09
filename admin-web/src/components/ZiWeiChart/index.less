@@ -123,6 +123,8 @@
     display: flex;
     align-items: center;
     gap: 1px;
+    position: relative;
+    margin-bottom: 2px;
 
     &-major {
       color: #1890ff;
@@ -144,6 +146,36 @@
       font-size: 10px;
       opacity: 0.8;
       margin-left: 1px;
+    }
+
+    .star-transform {
+      font-size: 10px;
+      margin-left: 2px;
+      padding: 0 2px;
+      border-radius: 2px;
+      line-height: 1.2;
+      display: inline-block;
+      white-space: nowrap;
+
+      &.transform-禄 {
+        color: #f5222d;
+        border: 1px solid #f5222d;
+      }
+
+      &.transform-权 {
+        color: #faad14;
+        border: 1px solid #faad14;
+      }
+
+      &.transform-科 {
+        color: #52c41a;
+        border: 1px solid #52c41a;
+      }
+
+      &.transform-忌 {
+        color: #722ed1;
+        border: 1px solid #722ed1;
+      }
     }
   }
 

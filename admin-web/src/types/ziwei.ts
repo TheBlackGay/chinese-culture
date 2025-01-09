@@ -1,4 +1,6 @@
 // 星耀类型
+import {Mutagen} from "iztro/lib/i18n";
+
 export interface Star {
   name: string;
   type: '主星' | '辅星' | '杂耀';
@@ -6,10 +8,8 @@ export interface Star {
   wuxing: '金' | '木' | '水' | '火' | '土';
   color: string;
   description: string;
-  transformation?: {
-    type: '禄' | '权' | '科' | '忌';
-    source: string;
-  };
+  transformation?: Mutagen
+  transformationType?: '禄' | '权' | '科' | '忌';
 }
 
 // 宫位类型
@@ -59,4 +59,4 @@ export interface Transformation {
   权: string;
   科: string;
   忌: string;
-} 
+}

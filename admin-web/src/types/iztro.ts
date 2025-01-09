@@ -1,5 +1,6 @@
 // 运限范围类型
 import {Decadal} from "iztro/lib/data/types/astro";
+import {Mutagen} from "iztro/lib/i18n";
 
 export type Scope = 'origin' | 'decadal' | 'yearly' | 'monthly' | 'daily' | 'hourly';
 
@@ -97,6 +98,8 @@ export interface Star {
   description: string;
   brightness?: '庙' | '旺' | '得' | '利' | '平' | '不' | '陷';
   scope: Scope;
+  transformation?: Mutagen
+  transformationType?: string;
 }
 
 // 宫位类型
@@ -115,7 +118,7 @@ export interface Palace {
   isBodyPalace: boolean;
   isOriginalPalace: boolean;
   stars: Star[];
-  transformations: string[];
+  // transformations: string[];
   changsheng12: string;
   boshi12?: string;
   displayPosition?: {

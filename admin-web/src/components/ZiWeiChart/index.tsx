@@ -42,12 +42,30 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
       return brightnessMap[brightness] || '';
     };
 
+    // 构建星耀描述
+    const description = [
+      star.description,
+      star.transformation && `四化: ${star.transformation.type}化 (来源: ${star.transformation.source})`,
+      star.brightness && `星耀强度: ${star.brightness}`
+    ].filter(Boolean).join('\n');
+
+    // 打印星耀数据，用于调试
+    console.log('Rendering star:', { star, hasTransformation: !!star.transformation });
+
     return (
-      <span key={star.name} className={starClass} title={star.description}>
-        {star.name}
+      <span key={star.name} className={starClass} title={description}>
+        <span className="star-name">{star.name}</span>
         {star.brightness && (
           <small className="star-brightness">
             {getBrightnessText(star.brightness)}
+          </small>
+        )}
+        {star.transformation && (
+          <small
+            className={`star-transform transform-${star.transformation}`}
+            title={`来源: ${star.transformation}`}
+          >
+            {star.transformation}
           </small>
         )}
       </span>
@@ -71,11 +89,11 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
             <div className="palace-stars">
               {palace.stars?.map(renderStar)}
             </div>
-            {palace.transformations && palace.transformations.length > 0 && (
-              <div className="transformations">
-                {palace.transformations.join('、')}
-              </div>
-            )}
+            {/*{palace.transformations && palace.transformations.length > 0 && (*/}
+            {/*  <div className="transformations">*/}
+            {/*    {palace.transformations.join('、')}*/}
+            {/*  </div>*/}
+            {/*)}*/}
             {/* 显示大限信息 */}
             {palace.decadal && (
               <div className="decadal-info">
