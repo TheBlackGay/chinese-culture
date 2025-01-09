@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, DatePicker, Button, Radio, Space } from 'antd';
+import { Card, DatePicker, Button, Radio, Space, message } from 'antd';
 import type { Dayjs } from 'dayjs';
 import { calculateZiWei } from '@/services/ziwei';
 import ZiWeiChart from '@/components/ZiWeiChart';
@@ -51,7 +51,28 @@ const ZiweiPage: React.FC = () => {
             </Button>
           </div>
 
-          {ziWeiResult && <ZiWeiChart data={ziWeiResult} />}
+          {ziWeiResult && (
+            <ZiWeiChart 
+              data={ziWeiResult} 
+              onTimeChange={async (params) => {
+                try {
+                  // 调用紫微斗数运限计算接口
+                  const horoscope = await calculateZiWei(
+                    selectedDateTime!.year(),
+                    selectedDateTime!.month() + 1,
+                    selectedDateTime!.date(),
+                    selectedDateTime!.hour(),
+                    gender,
+                    params
+                  );
+                  setZiWeiResult(horoscope);
+                } catch (error) {
+                  console.error('计算运限失败:', error);
+                  message.error('计算运限失败');
+                }
+              }}
+            />
+          )}
         </Space>
       </Card>
     </PageContainer>

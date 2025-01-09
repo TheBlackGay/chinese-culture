@@ -100,6 +100,7 @@ function processStars(stars: any[], type: '主星' | '辅星' | '杂耀'): Star[
  * @param birthDay 出生日期
  * @param birthHour 出生小时(0-23)
  * @param gender 性别 male/female
+ * @param horoscopeParams 运限参数
  * @returns 紫微斗数星盘数据
  */
 export const calculateZiWei = (
@@ -107,7 +108,14 @@ export const calculateZiWei = (
   birthMonth: number,
   birthDay: number,
   birthHour: number,
-  gender: 'male' | 'female'
+  gender: 'male' | 'female',
+  horoscopeParams?: {
+    decadal?: number;  // 大限
+    year?: number;    // 流年
+    month?: number;   // 流月
+    day?: number;     // 流日
+    hour?: number;    // 流时
+  }
 ): ZiWeiResult => {
   try {
     // 计算时辰
@@ -124,6 +132,21 @@ export const calculateZiWei = (
       gender === 'male' ? '男' : '女',
       true
     );
+
+    // 如果有运限参数，计算运限
+    if (horoscopeParams) {
+      const { year, month, day, hour } = horoscopeParams;
+      if (year) {
+        // 计算运限
+        const horoscopeResult = horoscope.horoscope({
+          year,
+          month,
+          day,
+          hour
+        });
+        console.log('运限计算结果:', horoscopeResult);
+      }
+    }
 
     console.log('Input params:', {
       date: `${birthYear}-${formattedMonth}-${formattedDay}`,

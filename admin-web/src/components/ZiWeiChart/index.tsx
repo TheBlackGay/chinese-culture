@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { Card, Button } from 'antd';
+import { Card, Button, Tooltip } from 'antd';
 import type { Star, Palace, ZiWeiResult } from '@/types/iztro';
+import HoroscopeSelector from '../HoroscopeSelector';
 import './index.less';
 
 interface ZiWeiChartProps {
   data: ZiWeiResult;
+  onTimeChange?: (params: {
+    decadal?: number;  // 大限
+    year?: number;    // 流年
+    month?: number;   // 流月
+    day?: number;     // 流日
+    hour?: number;    // 流时
+  }) => void;
 }
 
-const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
+const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
   const [chartRotation, setChartRotation] = useState(0);
 
   // 如果没有数据，显示加载中或空状态
@@ -170,21 +178,34 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data }) => {
   };
 
   return (
-    <Card className="chart-container">
-      <div className="chart-header">
-        {/*<Button onClick={handleRotate}>旋转命盘</Button>*/}
-        <div>紫微斗数开发中，可能有不准</div>
+    <div className="ziwei-chart-container">
+      <div className="ziwei-chart">
+        <Card className="chart-container">
+          <div className="chart-header">
+            {/*<Button onClick={handleRotate}>旋转命盘</Button>*/}
+            <div>紫微斗数开发中，可能有不准</div>
+          </div>
+          <div className="chart-wrapper">
+            <div
+              className="chart-body"
+              style={{ transform: `rotate(${chartRotation}deg)` }}
+            >
+              {data.palaces?.map((palace, index) => renderPalace(palace, index))}
+            </div>
+            {renderCenterInfo()}
+          </div>
+        </Card>
       </div>
-      <div className="chart-wrapper">
-        <div
-          className="chart-body"
-          style={{ transform: `rotate(${chartRotation}deg)` }}
-        >
-          {data.palaces?.map((palace, index) => renderPalace(palace, index))}
+      {onTimeChange && (
+        <div className="horoscope-selector-container">
+          <HoroscopeSelector
+            startYear={parseInt(data.solarDate.split('-')[0])}
+            currentYear={new Date().getFullYear()}
+            onTimeChange={onTimeChange}
+          />
         </div>
-        {renderCenterInfo()}
-      </div>
-    </Card>
+      )}
+    </div>
   );
 };
 

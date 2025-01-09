@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-components';
-import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip, Tabs, Radio } from 'antd';
+import { Card, DatePicker, Button, Typography, Table, Tag, Row, Col, Space, Progress, List, Collapse, Tooltip, Tabs, Radio, message } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { getBaZi, getLunarInfo, getTrueSolarTime } from '@/services/lunar';
@@ -566,7 +566,28 @@ const BaziPage: React.FC = () => {
 
   // 渲染紫微斗数内容
   const renderZiWeiInfo = () => (
-    <ZiWeiChart data={ziWeiResult} />
+    ziWeiResult && (
+      <ZiWeiChart 
+        data={ziWeiResult} 
+        onTimeChange={async (params) => {
+          try {
+            // 调用紫微斗数运限计算接口
+            const horoscope = await calculateZiWei(
+              birthYear,
+              birthMonth,
+              birthDay,
+              birthHour,
+              gender,
+              params
+            );
+            setZiWeiResult(horoscope);
+          } catch (error) {
+            console.error('计算运限失败:', error);
+            message.error('计算运限失败');
+          }
+        }}
+      />
+    )
   );
 
   return (
