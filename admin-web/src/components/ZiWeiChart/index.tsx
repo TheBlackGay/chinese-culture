@@ -142,7 +142,6 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             d={`M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`}
             stroke="#ff4d4f"
             strokeWidth="1.5"
-            markerEnd="url(#arrowhead)"
             fill="none"
           />
         );
@@ -161,7 +160,6 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             d={`M ${fromPoint.x} ${fromPoint.y} L ${toPoint.x} ${toPoint.y}`}
             stroke="#ff4d4f"
             strokeWidth="1.5"
-            markerEnd="url(#arrowhead)"
             fill="none"
           />
         );
