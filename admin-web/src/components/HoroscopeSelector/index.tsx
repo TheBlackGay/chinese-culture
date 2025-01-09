@@ -190,71 +190,59 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
 
   // 生成流月数据
   const getMonthData = (numbers: number[]) => {
-    if (!selectedTime.year) {
-      return numbers.slice(0, Math.min(numbers.length, 12)).map(num => ({
-        key: `month-${num}`,
-        value: `${numberToChinese(num + 1)}月`,
-        type: 'month',
-        monthValue: num + 1
-      }));
-    }
-
-    const month = numbers[0] + pageOffsets.month + 1;
-    if (month > 12) return [];
+    if (!selectedTime.year) return [];
 
     return numbers.map(num => {
-      const currentMonth = num + pageOffsets.month + 1;
-      if (currentMonth > 12) return null;
+      const month = num + pageOffsets.month + 1;
+      if (month > 12) return null;
       return {
         key: `month-${num}`,
-        value: `${numberToChinese(currentMonth)}月`,
+        value: `${numberToChinese(month)}月`,
         type: 'month',
-        monthValue: currentMonth
+        monthValue: month
       };
     }).filter(Boolean);
   };
 
   // 生成流日数据
   const getDayData = (numbers: number[]) => {
-    if (!selectedTime.month || !selectedTime.year) {
-      return [
-        numbers.map(num => ({
-          key: `day1-${num}`,
-          value: `初${numberToChinese(num + 1)}`,
-          type: 'day',
-          dayValue: num + 1
-        })),
-        numbers.map(num => ({
-          key: `day2-${num}`,
-          value: `十${numberToChinese(num + 1)}`,
-          type: 'day',
-          dayValue: num + 11
-        })),
-        numbers.map(num => ({
-          key: `day3-${num}`,
-          value: `廿${numberToChinese(num + 1)}`,
-          type: 'day',
-          dayValue: num + 21
-        }))
-      ];
+    if (!selectedTime.year || !selectedTime.month) return [[]];
+
+    // 计算选中月份的天数
+    const daysInMonth = new Date(selectedTime.year, selectedTime.month, 0).getDate();
+
+    // 将天数按照每10天分组
+    const groups = Math.ceil(daysInMonth / 10);
+    const result = [];
+
+    for (let i = 0; i < groups; i++) {
+      const startDay = i * 10 + 1;
+      const endDay = Math.min(startDay + 9, daysInMonth);
+      
+      if (i === pageOffsets.day) {  // 只返回当前页的数据
+        const days = Array.from(
+          { length: endDay - startDay + 1 },
+          (_, index) => {
+            const day = startDay + index;
+            let dayText = '';
+            if (day <= 10) dayText = `初${numberToChinese(day)}`;
+            else if (day <= 20) dayText = `十${numberToChinese(day - 10)}`;
+            else if (day <= 30) dayText = `廿${numberToChinese(day - 20)}`;
+            else dayText = `三${numberToChinese(day - 30)}`;
+
+            return {
+              key: `day-${day}`,
+              value: dayText,
+              type: 'day',
+              dayValue: day
+            };
+          }
+        );
+        result.push(days);
+      }
     }
 
-    const daysInMonth = new Date(selectedTime.year, selectedTime.month, 0).getDate();
-    const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-    const offset = pageOffsets.day * 10;
-
-    if (offset >= days.length) return [[]];
-
-    return [
-      days.slice(offset, Math.min(offset + 10, days.length)).map(day => ({
-        key: `day-${day}`,
-        value: day <= 10 ? `初${numberToChinese(day)}` :
-               day <= 20 ? `十${numberToChinese(day - 10)}` :
-               `廿${numberToChinese(day - 20)}`,
-        type: 'day',
-        dayValue: day
-      }))
-    ];
+    return result;
   };
 
   // 生成流时数据
@@ -282,12 +270,10 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     switch (record.type) {
       case 'decadal':
         newSelectedTime.decadal = record.decadalValue;
-        // 清除下级选择
         delete newSelectedTime.year;
         delete newSelectedTime.month;
         delete newSelectedTime.day;
         delete newSelectedTime.hour;
-        // 重置下级页码
         setPageOffsets(prev => ({
           ...prev,
           year: 0,
@@ -298,11 +284,9 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         break;
       case 'year':
         newSelectedTime.year = record.yearValue;
-        // 清除下级选择
         delete newSelectedTime.month;
         delete newSelectedTime.day;
         delete newSelectedTime.hour;
-        // 重置下级页码
         setPageOffsets(prev => ({
           ...prev,
           month: 0,
@@ -312,10 +296,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         break;
       case 'month':
         newSelectedTime.month = record.monthValue;
-        // 清除下级选择
         delete newSelectedTime.day;
         delete newSelectedTime.hour;
-        // 重置下级页码
         setPageOffsets(prev => ({
           ...prev,
           day: 0,
@@ -324,9 +306,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         break;
       case 'day':
         newSelectedTime.day = record.dayValue;
-        // 清除下级选择
         delete newSelectedTime.hour;
-        // 重置下级页码
         setPageOffsets(prev => ({
           ...prev,
           hour: 0
