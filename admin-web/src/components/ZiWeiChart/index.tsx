@@ -22,6 +22,29 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
   const [connectionPoints, setConnectionPoints] = useState<{[key: string]: DOMRect}>({});
   const chartRef = useRef<HTMLDivElement>(null);
 
+  // 数据更新时重新触发命宫选择
+  useEffect(() => {
+    if (data) {
+      // 等待DOM渲染完成后再计算连接点
+      setTimeout(() => {
+        setSelectedPalace('命宫');
+        if (chartRef.current) {
+          const points: {[key: string]: DOMRect} = {};
+          const palaces = chartRef.current.querySelectorAll('.palace');
+          
+          palaces.forEach((palace) => {
+            const palaceType = palace.querySelector('.palace-name')?.textContent;
+            if (palaceType) {
+              points[palaceType] = palace.getBoundingClientRect();
+            }
+          });
+          
+          setConnectionPoints(points);
+        }
+      }, 0);
+    }
+  }, [data]);
+
   // 更新连接点位置
   useEffect(() => {
     if (!chartRef.current || !selectedPalace) return;
