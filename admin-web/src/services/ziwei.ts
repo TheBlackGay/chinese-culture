@@ -135,17 +135,33 @@ export const calculateZiWei = (
 
     // 如果有运限参数，计算运限
     if (horoscopeParams) {
-      const { year, month, day, hour } = horoscopeParams;
-      if (year) {
-        // 计算运限
-        const horoscopeResult = horoscope.horoscope({
-          year,
-          month,
-          day,
-          hour
-        });
-        console.log('运限计算结果:', horoscopeResult);
-      }
+      const { decadal, year, month, day, hour } = horoscopeParams;
+      
+      // 打印运限参数
+      console.log('运限计算参数:', {
+        decadal,
+        year,
+        month,
+        day,
+        hour,
+        birthYear,
+        birthMonth,
+        birthDay,
+        birthHour,
+        gender
+      });
+      
+      // 计算运限
+      const horoscopeResult = horoscope.horoscope({
+        decadal,
+        year,
+        month,
+        day,
+        hour
+      });
+
+      // 打印运限计算结果
+      console.log('运限计算结果:', horoscopeResult);
     }
 
     console.log('Input params:', {

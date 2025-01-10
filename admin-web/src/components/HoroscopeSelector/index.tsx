@@ -279,8 +279,30 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   // 处理单元格点击
   const handleCellClick = (record: any) => {
     const newSelectedTime = { ...selectedTime };
+    
+    // 打印原始记录数据
+    console.log('点击的单元格数据:', {
+      type: record.type,
+      value: record.value,
+      decadalValue: record.decadalValue,
+      startAge: record.startAge,
+      endAge: record.endAge,
+      heavenlyStem: record.heavenlyStem,
+      earthlyBranch: record.earthlyBranch,
+      yearValue: record.yearValue,
+      monthValue: record.monthValue,
+      dayValue: record.dayValue,
+      hourValue: record.hourValue
+    });
+    
     switch (record.type) {
       case 'decadal':
+        console.log('选择大限:', {
+          decadalValue: record.decadalValue,
+          startAge: record.startAge,
+          endAge: record.endAge
+        });
+        
         newSelectedTime.decadal = record.decadalValue;
         delete newSelectedTime.year;
         delete newSelectedTime.month;
@@ -328,6 +350,14 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         newSelectedTime.hour = record.hourValue;
         break;
     }
+    
+    // 打印传递给父组件的数据
+    console.log('传递给父组件的运限数据:', {
+      ...newSelectedTime,
+      currentTime: new Date().toISOString(),
+      componentName: 'HoroscopeSelector'
+    });
+    
     setSelectedTime(newSelectedTime);
     onTimeChange(newSelectedTime);
   };

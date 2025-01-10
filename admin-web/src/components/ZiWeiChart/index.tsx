@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, Button, Tooltip } from 'antd';
+import { Card, Button, Tooltip, message } from 'antd';
 import type { Star, Palace, ZiWeiResult } from '@/types/iztro';
+import { calculateZiWei } from '@/services/ziwei';
 import HoroscopeSelector from '../HoroscopeSelector';
 import classNames from 'classnames';
 import './index.less';
@@ -432,7 +433,36 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
           <HoroscopeSelector
             startYear={parseInt(data.solarDate.split('-')[0])}
             currentYear={new Date().getFullYear()}
-            onTimeChange={onTimeChange}
+            onTimeChange={async (params) => {
+              try {
+                // 打印运限参数
+                console.log('运限计算参数:', {
+                  params,
+                  birthYear: parseInt(data.solarDate.split('-')[0]),
+                  birthMonth: parseInt(data.solarDate.split('-')[1]),
+                  birthDay: parseInt(data.solarDate.split('-')[2]),
+                  birthHour: data.time ? parseInt(data.time.split(':')[0]) : null,
+                  gender: data.gender === '男' ? 'male' : 'female'
+                });
+
+                // 调用紫微斗数运限计算接口
+                const horoscope = await calculateZiWei({
+                  birthYear: parseInt(data.solarDate.split('-')[0]),
+                  birthMonth: parseInt(data.solarDate.split('-')[1]),
+                  birthDay: parseInt(data.solarDate.split('-')[2]),
+                  birthHour: data.time ? parseInt(data.time.split(':')[0]) : null,
+                  gender: data.gender === '男' ? 'male' : 'female',
+                  ...params
+                });
+
+                if (onTimeChange) {
+                  onTimeChange(params);
+                }
+              } catch (error) {
+                console.error('计算运限失败:', error);
+                message.error('计算运限失败');
+              }
+            }}
             mingGongData={data.palaces.find(p => p.type === '命宫')}
             palaces={data.palaces}
           />
