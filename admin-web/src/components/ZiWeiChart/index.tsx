@@ -32,14 +32,14 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
         if (chartRef.current) {
           const points: {[key: string]: DOMRect} = {};
           const palaces = chartRef.current.querySelectorAll('.palace');
-          
+
           palaces.forEach((palace) => {
             const palaceType = palace.querySelector('.palace-name')?.textContent;
             if (palaceType) {
               points[palaceType] = palace.getBoundingClientRect();
             }
           });
-          
+
           setConnectionPoints(points);
         }
       }, 0);
@@ -52,7 +52,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
 
     const points: {[key: string]: DOMRect} = {};
     const palaces = chartRef.current.querySelectorAll('.palace');
-    
+
     palaces.forEach((palace) => {
       const palaceType = palace.querySelector('.palace-name')?.textContent;
       if (palaceType) {
@@ -67,7 +67,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
   const getConnectionPoint = (palace: Palace, rect: DOMRect, chartRect: DOMRect) => {
     const { earthlyBranch } = palace;
     const { left, top, width, height } = rect;
-    
+
     // 转换成相对于chart的坐标
     const relativeLeft = left - chartRect.left;
     const relativeTop = top - chartRect.top;
@@ -315,7 +315,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
   const renderPalace = (palace: Palace, index: number) => {
     const isSelected = palace.type === selectedPalace;
     const isRelated = isInThreeAndFour(palace.type);
-    
+
     return (
       <div
         key={index}
@@ -408,6 +408,27 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     );
   };
 
+  // 地支时间转换为小时数
+  const zhiToHour = (zhi: string): number => {
+    const zhiHourMap: { [key: string]: number } = {
+      '子时': 0,  // 23:00-00:59
+      '丑时': 2,  // 01:00-02:59
+      '寅时': 4,  // 03:00-04:59
+      '卯时': 6,  // 05:00-06:59
+      '辰时': 8,  // 07:00-08:59
+      '巳时': 10, // 09:00-10:59
+      '午时': 12, // 11:00-12:59
+      '未时': 14, // 13:00-14:59
+      '申时': 16, // 15:00-16:59
+      '酉时': 18, // 17:00-18:59
+      '戌时': 20, // 19:00-20:59
+      '亥时': 22  // 21:00-22:59
+    };
+    // 移除可能的"时"字
+    const cleanZhi = zhi.replace('时', '');
+    return zhiHourMap[`${cleanZhi}时`] ?? 0;
+  };
+
   return (
     <div className="ziwei-chart-container">
       <div className="ziwei-chart">
@@ -436,24 +457,32 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             onTimeChange={async (params) => {
               try {
                 // 打印运限参数
+                console.log("data.solarDate:", JSON.stringify(data.solarDate));
+                console.log("data.time:", JSON.stringify(data.time));
+                console.log("data.timeRange:", JSON.stringify(data.timeRange));
+
+                // 将地支时间转换为小时数
+                const birthHour = zhiToHour(data.time);
+                console.log('转换后的出生时间:', birthHour);
+
                 console.log('运限计算参数:', {
                   params,
                   birthYear: parseInt(data.solarDate.split('-')[0]),
                   birthMonth: parseInt(data.solarDate.split('-')[1]),
                   birthDay: parseInt(data.solarDate.split('-')[2]),
-                  birthHour: data.time ? parseInt(data.time.split(':')[0]) : null,
+                  birthHour,
                   gender: data.gender === '男' ? 'male' : 'female'
                 });
 
                 // 调用紫微斗数运限计算接口
-                const horoscope = await calculateZiWei({
-                  birthYear: parseInt(data.solarDate.split('-')[0]),
-                  birthMonth: parseInt(data.solarDate.split('-')[1]),
-                  birthDay: parseInt(data.solarDate.split('-')[2]),
-                  birthHour: data.time ? parseInt(data.time.split(':')[0]) : null,
-                  gender: data.gender === '男' ? 'male' : 'female',
-                  ...params
-                });
+                const horoscope = await calculateZiWei(
+                  parseInt(data.solarDate.split('-')[0]),
+                  parseInt(data.solarDate.split('-')[1]),
+                  parseInt(data.solarDate.split('-')[2]),
+                  birthHour,
+                  data.gender === '男' ? 'male' : 'female',
+                  params
+                );
 
                 if (onTimeChange) {
                   onTimeChange(params);
