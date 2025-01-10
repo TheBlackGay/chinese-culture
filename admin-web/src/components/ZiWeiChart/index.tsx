@@ -316,6 +316,10 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     const isSelected = palace.type === selectedPalace;
     const isRelated = isInThreeAndFour(palace.type);
 
+    // 处理大限星耀
+    const decadalStars = palace.decadal?.stars || [];
+    const allStars = [...(palace.stars || []), ...decadalStars];
+
     return (
       <div
         key={index}
@@ -331,11 +335,22 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
           </div>
           <div className="palace-body">
             <div className="palace-stars">
-              {palace.stars?.map(renderStar)}
+              {allStars.map(renderStar)}
             </div>
             {palace.decadal && (
               <div className="decadal-info">
-                {palace.decadal.range[0]}～{palace.decadal.range[1]}
+                <div className="decadal-range">
+                  {palace.decadal.range[0]}～{palace.decadal.range[1]}岁
+                </div>
+                {palace.decadal.stars && palace.decadal.stars.length > 0 && (
+                  <div className="decadal-stars">
+                    {palace.decadal.stars.map(star => (
+                      <span key={star.name} className="decadal-star">
+                        {star.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {palace.ages && palace.ages.length > 0 && (

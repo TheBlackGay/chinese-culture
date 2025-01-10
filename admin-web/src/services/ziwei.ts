@@ -153,15 +153,33 @@ export const calculateZiWei = (
       
       // 计算运限
       const horoscopeResult = horoscope.horoscope({
-        decadal,
-        year,
-        month,
-        day,
-        hour
+        decadal,  // 大限
+        year,     // 流年
+        month,    // 流月
+        day,      // 流日
+        hour      // 流时
       });
 
       // 打印运限计算结果
       console.log('运限计算结果:', horoscopeResult);
+
+      // 如果是大限运限，更新宫位信息
+      if (decadal !== undefined) {
+        // 获取大限年龄范围
+        const startAge = horoscope.getStartAge();
+        const decadalStartAge = startAge + (decadal - 1) * 10;
+        const decadalEndAge = decadalStartAge + 9;
+
+        // 更新宫位信息，添加大限数据
+        horoscope.palaces = horoscope.palaces.map(palace => ({
+          ...palace,
+          decadal: {
+            index: decadal,
+            range: [decadalStartAge, decadalEndAge],
+            stars: horoscopeResult.decadal?.stars || []
+          }
+        }));
+      }
     }
 
     console.log('Input params:', {
