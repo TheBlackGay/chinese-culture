@@ -471,32 +471,65 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             currentYear={new Date().getFullYear()}
             onTimeChange={async (params) => {
               try {
-                // 打印运限参数
-                console.log("data.solarDate:", JSON.stringify(data.solarDate));
-                console.log("data.time:", JSON.stringify(data.time));
-                console.log("data.timeRange:", JSON.stringify(data.timeRange));
+                // 检查必要的数据是否存在
+                if (!data || !data.solarDate || !data.time) {
+                  console.error('缺少必要的数据:', { data });
+                  message.error('缺少必要的数据，无法计算运限');
+                  return;
+                }
+
+                // 解析出生日期
+                const [birthYear, birthMonth, birthDay] = data.solarDate.split('-').map(Number);
+                if (!birthYear || !birthMonth || !birthDay) {
+                  console.error('出生日期格式错误:', data.solarDate);
+                  message.error('出生日期格式错误');
+                  return;
+                }
 
                 // 将地支时间转换为小时数
                 const birthHour = zhiToHour(data.time);
                 console.log('转换后的出生时间:', birthHour);
 
+                // 格式化运限日期
+                const horoscopeDate = new Date();
+                const formattedHoroscopeDate = `${horoscopeDate.getFullYear()}-${String(horoscopeDate.getMonth() + 1).padStart(2, '0')}-${String(horoscopeDate.getDate()).padStart(2, '0')}`;
+
+                // 构建运限参数
+                const horoscopeParams = {
+                  ...(params.decadal !== undefined && {
+                    decadal: params.decadal
+                  }),
+                  ...(params.year !== undefined && {
+                    year: params.year
+                  }),
+                  ...(params.month !== undefined && {
+                    month: params.month
+                  }),
+                  ...(params.day !== undefined && {
+                    day: params.day
+                  }),
+                  ...(params.hour !== undefined && {
+                    hour: params.hour
+                  })
+                };
+
                 console.log('运限计算参数:', {
-                  params,
-                  birthYear: parseInt(data.solarDate.split('-')[0]),
-                  birthMonth: parseInt(data.solarDate.split('-')[1]),
-                  birthDay: parseInt(data.solarDate.split('-')[2]),
+                  birthYear,
+                  birthMonth,
+                  birthDay,
                   birthHour,
-                  gender: data.gender === '男' ? 'male' : 'female'
+                  gender: data.gender === '男' ? 'male' : 'female',
+                  horoscopeParams
                 });
 
                 // 调用紫微斗数运限计算接口
                 const horoscope = await calculateZiWei(
-                  parseInt(data.solarDate.split('-')[0]),
-                  parseInt(data.solarDate.split('-')[1]),
-                  parseInt(data.solarDate.split('-')[2]),
+                  birthYear,
+                  birthMonth,
+                  birthDay,
                   birthHour,
                   data.gender === '男' ? 'male' : 'female',
-                  params
+                  horoscopeParams
                 );
 
                 if (onTimeChange) {

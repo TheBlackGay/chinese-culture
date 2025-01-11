@@ -11,7 +11,7 @@ interface HoroscopeSelectorProps {
   mingGongData?: Palace;  // 命宫数据
   palaces?: Palace[];     // 所有宫位数据
   onTimeChange: (params: {
-    decadal?: number;
+    decadal?: object;
     year?: number;
     month?: number;
     day?: number;
@@ -303,7 +303,12 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
           endAge: record.endAge
         });
         
-        newSelectedTime.decadal = record.decadalValue;
+        newSelectedTime.decadal = {
+          index: record.decadalValue,
+          startYear: startYear + record.startAge,
+          endYear: startYear + record.endAge
+        };
+
         delete newSelectedTime.year;
         delete newSelectedTime.month;
         delete newSelectedTime.day;

@@ -110,7 +110,11 @@ export const calculateZiWei = (
   birthHour: number,
   gender: 'male' | 'female',
   horoscopeParams?: {
-    decadal?: number;  // 大限
+    decadal?: {
+      index: number;  // 大限序号
+      startYear: number;  // 大限开始年份
+      endYear: number;   // 大限结束年份
+    };
     year?: number;    // 流年
     month?: number;   // 流月
     day?: number;     // 流日
@@ -135,50 +139,81 @@ export const calculateZiWei = (
 
     // 如果有运限参数，计算运限
     if (horoscopeParams) {
-      const { decadal, year, month, day, hour } = horoscopeParams;
-      
-      // 打印运限参数
-      console.log('运限计算参数:', {
-        decadal,
-        year,
-        month,
-        day,
-        hour,
-        birthYear,
-        birthMonth,
-        birthDay,
-        birthHour,
-        gender
-      });
-      
-      // 计算运限
-      const horoscopeResult = horoscope.horoscope({
-        decadal,  // 大限
-        year,     // 流年
-        month,    // 流月
-        day,      // 流日
-        hour      // 流时
-      });
+      try {
+        // 格式化运限日期
+        const horoscopeDate = new Date();
+        const formattedHoroscopeDate = `${horoscopeDate.getFullYear()}-${String(horoscopeDate.getMonth() + 1).padStart(2, '0')}-${String(horoscopeDate.getDate()).padStart(2, '0')}`;
 
-      // 打印运限计算结果
-      console.log('运限计算结果:', horoscopeResult);
+        // 获取大限运限
+        // const horoscopeInstance = astro.astrolabeBySolarDate(
+        //   `${birthYear}-${formattedMonth}-${formattedDay}`,
+        //   timeIndex,
+        //   gender === 'male' ? '男' : '女',
+        //   true
+        // );
 
-      // 如果是大限运限，更新宫位信息
-      if (decadal !== undefined) {
-        // 获取大限年龄范围
-        const startAge = horoscope.getStartAge();
-        const decadalStartAge = startAge + (decadal - 1) * 10;
-        const decadalEndAge = decadalStartAge + 9;
+        let decadalHoroscope = undefined;
+
+        if (horoscopeParams.hour !== undefined) {
+
+          // 说明有年、月、日、时
+          decadalHoroscope = horoscope.horoscope(
+              `${horoscopeParams.year}-${horoscopeParams.month}-${horoscopeParams.day}`,  // 使用大限开始年份的6月1日
+              horoscopeParams.hour  // 时辰
+          );
+
+        }else if (horoscopeParams.day !== undefined) {
+
+          // 说明没有时辰，为了统一结构，添加默认的时辰
+          decadalHoroscope = horoscope.horoscope(
+              `${horoscopeParams.year}-${horoscopeParams.month}-${horoscopeParams.day}`,  // 使用大限开始年份的6月1日
+              6  // 时辰
+          );
+
+        }else if (horoscopeParams.month !== undefined) {
+
+          // 说明没有时辰、日，为了统一结构，添加默认的时辰、日
+          decadalHoroscope = horoscope.horoscope(
+              `${horoscopeParams.year}-${horoscopeParams.month}-01`,  // 使用大限开始年份的6月1日
+              6  // 时辰
+          );
+
+        }else if (horoscopeParams.year !== undefined) {
+
+          // 说明没有时辰、日、月，为了统一结构，添加默认的时辰、日、月
+          decadalHoroscope = horoscope.horoscope(
+              `${horoscopeParams.year}-06-01`,  // 使用大限开始年份的6月1日
+              6  // 时辰
+          );
+
+        }else if (horoscopeParams.decadal !== undefined) {
+
+          // 说明没有时辰、日、月、年，为了统一结构，添加默认的时辰、日、月、年
+          decadalHoroscope = horoscope.horoscope(
+            `${horoscopeParams.decadal.startYear}-06-01`,  // 使用大限开始年份的6月1日
+            horoscopeParams.hour  // 大限宫位
+          );
+
+        }
 
         // 更新宫位信息，添加大限数据
-        horoscope.palaces = horoscope.palaces.map(palace => ({
-          ...palace,
-          decadal: {
-            index: decadal,
-            range: [decadalStartAge, decadalEndAge],
-            stars: horoscopeResult.decadal?.stars || []
-          }
-        }));
+        // horoscope.palaces = horoscope.palaces.map(palace => ({
+        //   ...palace,
+        //   decadal: {
+        //     heavenlyStem: decadalHoroscope.heavenlyStem,
+        //     earthlyBranch: decadalHoroscope.earthlyBranch,
+        //     range: [horoscopeParams.decadal.startYear - birthYear, horoscopeParams.decadal.endYear - birthYear]  // 使用传递的年龄范围
+        //   }
+        // }));
+
+        // 打印运限计算结果
+        console.log('运限计算结果:',{
+          "decadal":decadalHoroscope?.decadal
+        });
+
+      } catch (error) {
+        console.error('计算运限失败:', error);
+        throw error;
       }
     }
 
