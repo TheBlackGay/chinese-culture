@@ -207,8 +207,28 @@ export const calculateZiWei = (
         // }));
 
         // 打印运限计算结果
+        // console.log('运限计算结果:',{
+        //   "decadal":decadalHoroscope?.decadal
+        // });
+
+        //solarDate
+        // lunarDate
+        // decadal
+        // age
+        // yearly
+        // monthly
+        // daily
+        // hourly
         console.log('运限计算结果:',{
-          "decadal":decadalHoroscope?.decadal
+          // "decadal":decadalHoroscope;
+          "solarDate":JSON.stringify(decadalHoroscope?.solarDate),
+          "lunarDate":JSON.stringify(decadalHoroscope?.lunarDate),
+          "decadal":JSON.stringify(decadalHoroscope?.decadal),
+          "age":JSON.stringify(decadalHoroscope?.age),
+          "yearly":JSON.stringify(decadalHoroscope?.yearly),
+          "monthly":JSON.stringify(decadalHoroscope?.monthly),
+          "daily":JSON.stringify(decadalHoroscope?.daily),
+          "hourly":JSON.stringify(decadalHoroscope?.hourly),
         });
 
       } catch (error) {
