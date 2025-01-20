@@ -307,6 +307,14 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             {star.transformation}
           </small>
         )}
+        {star.horoscopeMutagen && (
+          <small
+            className="star-horoscope-mutagen"
+            title={`运限四化: ${star.horoscopeMutagen}`}
+          >
+            {star.horoscopeMutagen}
+          </small>
+        )}
       </span>
     );
   };
@@ -362,6 +370,15 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             {palace.changsheng12 && (
               <div className="changsheng12" title="长生十二神">
                 {palace.changsheng12}
+              </div>
+            )}
+            {palace.horoscope?.stars && palace.horoscope.stars.length > 0 && (
+              <div className="horoscope-stars">
+                {palace.horoscope.stars.map((star, index) => (
+                  <span key={`${star.name}-${index}`} className={`horoscope-star horoscope-star-${star.scope}`}>
+                    {star.name}
+                  </span>
+                ))}
               </div>
             )}
             {palace.boshi12 && (
@@ -488,38 +505,13 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
 
                 // 将地支时间转换为小时数
                 const birthHour = zhiToHour(data.time);
-                console.log('转换后的出生时间:', birthHour);
-
-                // 格式化运限日期
-                const horoscopeDate = new Date();
-                const formattedHoroscopeDate = `${horoscopeDate.getFullYear()}-${String(horoscopeDate.getMonth() + 1).padStart(2, '0')}-${String(horoscopeDate.getDate()).padStart(2, '0')}`;
-
-                // 构建运限参数
-                const horoscopeParams = {
-                  ...(params.decadal !== undefined && {
-                    decadal: params.decadal
-                  }),
-                  ...(params.year !== undefined && {
-                    year: params.year
-                  }),
-                  ...(params.month !== undefined && {
-                    month: params.month
-                  }),
-                  ...(params.day !== undefined && {
-                    day: params.day
-                  }),
-                  ...(params.hour !== undefined && {
-                    hour: params.hour
-                  })
-                };
-
                 console.log('运限计算参数:', {
                   birthYear,
                   birthMonth,
                   birthDay,
                   birthHour,
                   gender: data.gender === '男' ? 'male' : 'female',
-                  horoscopeParams
+                  horoscopeParams: params
                 });
 
                 // 调用紫微斗数运限计算接口
@@ -529,7 +521,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
                   birthDay,
                   birthHour,
                   data.gender === '男' ? 'male' : 'female',
-                  horoscopeParams
+                  params
                 );
 
                 if (onTimeChange) {

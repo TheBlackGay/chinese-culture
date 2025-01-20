@@ -1,4 +1,5 @@
-import { astro } from 'iztro';
+import type { Star, Palace, ZiWeiResult } from '@/types/iztro';
+import * as iztro from 'iztro';
 import type {
   HeavenlyStemName,
   EarthlyBranchName,
@@ -8,7 +9,6 @@ import type {
   GenderName,
   Mutagen
 } from 'iztro/lib/i18n';
-import type { Star, Palace, ZiWeiResult, PalaceType, Scope, HoroscopeItem, IFunctionalHoroscope } from '@/types/iztro';
 import { MAJOR_STARS, MINOR_STARS, OTHER_STARS } from '@/constants/ziwei-stars';
 
 // 将小时转换为时辰序号(0-11)
@@ -111,17 +111,21 @@ export const calculateZiWei = (
   gender: 'male' | 'female',
   horoscopeParams?: {
     decadal?: {
-      index: number;  // 大限序号
-      startYear: number;  // 大限开始年份
-      endYear: number;   // 大限结束年份
+      index: number;
+      startYear: number;
+      endYear: number;
     };
-    year?: number;    // 流年
-    month?: number;   // 流月
-    day?: number;     // 流日
-    hour?: number;    // 流时
+    year?: number;
+    month?: number;
+    day?: number;
+    hour?: number;
   }
 ): ZiWeiResult => {
   try {
+    // 初始化宫位数组
+    let tempPalaces: Palace[] = new Array(12);
+    let palaces: Palace[] = new Array(12);
+
     // 计算时辰
     const timeIndex = getTimeIndex(birthHour);
 
@@ -130,7 +134,7 @@ export const calculateZiWei = (
     const formattedDay = String(birthDay).padStart(2, '0');
 
     // 使用 iztro 的 bySolar 方法计算命盘
-    const horoscope = astro.bySolar(
+    const horoscope = iztro.astro.bySolar(
       `${birthYear}-${formattedMonth}-${formattedDay}`,
       timeIndex,
       gender === 'male' ? '男' : '女',
@@ -219,17 +223,93 @@ export const calculateZiWei = (
         // monthly
         // daily
         // hourly
-        console.log('运限计算结果:',{
-          // "decadal":decadalHoroscope;
-          "solarDate":JSON.stringify(decadalHoroscope?.solarDate),
-          "lunarDate":JSON.stringify(decadalHoroscope?.lunarDate),
-          "decadal":JSON.stringify(decadalHoroscope?.decadal),
-          "age":JSON.stringify(decadalHoroscope?.age),
-          "yearly":JSON.stringify(decadalHoroscope?.yearly),
-          "monthly":JSON.stringify(decadalHoroscope?.monthly),
-          "daily":JSON.stringify(decadalHoroscope?.daily),
-          "hourly":JSON.stringify(decadalHoroscope?.hourly),
+        console.log('运限计算结果:', {
+          solarDate: decadalHoroscope?.solarDate,
+          lunarDate: decadalHoroscope?.lunarDate,
+          decadal: decadalHoroscope?.decadal,
+          age: decadalHoroscope?.age,
+          yearly: decadalHoroscope?.yearly,
+          monthly: decadalHoroscope?.monthly,
+          daily: decadalHoroscope?.daily,
+          hourly: decadalHoroscope?.hourly
         });
+
+        if (decadalHoroscope) {
+          console.log('运限星耀数据:', {
+            decadalStars: decadalHoroscope.decadal?.stars,
+            yearlyStars: decadalHoroscope.yearly?.stars,
+            monthlyStars: decadalHoroscope.monthly?.stars,
+            dailyStars: decadalHoroscope.daily?.stars,
+            hourlyStars: decadalHoroscope.hourly?.stars
+          });
+
+          // 运限数据已经是对象，不需要 JSON.parse
+          const horoscopeData = {
+            decadal: decadalHoroscope.decadal || { stars: [] },
+            yearly: decadalHoroscope.yearly || { stars: [] },
+            monthly: decadalHoroscope.monthly || { stars: [] },
+            daily: decadalHoroscope.daily || { stars: [] },
+            hourly: decadalHoroscope.hourly || { stars: [] }
+          };
+
+          console.log('处理后的运限数据:', horoscopeData);
+
+          // 更新宫位信息，添加运限数据
+          tempPalaces = tempPalaces.map((palace, index) => {
+            if (!palace) {
+              console.warn(`Palace at index ${index} is undefined`);
+              return palace;
+            }
+
+            // 获取各个运限在该宫位的星耀
+            const horoscopeStars = {
+              decadal: Array.isArray(horoscopeData.decadal?.stars?.[index]) ? horoscopeData.decadal.stars[index] : [],
+              yearly: Array.isArray(horoscopeData.yearly?.stars?.[index]) ? horoscopeData.yearly.stars[index] : [],
+              monthly: Array.isArray(horoscopeData.monthly?.stars?.[index]) ? horoscopeData.monthly.stars[index] : [],
+              daily: Array.isArray(horoscopeData.daily?.stars?.[index]) ? horoscopeData.daily.stars[index] : [],
+              hourly: Array.isArray(horoscopeData.hourly?.stars?.[index]) ? horoscopeData.hourly.stars[index] : []
+            };
+
+            console.log(`宫位 ${index} 的运限星耀:`, horoscopeStars);
+
+            // 合并所有运限星耀，并确保每个星耀都有正确的scope
+            const allHoroscopeStars = [
+              ...(Array.isArray(horoscopeStars.decadal) ? horoscopeStars.decadal.map(star => ({ ...star, scope: 'decadal' })) : []),
+              ...(Array.isArray(horoscopeStars.yearly) ? horoscopeStars.yearly.map(star => ({ ...star, scope: 'yearly' })) : []),
+              ...(Array.isArray(horoscopeStars.monthly) ? horoscopeStars.monthly.map(star => ({ ...star, scope: 'monthly' })) : []),
+              ...(Array.isArray(horoscopeStars.daily) ? horoscopeStars.daily.map(star => ({ ...star, scope: 'daily' })) : []),
+              ...(Array.isArray(horoscopeStars.hourly) ? horoscopeStars.hourly.map(star => ({ ...star, scope: 'hourly' })) : [])
+            ];
+
+            // 处理四化星
+            const stars = (palace.stars || []).map(star => {
+              if (!star) return star;
+
+              const horoscopeMutagen = [
+                horoscopeData.decadal,
+                horoscopeData.yearly,
+                horoscopeData.monthly,
+                horoscopeData.daily,
+                horoscopeData.hourly
+              ].find(h => h?.mutagen?.includes?.(star.name))?.mutagen?.find(m => m === star.name);
+
+              return horoscopeMutagen ? {
+                ...star,
+                horoscopeMutagen
+              } : star;
+            });
+
+            return {
+              ...palace,
+              stars: stars || [],
+              horoscope: {
+                stars: allHoroscopeStars
+              }
+            };
+          });
+
+          console.log('更新后的宫位数据:', tempPalaces);
+        }
 
       } catch (error) {
         console.error('计算运限失败:', error);
@@ -278,8 +358,8 @@ export const calculateZiWei = (
     }
 
     // 获取宫位数据
-    let tempPalaces: Palace[] = new Array(12);
-    let palaces: Palace[] = new Array(12);
+    // let tempPalaces: Palace[] = new Array(12);
+    // let palaces: Palace[] = new Array(12);
 
     // 1. 先获取所有宫位数据
     for (let i = 0; i < 12; i++) {

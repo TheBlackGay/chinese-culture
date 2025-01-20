@@ -459,6 +459,59 @@
     font-size: 11px;
     color: #ffffff;
   }
+
+  .horoscope-stars {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+    position: absolute;
+    right: 25px;
+    bottom: 100px;
+    z-index: 3;
+  }
+
+  .horoscope-star {
+    font-size: 12px;
+    writing-mode: vertical-lr;
+    margin: 2px 0;
+    text-align: center;
+    padding: 2px;
+    
+    &.horoscope-star-decadal { 
+      color: #ffd700; 
+      font-weight: bold;
+    }
+    &.horoscope-star-yearly { 
+      color: #87ceeb; 
+      font-weight: bold;
+    }
+    &.horoscope-star-monthly { 
+      color: #98fb98; 
+      font-weight: bold;
+    }
+    &.horoscope-star-daily { 
+      color: #dda0dd; 
+      font-weight: bold;
+    }
+    &.horoscope-star-hourly { 
+      color: #f0e68c; 
+      font-weight: bold;
+    }
+  }
+
+  .star-horoscope-mutagen {
+    display: inline-block;
+    margin-left: 2px;
+    padding: 1px 4px;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 2px;
+    font-size: 10px;
+    position: relative;
+    top: -1px;
+  }
 }
 
 .body-palace-mark {

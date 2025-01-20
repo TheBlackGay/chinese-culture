@@ -92,14 +92,12 @@ export interface IFunctionalHoroscope {
 // 星耀类型
 export interface Star {
   name: string;
-  type: '主星' | '辅星' | '杂耀';
-  category: '吉星' | '凶星' | '中性';
-  wuxing: '金' | '木' | '水' | '火' | '土';
-  description: string;
-  brightness?: '庙' | '旺' | '得' | '利' | '平' | '不' | '陷';
-  scope: Scope;
-  transformation?: Mutagen
-  transformationType?: string;
+  type: string;
+  brightness?: string;
+  description?: string;
+  transformation?: string;
+  horoscopeMutagen?: string;  // 运限四化
+  scope?: 'decadal' | 'yearly' | 'monthly' | 'daily' | 'hourly';  // 运限范围
 }
 
 // 宫位类型
