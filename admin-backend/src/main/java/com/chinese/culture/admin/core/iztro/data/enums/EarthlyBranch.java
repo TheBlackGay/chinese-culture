@@ -45,14 +45,19 @@ public enum EarthlyBranch {
     }
 
     public static EarthlyBranch fromDescription(String description) {
-
         for (EarthlyBranch branch : values()) {
             if (branch.getDescription().equals(description)) {
                 return branch;
             }
         }
-
         throw new IllegalArgumentException("Invalid earthly branch description: " + description);
+    }
+
+    public static EarthlyBranch fromIndex(int index) {
+        if (index < 0 || index >= values().length) {
+            throw new IllegalArgumentException("Invalid earthly branch index: " + index);
+        }
+        return values()[index];
     }
 
     /**

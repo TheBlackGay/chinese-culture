@@ -103,13 +103,6 @@
 <!--            <version>3.3.3</version>-->
 <!--        </dependency>-->
 
-        <!-- Tyme 日历工具库 -->
-        <dependency>
-            <groupId>cn.6tail</groupId>
-            <artifactId>tyme4j</artifactId>
-            <version>1.1.8</version>
-        </dependency>
-
     </dependencies>
 
     <build>

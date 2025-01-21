@@ -174,7 +174,7 @@ public class LimitAnalyzer {
         analysis.put("minorStars", minorStars);
 
         // 4. 分析四化
-        List<Mutagen> mutagens = palace.getMutagens();
+        List<String> mutagens = palace.getMutagens();
         analysis.put("mutagens", mutagens);
 
         return analysis;

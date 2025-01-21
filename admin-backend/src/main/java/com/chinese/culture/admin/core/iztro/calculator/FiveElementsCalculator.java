@@ -12,14 +12,13 @@ public class FiveElementsCalculator {
     /**
      * 计算五行局
      *
-     * @param yearHeavenlyStem 年干
-     * @param yearEarthlyBranch 年支
+     * @param yearGanIndex 年干索引
+     * @param yearZhiIndex 年支索引
      * @return 五行局数字（2-6）
      */
-    public static int calculate(String yearHeavenlyStem, String yearEarthlyBranch) {
-
-        HeavenlyStem stem = HeavenlyStem.fromDescription(yearHeavenlyStem);
-        EarthlyBranch branch = EarthlyBranch.fromDescription(yearEarthlyBranch);
+    public static int calculate(int yearGanIndex, int yearZhiIndex) {
+        HeavenlyStem stem = HeavenlyStem.fromIndex(yearGanIndex);
+        EarthlyBranch branch = EarthlyBranch.fromIndex(yearZhiIndex);
 
         // 获取年干五行
         FiveElements stemElement = stem.getFiveElements();

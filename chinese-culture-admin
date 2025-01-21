@@ -1,0 +1,15 @@
+2025-01-21 21:24:02.740 [main] INFO  com.chinese.culture.admin.AdminApplication - Starting AdminApplication using Java 1.8.0_345 on zhongjiafeng.local with PID 64535 (/Users/zhongjiafeng/Desktop/5000_Project/github/chinese-culture/admin-backend/target/classes started by zhongjiafeng in /Users/zhongjiafeng/Desktop/5000_Project/github/chinese-culture)
+2025-01-21 21:24:02.742 [main] DEBUG com.chinese.culture.admin.AdminApplication - Running with Spring Boot v2.7.0, Spring v5.3.20
+2025-01-21 21:24:02.742 [main] INFO  com.chinese.culture.admin.AdminApplication - The following 1 profile is active: "dev"
+2025-01-21 21:24:03.327 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port(s): 8080 (http)
+2025-01-21 21:24:03.332 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-01-21 21:24:03.333 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.63]
+2025-01-21 21:24:03.378 [main] INFO  o.a.c.c.ContainerBase.[Tomcat].[localhost].[/api] - Initializing Spring embedded WebApplicationContext
+2025-01-21 21:24:03.378 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 614 ms
+2025-01-21 21:24:03.548 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 13 mappings in 'requestMappingHandlerMapping'
+2025-01-21 21:24:03.672 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-01-21 21:24:03.686 [main] DEBUG o.s.web.servlet.handler.SimpleUrlHandlerMapping - Patterns [/swagger-ui/] in 'viewControllerHandlerMapping'
+2025-01-21 21:24:03.695 [main] DEBUG o.s.web.servlet.handler.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui/**] in 'resourceHandlerMapping'
+2025-01-21 21:24:03.699 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-01-21 21:24:03.737 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port(s): 8080 (http) with context path '/api'
+2025-01-21 21:24:03.933 [main] INFO  com.chinese.culture.admin.AdminApplication - Started AdminApplication in 1.408 seconds (JVM running for 1.744)

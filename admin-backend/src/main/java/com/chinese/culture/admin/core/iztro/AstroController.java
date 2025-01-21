@@ -11,9 +11,12 @@ import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
 import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
 import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
 import com.chinese.culture.admin.core.iztro.interpreter.StarCombinationInterpreter;
+import com.chinese.culture.admin.core.tyme.sixtycycle.EarthBranch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,11 +30,13 @@ import java.util.Map;
 public class AstroController {
 
     private final StarCombinationInterpreter starCombinationInterpreter;
+    private final DateCalculator dateCalculator;
 
     private List<Star> majorStars = new ArrayList<>();
 
-    public AstroController(StarCombinationInterpreter starCombinationInterpreter) {
+    public AstroController(StarCombinationInterpreter starCombinationInterpreter, DateCalculator dateCalculator) {
         this.starCombinationInterpreter = starCombinationInterpreter;
+        this.dateCalculator = dateCalculator;
     }
 
     /**
@@ -43,19 +48,25 @@ public class AstroController {
      * @return 十二宫位列表
      */
     public List<Palace> generateAstrolabe(String solarDate, int timeIndex, boolean gender) {
+        // 解析阳历日期
+        String[] parts = solarDate.split("-");
+        RawDate.SolarDate solar = new RawDate.SolarDate();
+        solar.setYear(Integer.parseInt(parts[0]));
+        solar.setMonth(Integer.parseInt(parts[1]));
+        solar.setDay(Integer.parseInt(parts[2]));
 
         // 1. 获取农历日期和干支信息
-        RawDate.LunarDate lunarDate = DateCalculator.solar2lunar(solarDate);
-        RawDate.ChineseDate chineseDate = DateCalculator.getChineseDate(solarDate, timeIndex);
+        RawDate.LunarDate lunarDate = dateCalculator.solar2lunar(solar);
+        RawDate.ChineseDate chineseDate = dateCalculator.getChineseDate(solar, timeIndex);
 
         // 2. 计算五行局
         int fiveElementsClass = FiveElementsCalculator.calculate(
-            chineseDate.getYearHeavenlyStem(),
-            chineseDate.getYearEarthlyBranch()
+            chineseDate.getYearGan(),
+            chineseDate.getYearZhi()
         );
 
         // 3. 计算命宫和身宫
-        EarthlyBranch monthBranch = EarthlyBranch.fromDescription(chineseDate.getMonthEarthlyBranch());
+        EarthlyBranch monthBranch = EarthlyBranch.fromIndex(chineseDate.getMonthZhi());
         EarthlyBranch mingGongLocation = PalaceCalculator.calculateMingGongLocation(monthBranch, timeIndex);
         EarthlyBranch shenGongLocation = PalaceCalculator.calculateShenGongLocation(monthBranch, timeIndex);
 
@@ -82,7 +93,9 @@ public class AstroController {
         calculateMiscStars(palaces, chineseDate);
 
         // 9. 计算大限
-        int age = DateCalculator.calculateAge(solarDate);
+        LocalDateTime birthDate = LocalDateTime.parse(solarDate + "T00:00:00");
+        LocalDateTime now = LocalDateTime.now();
+        int age = dateCalculator.calculateAge(birthDate, now);
         calculateMajorLimit(palaces, mingGongLocation, gender, fiveElementsClass, age);
 
         // 10. 计算小限
@@ -251,8 +264,9 @@ public class AstroController {
         EarthlyBranch lingXingLocation = MiscStarCalculator.calculateLingXingLocation(chineseDate.getDayEarthlyBranch());
 
         // 计算地空地劫
-        EarthlyBranch diKongLocation = MiscStarCalculator.calculateDiKongLocation(chineseDate.getHourEarthlyBranch());
-        EarthlyBranch diJieLocation = MiscStarCalculator.calculateDiJieLocation(chineseDate.getHourEarthlyBranch());
+        EarthBranch earthBranch = EarthBranch.fromIndex(chineseDate.getTimeZhi());
+        EarthlyBranch diKongLocation = MiscStarCalculator.calculateDiKongLocation(earthBranch.getName());
+        EarthlyBranch diJieLocation = MiscStarCalculator.calculateDiJieLocation(earthBranch.getName());
 
         // 计算天空
         EarthlyBranch tianKongLocation = MiscStarCalculator.calculateTianKongLocation(chineseDate.getYearHeavenlyStem());

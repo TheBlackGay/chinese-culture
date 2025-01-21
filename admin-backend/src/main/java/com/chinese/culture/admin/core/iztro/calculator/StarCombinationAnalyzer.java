@@ -786,4 +786,78 @@ public class StarCombinationAnalyzer {
             analysis.append("健康方面：宜注意保养，规律作息，保持健康。\n");
         }
     }
+
+    /**
+     * 检查星耀列表中是否包含指定的星耀
+     */
+    private static boolean hasStars(List<Star> stars, String[] starNames) {
+        if (stars == null || starNames == null) {
+            return false;
+        }
+        for (String starName : starNames) {
+            boolean found = false;
+            for (Star star : stars) {
+                if (star.getName().equals(starName)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 分析两个星耀之间的关系
+     */
+    private static String analyzeTwoStars(Star star1, Star star2) {
+        if (star1 == null || star2 == null) {
+            return null;
+        }
+        
+        // 检查是否为预定义的组合
+        String key = star1.getName() + "," + star2.getName();
+        String reverseKey = star2.getName() + "," + star1.getName();
+        
+        String combination = LUCKY_COMBINATIONS.get(key);
+        if (combination == null) {
+            combination = LUCKY_COMBINATIONS.get(reverseKey);
+        }
+        if (combination == null) {
+            combination = UNLUCKY_COMBINATIONS.get(key);
+        }
+        if (combination == null) {
+            combination = UNLUCKY_COMBINATIONS.get(reverseKey);
+        }
+        if (combination == null) {
+            combination = HEXAGON_COMBINATIONS.get(key);
+        }
+        if (combination == null) {
+            combination = HEXAGON_COMBINATIONS.get(reverseKey);
+        }
+        
+        return combination;
+    }
+
+    /**
+     * 查找三合宫位
+     */
+    private static List<Palace> findTriplePalaces(Palace palace, List<Palace> allPalaces) {
+        List<Palace> triplePalaces = new ArrayList<>();
+        triplePalaces.add(palace);
+        
+        // 三合宫位相隔4个宫位
+        int currentIndex = allPalaces.indexOf(palace);
+        if (currentIndex != -1) {
+            int secondIndex = (currentIndex + 4) % 12;
+            int thirdIndex = (secondIndex + 4) % 12;
+            
+            triplePalaces.add(allPalaces.get(secondIndex));
+            triplePalaces.add(allPalaces.get(thirdIndex));
+        }
+        
+        return triplePalaces;
+    }
 } 

@@ -1,5 +1,7 @@
 package com.chinese.culture.admin.core.iztro.data;
 
+import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
+import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
 import lombok.Data;
 
 /**
@@ -75,92 +77,140 @@ public class RawDate {
     
     @Data
     public static class ChineseDate {
-        private String yearGan;
-        private String yearZhi;
-        private String monthGan;
-        private String monthZhi;
-        private String dayGan;
-        private String dayZhi;
-        private String hourEarthlyBranch;
+        private int yearGan;
+        private int yearZhi;
+        private int monthGan;
+        private int monthZhi;
+        private int dayGan;
+        private int dayZhi;
+        private int timeGan;
+        private int timeZhi;
 
-        public String getYearGan() {
+        public int getYearGan() {
             return yearGan;
         }
 
-        public void setYearGan(String yearGan) {
+        public void setYearGan(int yearGan) {
             this.yearGan = yearGan;
         }
 
-        public String getYearZhi() {
+        public int getYearZhi() {
             return yearZhi;
         }
 
-        public void setYearZhi(String yearZhi) {
+        public void setYearZhi(int yearZhi) {
             this.yearZhi = yearZhi;
         }
 
-        public String getMonthGan() {
+        public int getMonthGan() {
             return monthGan;
         }
 
-        public void setMonthGan(String monthGan) {
+        public void setMonthGan(int monthGan) {
             this.monthGan = monthGan;
         }
 
-        public String getMonthZhi() {
+        public int getMonthZhi() {
             return monthZhi;
         }
 
-        public void setMonthZhi(String monthZhi) {
+        public void setMonthZhi(int monthZhi) {
             this.monthZhi = monthZhi;
         }
 
-        public String getDayGan() {
+        public int getDayGan() {
             return dayGan;
         }
 
-        public void setDayGan(String dayGan) {
+        public void setDayGan(int dayGan) {
             this.dayGan = dayGan;
         }
 
-        public String getDayZhi() {
+        public int getDayZhi() {
             return dayZhi;
         }
 
-        public void setDayZhi(String dayZhi) {
+        public void setDayZhi(int dayZhi) {
             this.dayZhi = dayZhi;
         }
 
-        public String getHourEarthlyBranch() {
-            return hourEarthlyBranch;
+        public int getTimeGan() {
+            return timeGan;
         }
 
-        public void setHourEarthlyBranch(String hourEarthlyBranch) {
-            this.hourEarthlyBranch = hourEarthlyBranch;
+        public void setTimeGan(int timeGan) {
+            this.timeGan = timeGan;
+        }
+
+        public int getTimeZhi() {
+            return timeZhi;
+        }
+
+        public void setTimeZhi(int timeZhi) {
+            this.timeZhi = timeZhi;
         }
 
         public String getYearHeavenlyStem() {
-            return yearGan;
+            return HeavenlyStem.fromIndex(yearGan).getDescription();
         }
-        
+
         public String getYearEarthlyBranch() {
-            return yearZhi;
+            return EarthlyBranch.fromIndex(yearZhi).getDescription();
         }
-        
+
         public String getMonthHeavenlyStem() {
-            return monthGan;
+            return HeavenlyStem.fromIndex(monthGan).getDescription();
         }
-        
+
         public String getMonthEarthlyBranch() {
-            return monthZhi;
+            return EarthlyBranch.fromIndex(monthZhi).getDescription();
         }
-        
+
         public String getDayHeavenlyStem() {
-            return dayGan;
+            return HeavenlyStem.fromIndex(dayGan).getDescription();
         }
-        
+
         public String getDayEarthlyBranch() {
-            return dayZhi;
+            return EarthlyBranch.fromIndex(dayZhi).getDescription();
+        }
+
+        public String getTimeHeavenlyStem() {
+            return HeavenlyStem.fromIndex(timeGan).getDescription();
+        }
+
+        public String getTimeEarthlyBranch() {
+            return EarthlyBranch.fromIndex(timeZhi).getDescription();
+        }
+    }
+
+    @Data
+    public static class SolarDate {
+        private int year;
+        private int month;
+        private int day;
+
+        public int getYear() {
+            return year;
+        }
+
+        public void setYear(int year) {
+            this.year = year;
+        }
+
+        public int getMonth() {
+            return month;
+        }
+
+        public void setMonth(int month) {
+            this.month = month;
+        }
+
+        public int getDay() {
+            return day;
+        }
+
+        public void setDay(int day) {
+            this.day = day;
         }
     }
 } 

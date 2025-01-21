@@ -46,6 +46,13 @@ public enum HeavenlyStem {
         throw new IllegalArgumentException("Invalid heavenly stem description: " + description);
     }
 
+    public static HeavenlyStem fromIndex(int index) {
+        if (index < 0 || index >= values().length) {
+            throw new IllegalArgumentException("Invalid heavenly stem index: " + index);
+        }
+        return values()[index];
+    }
+
     /**
      * 获取下一个天干
      */
