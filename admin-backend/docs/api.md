@@ -24,7 +24,10 @@ Object
 
 | 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
 |--------|------|------|------|-----------|------|------|
-| birthDateTime | 出生日期时间 | 是 | string | | yyyyMMddHHmmss | 19900101120000 |
+| birthYear | 出生年 | 是 | int | | | 1990 |
+| birthMonth | 出生月 | 是 | int | 1-12 | | 8 |
+| birthDay | 出生日 | 是 | int | 1-31 | | 15 |
+| birthHour | 出生时辰 | 是 | int | 1-12 | | 3 |
 | gender | 性别 | 是 | int | 1-男,2-女 | | 1 |
 | isLunar | 是否农历 | 否 | boolean | | | false |
 
@@ -38,36 +41,34 @@ Object
 | 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
 |--------|------|------|------|-----------|------|------|
 | code | 状态码 | 是 | int | | | 200 |
-| message | 状态信息 | 是 | string | | | success |
+| message | 状态信息 | 是 | string | | | 操作成功 |
 | data | 响应数据 | 是 | object | | | |
-| data>>solarDate | 阳历日期 | 是 | string | | | 1990-01-01 |
-| data>>lunarDate | 农历日期 | 是 | string | | | 己巳年十二月初五 |
-| data>>gender | 性别 | 是 | int | 1-男,2-女 | | 1 |
-| data>>age | 年龄 | 是 | int | | | 33 |
+| data>>solarDate | 阳历日期 | 是 | string | | | 1990年8月15日 |
+| data>>lunarDate | 农历日期 | 是 | string | | | 1990年6月25日 |
+| data>>birthHour | 出生时辰 | 是 | int | 1-12 | | 3 |
+| data>>gender | 性别 | 是 | string | 男,女 | | 男 |
+| data>>age | 年龄 | 是 | int | | | 0 |
 | data>>palaces | 十二宫位 | 是 | array | | | |
 | data>>palaces>>name | 宫位名 | 是 | string | | | 命宫 |
-| data>>palaces>>branch | 地支 | 是 | string | | | 寅 |
+| data>>palaces>>index | 宫位序号 | 是 | int | 0-11 | | 0 |
+| data>>palaces>>branch | 地支 | 是 | string | | | 午 |
 | data>>palaces>>stars | 星耀列表 | 是 | array | | | |
-| data>>palaces>>stars>>name | 星耀名 | 是 | string | | | 紫微 |
-| data>>palaces>>stars>>type | 星耀类型 | 是 | string | | | 主星 |
-| data>>palaces>>stars>>brightness | 亮度 | 是 | int | 1-4 | | 1 |
-| data>>palaces>>mutagens | 四化 | 是 | array | | | ["化科"] |
-| data>>horoscopeData | 运限数据 | 是 | object | | | |
-| data>>horoscopeData>>decadal | 大限 | 是 | object | | | |
-| data>>horoscopeData>>decadal>>index | 序号 | 是 | int | | | 1 |
-| data>>horoscopeData>>decadal>>name | 名称 | 是 | string | | | 戊寅 |
-| data>>horoscopeData>>decadal>>stars | 星耀 | 是 | array | | | |
-| data>>horoscopeData>>yearly | 流年 | 是 | object | | | |
-| data>>horoscopeData>>monthly | 流月 | 是 | object | | | |
-| data>>horoscopeData>>daily | 流日 | 是 | object | | | |
-| data>>horoscopeData>>hourly | 流时 | 是 | object | | | |
+| data>>palaces>>stars>>name | 星耀名 | 是 | string | | | 太阳 |
+| data>>palaces>>stars>>position | 位置 | 是 | int | 0-11 | | 0 |
+| data>>palaces>>stars>>branch | 地支 | 是 | string | | | 午 |
+| data>>palaces>>mutagens | 四化 | 是 | array | | | ["化禄","化科"] |
+| data>>stars | 星耀列表 | 是 | array | | | |
+| data>>yearStem | 年干 | 是 | string | | | 庚 |
 
 **测试案例**
 ```bash
 curl -X POST 'http://localhost:8080/api/v1/astrolabe/get' \
 -H 'Content-Type: application/json' \
 -d '{
-    "birthDateTime": "19900101120000",
+    "birthYear": 1990,
+    "birthMonth": 8,
+    "birthDay": 15,
+    "birthHour": 3,
     "gender": 1,
     "isLunar": false
 }'
@@ -97,7 +98,13 @@ Object
 
 | 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
 |--------|------|------|------|-----------|------|------|
-| astrolabe | 命盘数据 | 是 | object | | | |
+| solarDate | 阳历日期 | 是 | string | | | 1990年8月15日 |
+| lunarDate | 农历日期 | 是 | string | | | 1990年6月25日 |
+| birthHour | 出生时辰 | 是 | int | 1-12 | | 3 |
+| gender | 性别 | 是 | string | 男,女 | | 男 |
+| palaces | 十二宫位 | 是 | array | | | |
+| stars | 星耀列表 | 是 | array | | | |
+| yearStem | 年干 | 是 | string | | | 庚 |
 
 **响应内容**
 
@@ -109,45 +116,57 @@ Object
 | 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
 |--------|------|------|------|-----------|------|------|
 | code | 状态码 | 是 | int | | | 200 |
-| message | 状态信息 | 是 | string | | | success |
+| message | 状态信息 | 是 | string | | | 操作成功 |
 | data | 响应数据 | 是 | object | | | |
 | data>>palaceRelations | 宫位关系 | 是 | object | | | |
-| data>>palaceRelations>>punishments | 冲克关系 | 是 | array | | | ["命宫冲克财帛宫"] |
-| data>>palaceRelations>>harmonies | 合化关系 | 是 | array | | | ["命宫与官禄宫合化"] |
-| data>>palaceRelations>>trineFormations | 三合关系 | 是 | array | | | ["命宫、财帛宫、官禄宫三合"] |
+| data>>palaceRelations>>punishments | 相刑关系 | 是 | object | | | |
+| data>>palaceRelations>>harmonies | 相合关系 | 是 | object | | | |
+| data>>palaceRelations>>trineFormations | 三合关系 | 是 | object | | | |
 | data>>starCombinations | 星耀组合 | 是 | object | | | |
-| data>>starCombinations>>trineAndOpposition | 三方四正 | 是 | array | | | ["紫微天府朱雀组合"] |
-| data>>starCombinations>>convergence | 星耀会合 | 是 | array | | | ["紫微天府同宫"] |
+| data>>starCombinations>>trineAndOpposition | 三方四正 | 是 | object | | | |
+| data>>starCombinations>>convergence | 会合 | 是 | object | | | |
 | data>>mutagenRelations | 四化关系 | 是 | object | | | |
-| data>>mutagenRelations>>mutagenRelations | 四化关系列表 | 是 | array | | | ["紫微化科与天府化权相会"] |
-| data>>mutagenRelations>>starConflicts | 星耀冲突 | 是 | array | | | ["紫微与天府相冲"] |
-| data>>majorPatterns | 主要格局 | 是 | array | | | ["紫微命格", "财帛格"] |
+| data>>mutagenRelations>>mutagenRelations | 四化关系 | 是 | object | | | |
+| data>>mutagenRelations>>starConflicts | 星耀冲突 | 是 | object | | | |
+| data>>majorPatterns | 主要格局 | 是 | array | | | ["经商有道","学术优秀"] |
 
 **测试案例**
 ```bash
 curl -X POST 'http://localhost:8080/api/v1/astrolabe/interpret' \
 -H 'Content-Type: application/json' \
 -d '{
-    "astrolabe": {
-        "solarDate": "19900101",
-        "lunarDate": "己巳年十二月初五",
-        "gender": 1,
-        "age": 33,
-        "palaces": [
-            {
-                "name": "命宫",
-                "branch": "寅",
-                "stars": [
-                    {
-                        "name": "紫微",
-                        "type": "主星",
-                        "brightness": 1
-                    }
-                ],
-                "mutagens": ["化科"]
-            }
-        ]
-    }
+    "solarDate": "1990年8月15日",
+    "lunarDate": "1990年6月25日",
+    "birthHour": 3,
+    "gender": "男",
+    "age": 0,
+    "palaces": [
+        {
+            "name": "命宫",
+            "index": 0,
+            "branch": "午",
+            "stars": [
+                {
+                    "name": "太阳",
+                    "position": 0,
+                    "branch": "午"
+                }
+            ],
+            "mutagens": [],
+            "body": false,
+            "ming": true
+        }
+        // ... 其他宫位数据 ...
+    ],
+    "stars": [
+        {
+            "name": "太阳",
+            "position": 0,
+            "branch": "午"
+        }
+        // ... 其他星耀数据 ...
+    ],
+    "yearStem": "庚"
 }'
 ```
 
