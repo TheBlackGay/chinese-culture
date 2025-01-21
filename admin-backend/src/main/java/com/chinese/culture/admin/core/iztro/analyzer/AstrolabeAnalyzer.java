@@ -43,9 +43,8 @@ public class AstrolabeAnalyzer {
      */
     public static String analyzeMingZhuPattern(Astrolabe astrolabe) {
         try {
-            if (astrolabe == null || astrolabe.getPalaces() == null || astrolabe.getStars() == null) {
-                throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘数据不完整");
-            }
+            // 验证命盘数据完整性
+            validateAstrolabeData(astrolabe);
 
             List<String> patterns = new ArrayList<>();
 
@@ -80,6 +79,33 @@ public class AstrolabeAnalyzer {
     }
 
     /**
+     * 验证命盘数据完整性
+     */
+    private static void validateAstrolabeData(Astrolabe astrolabe) {
+        if (astrolabe == null) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘数据不能为空");
+        }
+        if (astrolabe.getPalaces() == null || astrolabe.getPalaces().isEmpty()) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘宫位数据不能为空");
+        }
+        if (astrolabe.getStars() == null || astrolabe.getStars().isEmpty()) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘星耀数据不能为空");
+        }
+        if (astrolabe.getPalaces().size() != 12) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘宫位数量必须为12");
+        }
+        
+        // 验证命宫数据
+        Palace mingGong = findMingGong(astrolabe.getPalaces());
+        if (mingGong == null) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘数据不完整：未找到命宫");
+        }
+        if (mingGong.getStars() == null || mingGong.getStars().isEmpty()) {
+            throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘数据不完整：命宫星耀为空");
+        }
+    }
+
+    /**
      * 查找命宫
      */
     private static Palace findMingGong(List<Palace> palaces) {
@@ -100,25 +126,32 @@ public class AstrolabeAnalyzer {
             return patterns;
         }
 
+        // 获取所有星耀名称
+        List<String> starNames = stars.stream()
+                .map(Star::getName)
+                .collect(java.util.stream.Collectors.toList());
+
         // 检查特殊星耀组合
         for (Map.Entry<String, String> entry : PATTERN_TYPES.entrySet()) {
-            String[] starNames = entry.getKey().split("同宫");
-            if (starNames.length > 1) {
-                boolean hasAllStars = true;
-                for (String starName : starNames) {
-                    boolean found = false;
-                    for (Star star : stars) {
-                        if (star.getName().equals(starName)) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        hasAllStars = false;
-                        break;
-                    }
+            String key = entry.getKey();
+            if (key.contains("同宫")) {
+                String[] starPair = key.split("同宫")[0].split("(?<=..)(?=..)");
+                if (starPair.length == 2 && 
+                    starNames.contains(starPair[0]) && 
+                    starNames.contains(starPair[1])) {
+                    patterns.add(entry.getValue());
                 }
-                if (hasAllStars) {
+            } else if (key.equals("命宫有禄存科权")) {
+                // 检查四化组合
+                List<String> mutagens = mingGong.getMutagens();
+                if (mutagens != null && mutagens.contains("化禄") && 
+                    mutagens.contains("化权") && mutagens.contains("化科")) {
+                    patterns.add(entry.getValue());
+                }
+            } else if (key.equals("命宫三方四正会众吉星")) {
+                // 检查三方四正是否有吉星会集
+                int goodStarCount = countGoodStars(stars);
+                if (goodStarCount >= 3) {
                     patterns.add(entry.getValue());
                 }
             }

@@ -19,6 +19,7 @@ class AstrolabeAnalyzerTest {
         // 创建测试数据
         Astrolabe astrolabe = new Astrolabe();
         List<Palace> palaces = new ArrayList<>();
+        List<Star> stars = new ArrayList<>();
         
         // 创建命宫
         Palace mingGong = new Palace();
@@ -27,20 +28,33 @@ class AstrolabeAnalyzerTest {
         mingGong.setMing(true);
         
         // 添加星耀
-        List<Star> stars = new ArrayList<>();
         Star ziwei = new Star();
         ziwei.setName("紫微");
         Star tianfu = new Star();
         tianfu.setName("天府");
         stars.add(ziwei);
         stars.add(tianfu);
-        mingGong.setStars(stars);
+        mingGong.setStars(Arrays.asList(ziwei, tianfu));
         
         // 添加四化
         mingGong.setMutagens(Arrays.asList("化禄", "化权", "化科"));
         
+        // 添加命宫到宫位列表
         palaces.add(mingGong);
+        
+        // 补充其他宫位到12个
+        for (int i = 1; i < 12; i++) {
+            Palace palace = new Palace();
+            palace.setName("宫位" + i);
+            palace.setIndex(i);
+            palace.setStars(new ArrayList<>());
+            palace.setMutagens(new ArrayList<>());
+            palaces.add(palace);
+        }
+        
         astrolabe.setPalaces(palaces);
+        astrolabe.setStars(stars);  // 设置命盘的星耀列表
+        astrolabe.setYearStem("甲"); // 设置年干
         
         // 测试分析结果
         String pattern = AstrolabeAnalyzer.analyzeMingZhuPattern(astrolabe);

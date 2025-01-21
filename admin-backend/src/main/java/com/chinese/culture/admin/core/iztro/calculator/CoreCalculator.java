@@ -36,6 +36,10 @@ public class CoreCalculator {
             String lunarDate = String.format("%d年%d月%d日", lunarYear, lunarMonth, lunarDay);
             astrolabe.setLunarDate(lunarDate);
             
+            // 计算并设置年干
+            String yearStem = CalendarConverter.getYearStem(lunarYear);
+            astrolabe.setYearStem(yearStem);
+            
             // 设置阳历日期
             int[] solarDate = CalendarConverter.lunarToSolar(lunarYear, lunarMonth, lunarDay);
             String solarDateStr = String.format("%d年%d月%d日", solarDate[0], solarDate[1], solarDate[2]);
@@ -171,13 +175,27 @@ public class CoreCalculator {
      * 计算四化
      */
     private static void calculateTransformations(Astrolabe astrolabe) {
-        try {
-            String yearStem = CalendarConverter.getYearStem(astrolabe.getLunarYear());
-            Map<String, List<String>> transformations = MutagenCalculator.calculateTransformations(yearStem);
-            astrolabe.setTransformations(transformations);
-        } catch (Exception e) {
-            log.error("四化计算失败：{}", e.getMessage(), e);
-            throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);
+        List<Palace> palaces = astrolabe.getPalaces();
+        List<Star> stars = astrolabe.getStars();
+        
+        // 获取年干
+        String yearStem = astrolabe.getYearStem();
+        if (yearStem == null || yearStem.isEmpty()) {
+            log.error("年干不能为空");
+            throw new BusinessException(ResultCode.ERROR, "年干不能为空");
+        }
+        
+        // 根据年干确定四化星
+        Map<String, List<String>> transformations = MutagenCalculator.calculateTransformations(yearStem);
+        
+        // 为每个宫位的星耀添加四化信息
+        for (Palace palace : palaces) {
+            for (Star star : palace.getStars()) {
+                List<String> transformation = transformations.get(star.getName());
+                if (transformation != null && !transformation.isEmpty()) {
+                    palace.getMutagens().addAll(transformation);
+                }
+            }
         }
     }
 } 

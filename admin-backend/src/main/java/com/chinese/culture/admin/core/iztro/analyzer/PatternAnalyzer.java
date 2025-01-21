@@ -48,7 +48,7 @@ public class PatternAnalyzer {
     
     // 财帛格局星耀
     private static final List<String> WEALTH_KEY_STARS = Arrays.asList("武曲", "天同", "太阳");
-    private static final List<String> SIDE_WEALTH_STARS = Arrays.asList("贪狼", "破军");
+    private static final List<String> SIDE_WEALTH_STARS = Arrays.asList("贪狼", "破军", "武曲", "太阳");
     private static final List<String> BUSINESS_STARS = Arrays.asList("武曲", "天相");
     
     // 官禄格局星耀
@@ -57,7 +57,7 @@ public class PatternAnalyzer {
     private static final List<String> LEADERSHIP_STARS = Arrays.asList("天机", "天相");
     
     // 婚姻格局星耀
-    private static final List<String> MARRIAGE_KEY_STARS = Arrays.asList("天同", "太阴", "文昌");
+    private static final List<String> MARRIAGE_KEY_STARS = Arrays.asList("天同", "太阴", "文昌", "文曲");
     private static final List<String> EMOTION_STARS = Arrays.asList("天姚", "红鸾");
     private static final List<String> SPOUSE_STARS = Arrays.asList("天同", "文昌");
     
@@ -263,7 +263,33 @@ public class PatternAnalyzer {
     }
     
     public static boolean isSideWealthPattern(List<Star> stars) {
-        return hasKeyStars(stars, SIDE_WEALTH_STARS);
+        if (stars == null || stars.isEmpty()) {
+            return false;
+        }
+
+        // 获取所有星耀名称
+        List<String> starNames = stars.stream()
+                .map(Star::getName)
+                .collect(java.util.stream.Collectors.toList());
+
+        // 获取所有四化
+        List<String> mutagens = stars.stream()
+                .filter(star -> star.getMutagens() != null && !star.getMutagens().isEmpty())
+                .flatMap(star -> star.getMutagens().stream())
+                .collect(java.util.stream.Collectors.toList());
+
+        // 检查是否包含贪狼或破军
+        long sideWealthStarCount = SIDE_WEALTH_STARS.stream()
+                .filter(starNames::contains)
+                .count();
+
+        // 检查是否包含化禄或化科
+        List<String> sideWealthMutagens = Arrays.asList("化禄", "化科");
+        long mutagenCount = sideWealthMutagens.stream()
+                .filter(mutagens::contains)
+                .count();
+
+        return sideWealthStarCount >= 1 && mutagenCount >= 1;
     }
     
     public static boolean isBusinessPattern(List<Star> stars) {
@@ -274,7 +300,34 @@ public class PatternAnalyzer {
      * 分析官禄格局
      */
     public static boolean isCareerPattern(List<Star> stars) {
-        return hasKeyStars(stars, CAREER_KEY_STARS) && hasMutagens(stars, CAREER_MUTAGENS);
+        if (stars == null || stars.isEmpty()) {
+            return false;
+        }
+
+        // 获取所有星耀名称
+        List<String> starNames = stars.stream()
+                .map(Star::getName)
+                .collect(java.util.stream.Collectors.toList());
+
+        // 获取所有四化
+        List<String> mutagens = stars.stream()
+                .filter(star -> star.getMutagens() != null && !star.getMutagens().isEmpty())
+                .flatMap(star -> star.getMutagens().stream())
+                .collect(java.util.stream.Collectors.toList());
+
+        // 检查是否包含天府、破军或天相中的至少两个
+        List<String> careerStars = Arrays.asList("天府", "破军", "天相");
+        long careerStarCount = careerStars.stream()
+                .filter(starNames::contains)
+                .count();
+
+        // 检查是否包含化禄、化权、化科中的至少两个
+        List<String> careerMutagens = Arrays.asList("化禄", "化权", "化科");
+        long mutagenCount = careerMutagens.stream()
+                .filter(mutagens::contains)
+                .count();
+
+        return careerStarCount >= 2 && mutagenCount >= 2;
     }
     
     public static boolean isAcademicPattern(List<Star> stars) {
@@ -289,7 +342,36 @@ public class PatternAnalyzer {
      * 分析婚姻格局
      */
     public static boolean isMarriagePattern(List<Star> stars) {
-        return hasKeyStars(stars, MARRIAGE_KEY_STARS) && hasMutagens(stars, MARRIAGE_MUTAGENS);
+        if (stars == null || stars.isEmpty()) {
+            return false;
+        }
+
+        // 获取所有星耀名称
+        List<String> starNames = stars.stream()
+                .map(Star::getName)
+                .collect(java.util.stream.Collectors.toList());
+
+        // 获取所有四化（去掉"化"字）
+        List<String> mutagens = stars.stream()
+                .filter(star -> star.getMutagens() != null && !star.getMutagens().isEmpty())
+                .flatMap(star -> star.getMutagens().stream())
+                .map(mutagen -> mutagen.replace("化", ""))
+                .collect(java.util.stream.Collectors.toList());
+
+        // 检查婚姻主星的数量
+        long marriageStarCount = MARRIAGE_KEY_STARS.stream()
+                .filter(starNames::contains)
+                .count();
+
+        // 检查婚姻四化的数量
+        long marriageMutagenCount = MARRIAGE_MUTAGENS.stream()
+                .filter(mutagens::contains)
+                .count();
+
+        // 满足以下任一条件：
+        // 1. 包含两个或以上婚姻主星
+        // 2. 包含一个婚姻主星且有婚姻四化
+        return marriageStarCount >= 2 || (marriageStarCount >= 1 && marriageMutagenCount >= 1);
     }
     
     public static boolean isEmotionPattern(List<Star> stars) {
@@ -304,16 +386,35 @@ public class PatternAnalyzer {
      * 检查是否包含关键星耀
      */
     private static boolean hasKeyStars(List<Star> stars, List<String> keyStars) {
-        return stars.stream().anyMatch(star -> keyStars.contains(star.getName()));
+        if (stars == null || stars.isEmpty() || keyStars == null || keyStars.isEmpty()) {
+            return false;
+        }
+        
+        // 获取所有星耀名称
+        List<String> starNames = stars.stream()
+                .map(Star::getName)
+                .collect(java.util.stream.Collectors.toList());
+        
+        // 检查是否包含所有关键星耀中的至少一个
+        return keyStars.stream().anyMatch(starNames::contains);
     }
     
     /**
-     * 检查是否包含特定四化
+     * 检查是否包含四化
      */
     private static boolean hasMutagens(List<Star> stars, List<String> mutagens) {
-        return stars.stream().anyMatch(star -> 
-            star.getMutagens() != null && 
-            star.getMutagens().stream().anyMatch(mutagens::contains)
-        );
+        if (stars == null || stars.isEmpty() || mutagens == null || mutagens.isEmpty()) {
+            return false;
+        }
+        
+        // 获取所有四化
+        List<String> allMutagens = stars.stream()
+                .filter(star -> star.getMutagens() != null && !star.getMutagens().isEmpty())
+                .flatMap(star -> star.getMutagens().stream())
+                .map(mutagen -> mutagen.replace("化", "")) // 去掉"化"字
+                .collect(java.util.stream.Collectors.toList());
+        
+        // 检查是否包含所有指定四化中的至少一个
+        return mutagens.stream().anyMatch(allMutagens::contains);
     }
 } 

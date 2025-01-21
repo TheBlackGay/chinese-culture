@@ -46,6 +46,11 @@ public class Astrolabe {
     private List<Star> stars;
     
     /**
+     * 年干
+     */
+    private String yearStem;
+    
+    /**
      * 命主
      */
     private String soul;
@@ -64,11 +69,6 @@ public class Astrolabe {
      * 运限数据
      */
     private Map<String, Object> horoscope;
-
-    /**
-     * 年干
-     */
-    private String yearStem;
 
     /**
      * 获取年干

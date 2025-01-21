@@ -183,6 +183,15 @@ public class AstrolabeInterpreter {
         // 分析婚姻格局
         analyzeMarriagePattern(astrolabe, patterns);
         
+        // 分析智慧格局
+        analyzeWisdomPattern(astrolabe, patterns);
+        
+        // 分析学术格局
+        analyzeAcademicPattern(astrolabe, patterns);
+        
+        // 分析情感格局
+        analyzeEmotionalPattern(astrolabe, patterns);
+        
         return patterns;
     }
     
@@ -213,19 +222,26 @@ public class AstrolabeInterpreter {
      * 分析财帛格局
      */
     private static void analyzeWealthPattern(Astrolabe astrolabe, List<String> patterns) {
-        Palace wealthPalace = astrolabe.getPalaces().get(1); // 财帛宫
-        List<Star> wealthStars = wealthPalace.getStars();
+        // 查找财帛宫
+        Palace wealthPalace = astrolabe.getPalaces().stream()
+                .filter(palace -> "财帛".equals(palace.getName()))
+                .findFirst()
+                .orElse(null);
         
-        // 使用格局分析器进行分析
-        if (PatternAnalyzer.isWealthPattern(wealthStars)) {
-            patterns.add("财运亨通");
-            patterns.add("正财旺盛");
-        }
-        if (PatternAnalyzer.isSideWealthPattern(wealthStars)) {
-            patterns.add("偏财多得");
-        }
-        if (PatternAnalyzer.isBusinessPattern(wealthStars)) {
-            patterns.add("经商有道");
+        if (wealthPalace != null) {
+            List<Star> wealthStars = wealthPalace.getStars();
+            
+            // 使用格局分析器进行分析
+            if (PatternAnalyzer.isWealthPattern(wealthStars)) {
+                patterns.add("财运亨通");
+                patterns.add("正财旺盛");
+            }
+            if (PatternAnalyzer.isSideWealthPattern(wealthStars)) {
+                patterns.add("偏财多得");
+            }
+            if (PatternAnalyzer.isBusinessPattern(wealthStars)) {
+                patterns.add("经商有道");
+            }
         }
     }
     
@@ -233,19 +249,25 @@ public class AstrolabeInterpreter {
      * 分析官禄格局
      */
     private static void analyzeCareerPattern(Astrolabe astrolabe, List<String> patterns) {
-        Palace careerPalace = astrolabe.getPalaces().get(9); // 官禄宫
-        List<Star> careerStars = careerPalace.getStars();
+        // 查找官禄宫
+        Palace careerPalace = astrolabe.getPalaces().stream()
+                .filter(palace -> "官禄".equals(palace.getName()))
+                .findFirst()
+                .orElse(null);
         
-        // 使用格局分析器进行分析
-        if (PatternAnalyzer.isCareerPattern(careerStars)) {
-            patterns.add("官运亨通");
-            patterns.add("仕途顺遂");
-        }
-        if (PatternAnalyzer.isAcademicPattern(careerStars)) {
-            patterns.add("学术优秀");
-        }
-        if (PatternAnalyzer.isLeadershipPattern(careerStars)) {
-            patterns.add("领导才能");
+        if (careerPalace != null) {
+            List<Star> careerStars = careerPalace.getStars();
+            
+            // 使用格局分析器进行分析
+            if (PatternAnalyzer.isCareerPattern(careerStars)) {
+                patterns.add("官运亨通");
+            }
+            if (PatternAnalyzer.isAcademicPattern(careerStars)) {
+                patterns.add("学术优秀");
+            }
+            if (PatternAnalyzer.isLeadershipPattern(careerStars)) {
+                patterns.add("领导才能");
+            }
         }
     }
     
@@ -253,19 +275,78 @@ public class AstrolabeInterpreter {
      * 分析婚姻格局
      */
     private static void analyzeMarriagePattern(Astrolabe astrolabe, List<String> patterns) {
-        Palace marriagePalace = astrolabe.getPalaces().get(6); // 夫妻宫
-        List<Star> marriageStars = marriagePalace.getStars();
+        // 查找夫妻宫
+        Palace marriagePalace = astrolabe.getPalaces().stream()
+                .filter(palace -> "夫妻".equals(palace.getName()))
+                .findFirst()
+                .orElse(null);
         
-        // 使用格局分析器进行分析
-        if (PatternAnalyzer.isMarriagePattern(marriageStars)) {
-            patterns.add("婚姻美满");
-            patterns.add("姻缘和顺");
+        if (marriagePalace != null) {
+            List<Star> marriageStars = marriagePalace.getStars();
+            
+            // 使用格局分析器进行分析
+            if (PatternAnalyzer.isMarriagePattern(marriageStars)) {
+                patterns.add("婚姻美满");
+                patterns.add("姻缘和顺");
+            }
+            if (PatternAnalyzer.isEmotionPattern(marriageStars)) {
+                patterns.add("情感丰富");
+            }
+            if (PatternAnalyzer.isSpousePattern(marriageStars)) {
+                patterns.add("配偶贤良");
+            }
         }
-        if (PatternAnalyzer.isEmotionPattern(marriageStars)) {
-            patterns.add("情感丰富");
+    }
+    
+    private static void analyzeWisdomPattern(Astrolabe astrolabe, List<String> patterns) {
+        List<Palace> palaces = astrolabe.getPalaces();
+        Palace mingGong = palaces.get(0);  // 命宫
+        
+        // 检查命宫是否有智慧星耀
+        boolean hasWisdomStars = mingGong.getStars().stream()
+                .anyMatch(star -> Arrays.asList("天机", "文昌", "文曲").contains(star.getName()));
+        
+        if (hasWisdomStars) {
+            patterns.add("智慧超群");
+            patterns.add("心思细腻");
         }
-        if (PatternAnalyzer.isSpousePattern(marriageStars)) {
-            patterns.add("配偶贤良");
+    }
+    
+    private static void analyzeAcademicPattern(Astrolabe astrolabe, List<String> patterns) {
+        List<Palace> palaces = astrolabe.getPalaces();
+        
+        // 检查文昌文曲组合
+        boolean hasAcademicCombination = palaces.stream()
+                .anyMatch(palace -> palace.getStars().stream()
+                        .anyMatch(star -> "文昌".equals(star.getName())) &&
+                        palace.getStars().stream()
+                        .anyMatch(star -> "文曲".equals(star.getName())));
+        
+        if (hasAcademicCombination) {
+            patterns.add("学术优秀");
+        }
+    }
+    
+    private static void analyzeEmotionalPattern(Astrolabe astrolabe, List<String> patterns) {
+        List<Palace> palaces = astrolabe.getPalaces();
+        Palace qingGong = null;  // 情感宫
+        
+        // 找到情感宫
+        for (Palace palace : palaces) {
+            if ("夫妻".equals(palace.getName())) {
+                qingGong = palace;
+                break;
+            }
+        }
+        
+        if (qingGong != null) {
+            // 检查情感宫的星耀组合
+            boolean hasEmotionalStars = qingGong.getStars().stream()
+                    .anyMatch(star -> Arrays.asList("天同", "太阴", "文昌", "文曲").contains(star.getName()));
+            
+            if (hasEmotionalStars) {
+                patterns.add("情感丰富");
+            }
         }
     }
 } 

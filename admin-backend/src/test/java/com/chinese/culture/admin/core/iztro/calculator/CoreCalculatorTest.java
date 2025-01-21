@@ -55,9 +55,14 @@ class CoreCalculatorTest {
         assertTrue(stars.stream().anyMatch(star -> "右弼".equals(star.getName())));
 
         // 验证四化
-        boolean hasTransformation = palaces.stream()
-                .anyMatch(palace -> !palace.getMutagens().isEmpty());
-        assertTrue(hasTransformation);
+        boolean hasTransformation = false;
+        for (Palace palace : palaces) {
+            if (!palace.getMutagens().isEmpty()) {
+                hasTransformation = true;
+                break;
+            }
+        }
+        assertTrue(hasTransformation, "至少应该有一个宫位包含四化星");
     }
 
     @ParameterizedTest
