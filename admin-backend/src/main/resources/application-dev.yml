@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  # 开发环境禁用缓存
+  cache:
+    type: none
+
+# 开发环境日志配置
+logging:
+  level:
+    root: INFO
+    com.chinese.culture: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+
+# Swagger文档
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
+
+# 开发环境自定义配置
+app:
+  # 开发环境关闭限流
+  rate-limit:
+    enabled: false 
