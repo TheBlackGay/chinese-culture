@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Api(tags = "命盘查询接口")
 @RestController
-@RequestMapping("/api/v1/astrolabe")
+@RequestMapping("/v1/astrolabe")
 @RequiredArgsConstructor
 public class AstrolabeController {
     
