@@ -9,6 +9,7 @@ import com.chinese.culture.admin.core.iztro.data.Star;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 命盘分析器
@@ -94,7 +95,7 @@ public class AstrolabeAnalyzer {
         if (astrolabe.getPalaces().size() != 12) {
             throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命盘宫位数量必须为12");
         }
-        
+
         // 验证命宫数据
         Palace mingGong = findMingGong(astrolabe.getPalaces());
         if (mingGong == null) {
@@ -129,22 +130,22 @@ public class AstrolabeAnalyzer {
         // 获取所有星耀名称
         List<String> starNames = stars.stream()
                 .map(Star::getName)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
 
         // 检查特殊星耀组合
         for (Map.Entry<String, String> entry : PATTERN_TYPES.entrySet()) {
             String key = entry.getKey();
             if (key.contains("同宫")) {
                 String[] starPair = key.split("同宫")[0].split("(?<=..)(?=..)");
-                if (starPair.length == 2 && 
-                    starNames.contains(starPair[0]) && 
+                if (starPair.length == 2 &&
+                    starNames.contains(starPair[0]) &&
                     starNames.contains(starPair[1])) {
                     patterns.add(entry.getValue());
                 }
             } else if (key.equals("命宫有禄存科权")) {
                 // 检查四化组合
                 List<String> mutagens = mingGong.getMutagens();
-                if (mutagens != null && mutagens.contains("化禄") && 
+                if (mutagens != null && mutagens.contains("化禄") &&
                     mutagens.contains("化权") && mutagens.contains("化科")) {
                     patterns.add(entry.getValue());
                 }
@@ -270,23 +271,25 @@ public class AstrolabeAnalyzer {
             Horoscope.DecadalHoroscope decadal = horoscope.getDecadal();
 
             // 添加大限基本信息
-            fortune.append(String.format("大限：%d-%d岁，", decadal.getStartYear(), decadal.getEndYear()));
+            int startAge = decadal.getStartAge();
+            int endAge = decadal.getEndAge();
+            List<Star> decadalStars = decadal.getStars();
+            fortune.append(String.format("大限：%d-%d岁，", startAge, endAge));
             fortune.append(String.format("天干地支：%s%s，", decadal.getHeavenlyStem(), decadal.getEarthlyBranch()));
 
             // 分析星耀
-            List<String> stars = decadal.getStars();
-            if (stars != null && !stars.isEmpty()) {
-                fortune.append("主要星耀：").append(String.join("、", stars));
+            if (decadalStars != null && !decadalStars.isEmpty()) {
+                fortune.append("主要星耀：").append(String.join("、", decadalStars.stream().map(Star::getName).collect(Collectors.toList())));
             }
 
             // 分析四化
-            List<String> mutagens = decadal.getMutagens();
+            List<String> mutagens = getMutagens(decadal);
             if (mutagens != null && !mutagens.isEmpty()) {
                 fortune.append("，四化：").append(String.join("、", mutagens));
             }
 
             // 分析吉凶
-            String fortune_level = analyzeFortuneLevel(stars, mutagens);
+            String fortune_level = analyzeFortuneLevel(decadalStars, mutagens);
             fortune.append("，").append(fortune_level);
 
             return fortune.toString();
@@ -315,29 +318,30 @@ public class AstrolabeAnalyzer {
             Horoscope.YearlyHoroscope yearly = horoscope.getYearly();
 
             // 添加流年基本信息
-            fortune.append(String.format("流年：%d年，", yearly.getYear()));
+            int yearlyAge = yearly.getAge();
+            List<Star> yearlyStars = yearly.getStars();
+            fortune.append(String.format("流年：%d年，", yearlyAge));
             fortune.append(String.format("天干地支：%s%s，", yearly.getHeavenlyStem(), yearly.getEarthlyBranch()));
 
             // 分析星耀
-            List<String> stars = yearly.getStars();
-            if (stars != null && !stars.isEmpty()) {
-                fortune.append("主要星耀：").append(String.join("、", stars));
+            if (yearlyStars != null && !yearlyStars.isEmpty()) {
+                fortune.append("主要星耀：").append(String.join("、", yearlyStars.stream().map(Star::getName).collect(Collectors.toList())));
             }
 
             // 分析四化
-            List<String> mutagens = yearly.getMutagens();
+            List<String> mutagens = getMutagens(yearly);
             if (mutagens != null && !mutagens.isEmpty()) {
                 fortune.append("，四化：").append(String.join("、", mutagens));
             }
 
             // 分析流年将前
-            List<String> yearlyDecStars = yearly.getYearlyDecStars();
+            List<String> yearlyDecStars = getYearlyDecStars(yearly);
             if (yearlyDecStars != null && !yearlyDecStars.isEmpty()) {
                 fortune.append("，流年将前：").append(String.join("、", yearlyDecStars));
             }
 
             // 分析吉凶
-            String fortune_level = analyzeFortuneLevel(stars, mutagens);
+            String fortune_level = analyzeFortuneLevel(yearlyStars, mutagens);
             fortune.append("，").append(fortune_level);
 
             return fortune.toString();
@@ -353,7 +357,7 @@ public class AstrolabeAnalyzer {
     /**
      * 分析运势等级
      */
-    private static String analyzeFortuneLevel(List<String> stars, List<String> mutagens) {
+    private static String analyzeFortuneLevel(List<Star> stars, List<String> mutagens) {
         int score = 0;
 
         // 计算吉星分数
@@ -370,10 +374,11 @@ public class AstrolabeAnalyzer {
         ));
 
         if (stars != null) {
-            for (String star : stars) {
-                if (goodStars.contains(star)) {
+            for (Star star : stars) {
+                String starName = star.getName();
+                if (goodStars.contains(starName)) {
                     score += 2;
-                } else if (badStars.contains(star)) {
+                } else if (badStars.contains(starName)) {
                     score -= 2;
                 }
             }
@@ -409,5 +414,29 @@ public class AstrolabeAnalyzer {
         } else {
             return "大凶";
         }
+    }
+
+    private static List<String> getMutagens(Horoscope.DecadalHoroscope decadal) {
+        if (decadal == null) {
+            return Collections.emptyList();
+        }
+        List<String> mutagens = decadal.getMutagens();
+        return mutagens != null ? mutagens : Collections.emptyList();
+    }
+
+    private static List<String> getYearlyDecStars(Horoscope.YearlyHoroscope yearly) {
+        if (yearly == null) {
+            return Collections.emptyList();
+        }
+        List<String> yearlyDecStars = yearly.getYearlyDecStars();
+        return yearlyDecStars != null ? yearlyDecStars : Collections.emptyList();
+    }
+
+    private static List<String> getMutagens(Horoscope.YearlyHoroscope yearly) {
+        if (yearly == null) {
+            return Collections.emptyList();
+        }
+        List<String> mutagens = yearly.getMutagens();
+        return mutagens != null ? mutagens : Collections.emptyList();
     }
 }

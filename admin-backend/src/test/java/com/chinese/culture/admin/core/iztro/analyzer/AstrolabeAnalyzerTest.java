@@ -20,13 +20,13 @@ class AstrolabeAnalyzerTest {
         Astrolabe astrolabe = new Astrolabe();
         List<Palace> palaces = new ArrayList<>();
         List<Star> stars = new ArrayList<>();
-        
+
         // 创建命宫
         Palace mingGong = new Palace();
         mingGong.setName("命宫");
         mingGong.setIndex(0);
         mingGong.setMing(true);
-        
+
         // 添加星耀
         Star ziwei = new Star();
         ziwei.setName("紫微");
@@ -35,13 +35,13 @@ class AstrolabeAnalyzerTest {
         stars.add(ziwei);
         stars.add(tianfu);
         mingGong.setStars(Arrays.asList(ziwei, tianfu));
-        
+
         // 添加四化
         mingGong.setMutagens(Arrays.asList("化禄", "化权", "化科"));
-        
+
         // 添加命宫到宫位列表
         palaces.add(mingGong);
-        
+
         // 补充其他宫位到12个
         for (int i = 1; i < 12; i++) {
             Palace palace = new Palace();
@@ -51,11 +51,11 @@ class AstrolabeAnalyzerTest {
             palace.setMutagens(new ArrayList<>());
             palaces.add(palace);
         }
-        
+
         astrolabe.setPalaces(palaces);
         astrolabe.setStars(stars);  // 设置命盘的星耀列表
         astrolabe.setYearStem("甲"); // 设置年干
-        
+
         // 测试分析结果
         String pattern = AstrolabeAnalyzer.analyzeMingZhuPattern(astrolabe);
         assertNotNull(pattern);
@@ -68,14 +68,14 @@ class AstrolabeAnalyzerTest {
         // 创建测试数据
         Horoscope horoscope = new Horoscope();
         Horoscope.DecadalHoroscope decadal = new Horoscope.DecadalHoroscope();
-        decadal.setStartYear(20);
-        decadal.setEndYear(29);
+        decadal.setStartAge(20);
+        decadal.setEndAge(29);
         decadal.setHeavenlyStem("甲");
         decadal.setEarthlyBranch("子");
         decadal.setStars(Arrays.asList("紫微", "天机", "文昌"));
         decadal.setMutagens(Arrays.asList("化禄", "化科"));
         horoscope.setDecadal(decadal);
-        
+
         // 测试分析结果
         String fortune = AstrolabeAnalyzer.analyzeDecadalFortune(horoscope);
         assertNotNull(fortune);
@@ -90,14 +90,14 @@ class AstrolabeAnalyzerTest {
         // 创建测试数据
         Horoscope horoscope = new Horoscope();
         Horoscope.YearlyHoroscope yearly = new Horoscope.YearlyHoroscope();
-        yearly.setYear(2024);
+        yearly.setAge(2024);
         yearly.setHeavenlyStem("甲");
         yearly.setEarthlyBranch("辰");
         yearly.setStars(Arrays.asList("天梁", "天相", "七杀"));
         yearly.setMutagens(Arrays.asList("化权", "化忌"));
         yearly.setYearlyDecStars(Arrays.asList("文昌", "左辅"));
         horoscope.setYearly(yearly);
-        
+
         // 测试分析结果
         String fortune = AstrolabeAnalyzer.analyzeYearlyFortune(horoscope);
         assertNotNull(fortune);
@@ -106,4 +106,4 @@ class AstrolabeAnalyzerTest {
         assertTrue(fortune.contains("天梁"));
         assertTrue(fortune.contains("文昌"));
     }
-} 
+}

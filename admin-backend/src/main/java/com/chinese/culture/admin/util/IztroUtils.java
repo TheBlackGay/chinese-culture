@@ -5,10 +5,15 @@ import com.chinese.culture.admin.common.result.ResultCode;
 import com.chinese.culture.admin.core.iztro.data.Astrolabe;
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
+import com.chinese.culture.admin.core.iztro.data.enums.StarType;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.HashMap;
 
 /**
  * 紫微斗数工具类
@@ -20,75 +25,98 @@ public class IztroUtils {
     }
 
     /**
-     * 获取指定宫位
+     * 获取宫位列表
      */
-    public static Palace getPalace(Astrolabe astrolabe, String palaceName) {
-        if (astrolabe == null || astrolabe.getPalaces() == null) {
-            return null;
+    public static List<Palace> getPalaces(Astrolabe astrolabe) {
+        if (astrolabe == null) {
+            throw new IllegalArgumentException("命盘数据不能为空");
         }
         
-        return astrolabe.getPalaces().stream()
-                .filter(p -> palaceName.equals(p.getName()))
-                .findFirst()
-                .orElse(null);
+        return new ArrayList<>(astrolabe.getPalaces());
     }
     
     /**
-     * 获取指定星耀
+     * 获取星耀列表
      */
-    public static Star getStar(Astrolabe astrolabe, String starName) {
-        if (astrolabe == null || astrolabe.getStars() == null) {
-            return null;
+    public static List<Star> getStars(Astrolabe astrolabe) {
+        if (astrolabe == null) {
+            throw new IllegalArgumentException("命盘数据不能为空");
         }
         
-        return astrolabe.getStars().stream()
-                .filter(s -> starName.equals(s.getName()))
-                .findFirst()
-                .orElse(null);
+        return new ArrayList<>(astrolabe.getStars());
     }
     
     /**
-     * 获取指定宫位的环绕宫位
+     * 获取宫位中的星耀
      */
-    public static List<Palace> getSurroundedPalaces(Astrolabe astrolabe, String palaceName) {
-        Palace palace = getPalace(astrolabe, palaceName);
+    public static List<Star> getStarsInPalace(Palace palace, StarType type) {
         if (palace == null) {
-            return null;
+            return Collections.emptyList();
         }
         
-        return palace.surroundedPalaces();
+        return palace.getStarsByType(type);
+    }
+    
+    /**
+     * 获取宫位中的所有星耀
+     */
+    public static List<Star> getAllStarsInPalace(Palace palace) {
+        if (palace == null) {
+            return Collections.emptyList();
+        }
+        
+        return palace.getAllStars();
+    }
+    
+    /**
+     * 获取命盘数据
+     */
+    public static Map<String, Object> getHoroscope(Astrolabe astrolabe) {
+        if (astrolabe == null) {
+            throw new IllegalArgumentException("命盘数据不能为空");
+        }
+        
+        Map<String, Object> horoscope = new HashMap<>();
+        horoscope.put("solarDate", astrolabe.getSolarDate());
+        horoscope.put("lunarDate", astrolabe.getLunarDate());
+        horoscope.put("gender", astrolabe.getGender());
+        horoscope.put("birthHour", astrolabe.getBirthHour());
+        
+        return horoscope;
+    }
+    
+    /**
+     * 获取宫位名称
+     */
+    public static String getPalaceName(Palace palace) {
+        return palace != null ? palace.getName() : "";
+    }
+    
+    /**
+     * 获取星耀名称
+     */
+    public static String getStarName(Star star) {
+        return star != null ? star.getName() : "";
+    }
+    
+    /**
+     * 获取四化列表
+     */
+    public static List<String> getMutagens(Palace palace) {
+        return palace != null ? new ArrayList<>(palace.getMutagens()) : Collections.emptyList();
     }
     
     /**
      * 检查宫位是否包含指定星耀
      */
     public static boolean hasStar(Palace palace, String starName) {
-        if (palace == null || palace.getStars() == null) {
-            return false;
-        }
-        
-        return palace.hasStar(starName);
+        return palace != null && palace.hasStar(starName);
     }
     
     /**
      * 检查宫位是否包含指定四化
      */
     public static boolean hasMutagen(Palace palace, String mutagen) {
-        if (palace == null || palace.getMutagens() == null) {
-            return false;
-        }
-        
-        return palace.hasMutagen(mutagen);
-    }
-    
-    /**
-     * 获取运限数据
-     */
-    public static Map<String, Object> getHoroscope(Astrolabe astrolabe) {
-        if (astrolabe == null) {
-            return null;
-        }
-        
-        return astrolabe.getHoroscope();
+        return palace != null && palace.hasMutagen(mutagen);
     }
 }

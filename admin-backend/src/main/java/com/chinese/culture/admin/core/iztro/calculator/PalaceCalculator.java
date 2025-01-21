@@ -2,7 +2,8 @@ package com.chinese.culture.admin.core.iztro.calculator;
 
 import com.chinese.culture.admin.common.exception.BusinessException;
 import com.chinese.culture.admin.common.result.ResultCode;
-import com.chinese.culture.admin.core.iztro.utils.CalendarConverter;
+import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
+import com.chinese.culture.admin.core.iztro.data.Palace;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -22,75 +23,114 @@ public class PalaceCalculator {
     private static final int[] BRANCH_HOURS = {23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21};
     
     /**
-     * 计算命宫所在位置
+     * 计算命宫位置
      * 
-     * @param lunarMonth 农历月
-     * @param lunarHour 时辰（1-12）
-     * @return 命宫位置（0-11）
+     * @param monthBranch 月支
+     * @param timeIndex 时辰索引（0-11）
+     * @return 命宫所在地支
      */
-    public static int calculateMingGong(int lunarMonth, int lunarHour) {
-        try {
-            validateInput(lunarMonth, lunarHour);
-            
-            // 命宫计算公式：12 - 月数 + 时辰 - 1
-            int position = (12 - lunarMonth + lunarHour - 1) % 12;
-            return position >= 0 ? position : position + 12;
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("命宫计算失败：{}", e.getMessage(), e);
-            throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);
-        }
+    public static EarthlyBranch calculateMingGongLocation(EarthlyBranch monthBranch, int timeIndex) {
+        int monthIndex = monthBranch.ordinal();
+        // 命宫 = 月支 + (12 - 时辰)
+        int mingGongIndex = (monthIndex + (12 - timeIndex)) % 12;
+        return EarthlyBranch.values()[mingGongIndex];
     }
     
     /**
-     * 计算身宫所在位置
+     * 计算身宫位置
      * 
-     * @param lunarMonth 农历月
-     * @param lunarHour 时辰（1-12）
-     * @return 身宫位置（0-11）
+     * @param monthBranch 月支
+     * @param timeIndex 时辰索引（0-11）
+     * @return 身宫所在地支
      */
-    public static int calculateShenGong(int lunarMonth, int lunarHour) {
-        try {
-            validateInput(lunarMonth, lunarHour);
-            
-            // 身宫计算公式：月数 + 时辰 - 1
-            int position = (lunarMonth + lunarHour - 1) % 12;
-            return position >= 0 ? position : position + 12;
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("身宫计算失败：{}", e.getMessage(), e);
-            throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);
-        }
+    public static EarthlyBranch calculateShenGongLocation(EarthlyBranch monthBranch, int timeIndex) {
+        int monthIndex = monthBranch.ordinal();
+        // 身宫 = 月支 + 时辰
+        int shenGongIndex = (monthIndex + timeIndex) % 12;
+        return EarthlyBranch.values()[shenGongIndex];
     }
     
     /**
-     * 根据命宫位置计算其他宫位
+     * 计算三方四正宫位
      * 
-     * @param mingGongPosition 命宫位置（0-11）
-     * @return 十二宫位置数组
+     * @param palace 宫位
+     * @return 三方四正宫位数组 [对宫, 三合1, 三合2, 六合]
      */
-    public static String[] calculateTwelvePalaces(int mingGongPosition) {
-        try {
-            if (mingGongPosition < 0 || mingGongPosition > 11) {
-                throw new BusinessException(ResultCode.PARAM_ERROR.getCode(), "命宫位置无效");
-            }
-            
-            String[] palaces = new String[12];
-            for (int i = 0; i < 12; i++) {
-                int position = (mingGongPosition + i) % 12;
-                palaces[position] = PALACE_NAMES[i];
-            }
-            return palaces;
-            
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("十二宫位计算失败：{}", e.getMessage(), e);
-            throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);
+    public static EarthlyBranch[] calculateSurroundedPalaces(Palace palace) {
+        EarthlyBranch branch = palace.getEarthlyBranch();
+        int branchIndex = branch.ordinal();
+        
+        // 计算对宫（相隔6个地支）
+        int oppositeIndex = (branchIndex + 6) % 12;
+        
+        // 计算三合宫（相隔4个地支）
+        int sanhe1Index = (branchIndex + 4) % 12;
+        int sanhe2Index = (branchIndex + 8) % 12;
+        
+        // 计算六合宫
+        int liuheIndex = branch.getSixHarmonyBranch().ordinal();
+        
+        return new EarthlyBranch[] {
+            EarthlyBranch.values()[oppositeIndex],
+            EarthlyBranch.values()[sanhe1Index],
+            EarthlyBranch.values()[sanhe2Index],
+            EarthlyBranch.values()[liuheIndex]
+        };
+    }
+    
+    /**
+     * 计算十二宫位顺序
+     * 
+     * @param mingGongLocation 命宫位置
+     * @return 十二宫位顺序（从命宫开始顺时针）
+     */
+    public static EarthlyBranch[] calculateTwelvePalaces(EarthlyBranch mingGongLocation) {
+        EarthlyBranch[] palaces = new EarthlyBranch[12];
+        int startIndex = mingGongLocation.ordinal();
+        
+        // 从命宫开始顺时针排列十二宫
+        for (int i = 0; i < 12; i++) {
+            int index = (startIndex + i) % 12;
+            palaces[i] = EarthlyBranch.values()[index];
+        }
+        
+        return palaces;
+    }
+    
+    /**
+     * 获取宫位名称
+     * 
+     * @param index 宫位索引（0-11，0代表命宫）
+     * @return 宫位名称
+     */
+    public static String getPalaceName(int index) {
+        switch (index) {
+            case 0:
+                return "命宫";
+            case 1:
+                return "兄弟";
+            case 2:
+                return "夫妻";
+            case 3:
+                return "子女";
+            case 4:
+                return "财帛";
+            case 5:
+                return "疾厄";
+            case 6:
+                return "迁移";
+            case 7:
+                return "交友";
+            case 8:
+                return "官禄";
+            case 9:
+                return "田宅";
+            case 10:
+                return "福德";
+            case 11:
+                return "父母";
+            default:
+                throw new IllegalArgumentException("Invalid palace index: " + index);
         }
     }
     

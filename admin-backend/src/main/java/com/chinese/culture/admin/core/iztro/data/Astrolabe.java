@@ -1,5 +1,6 @@
 package com.chinese.culture.admin.core.iztro.data;
 
+import com.chinese.culture.admin.core.iztro.data.enums.Gender;
 import lombok.Data;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,16 @@ public class Astrolabe {
     private String lunarDate;
     
     /**
+     * 原始日期数据
+     */
+    private RawDate rawDates;
+    
+    /**
+     * 时辰范围
+     */
+    private String timeRange;
+    
+    /**
      * 出生时辰（1-12）
      */
     private int birthHour;
@@ -28,12 +39,22 @@ public class Astrolabe {
     /**
      * 性别
      */
-    private String gender;
+    private Gender gender;
     
     /**
      * 年龄
      */
     private int age;
+    
+    /**
+     * 星座
+     */
+    private String sign;
+    
+    /**
+     * 生肖
+     */
+    private String zodiac;
     
     /**
      * 宫位列表
@@ -68,7 +89,7 @@ public class Astrolabe {
     /**
      * 运限数据
      */
-    private Map<String, Object> horoscope;
+    private Horoscope horoscope;
 
     /**
      * 获取年干
@@ -80,47 +101,50 @@ public class Astrolabe {
     /**
      * 根据宫位名称获取宫位
      */
-    public Palace getPalace(String name) {
+    public Optional<Palace> getPalace(String name) {
         return palaces.stream()
                 .filter(p -> name.equals(p.getName()))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     /**
      * 根据星耀名称获取星耀
      */
-    public Star getStar(String name) {
+    public Optional<Star> getStar(String name) {
         return stars.stream()
                 .filter(s -> name.equals(s.getName()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
-     * 获取运限数据
-     */
-    public Map<String, Object> getHoroscope() {
-        return horoscope;
+                .findFirst();
     }
 
     /**
      * 获取农历年份
      */
     public int getLunarYear() {
-        return Integer.parseInt(lunarDate.substring(0, 4));
+        return rawDates.getLunarDate().getYear();
     }
     
     /**
      * 设置四化
      */
-    public void setTransformations(Map<String, List<String>> transformations) {
-        if (transformations != null && !transformations.isEmpty()) {
-            for (Star star : stars) {
-                if (transformations.containsKey(star.getName())) {
-                    star.setMutagens(transformations.get(star.getName()));
-                }
-            }
-        }
+    public void setTransformations(List<Star> stars) {
+        this.stars = stars;
+    }
+    
+    /**
+     * 获取命宫
+     */
+    public Optional<Palace> getSoulPalace() {
+        return palaces.stream()
+                .filter(Palace::isMing)
+                .findFirst();
+    }
+    
+    /**
+     * 获取身宫
+     */
+    public Optional<Palace> getBodyPalace() {
+        return palaces.stream()
+                .filter(Palace::isBody)
+                .findFirst();
     }
 } 

@@ -3,6 +3,7 @@ package com.chinese.culture.admin.core.iztro.analyzer;
 import com.chinese.culture.admin.common.exception.BusinessException;
 import com.chinese.culture.admin.common.result.ResultCode;
 import com.chinese.culture.admin.core.iztro.data.Star;
+import com.chinese.culture.admin.core.iztro.data.enums.StarType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;

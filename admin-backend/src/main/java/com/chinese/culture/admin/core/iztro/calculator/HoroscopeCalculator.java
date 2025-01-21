@@ -3,6 +3,8 @@ package com.chinese.culture.admin.core.iztro.calculator;
 import com.chinese.culture.admin.common.exception.BusinessException;
 import com.chinese.culture.admin.common.result.ResultCode;
 import com.chinese.culture.admin.core.iztro.data.Astrolabe;
+import com.chinese.culture.admin.core.iztro.data.Palace;
+import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.utils.CalendarConverter;
 import lombok.extern.slf4j.Slf4j;
 

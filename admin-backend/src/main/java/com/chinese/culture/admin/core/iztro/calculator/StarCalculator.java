@@ -4,6 +4,7 @@ import com.chinese.culture.admin.common.exception.BusinessException;
 import com.chinese.culture.admin.common.result.ResultCode;
 import com.chinese.culture.admin.core.iztro.utils.CalendarConverter;
 import com.chinese.culture.admin.core.iztro.data.Star;
+import com.chinese.culture.admin.core.iztro.data.enums.StarType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 紫微斗数星耀计算器
+ * 星耀计算器
  */
 @Slf4j
 public class StarCalculator {
@@ -284,7 +285,7 @@ public class StarCalculator {
      * @param yearGanZhi 年干支
      * @return 亮度等级（0-4）
      */
-    public static int calculateStarBrightness(String star, int position, String yearGanZhi) {
+    public static int calculateBrightness(String star, int position, String yearGanZhi) {
         try {
             // 获取年干和地支
             String yearStem = yearGanZhi.substring(0, 1);
@@ -296,9 +297,9 @@ public class StarCalculator {
             
             // 判断星耀类型
             if (isMainStar(star)) {
-                return calculateMainStarBrightness(star, yearStem, palaceBranch);
+                return calculateMainBrightness(star, yearStem, palaceBranch);
             } else if (isAuxiliaryStar(star)) {
-                return calculateAuxiliaryStarBrightness(star, yearStem, palaceBranch);
+                return calculateAuxiliaryBrightness(star, yearStem, palaceBranch);
             } else {
                 return 2; // 杂耀默认中等亮度
             }
@@ -328,7 +329,7 @@ public class StarCalculator {
     /**
      * 计算主星亮度
      */
-    private static int calculateMainStarBrightness(String star, String yearStem, String palaceBranch) {
+    private static int calculateMainBrightness(String star, String yearStem, String palaceBranch) {
         // 紫微星系
         Map<String, Map<String, Integer>> ziWeiSystem = new HashMap<>();
         ziWeiSystem.put("紫微", createBrightnessMap("午", "子", "卯酉"));
@@ -370,7 +371,7 @@ public class StarCalculator {
     /**
      * 计算辅星亮度
      */
-    private static int calculateAuxiliaryStarBrightness(String star, String yearStem, String palaceBranch) {
+    private static int calculateAuxiliaryBrightness(String star, String yearStem, String palaceBranch) {
         Map<String, Map<String, Integer>> auxiliarySystem = new HashMap<>();
         
         // 文昌文曲
@@ -442,48 +443,18 @@ public class StarCalculator {
     }
     
     /**
-     * 计算紫微星位置
-     * 
-     * @param lunarYear 农历年
-     * @return 紫微星位置（0-11）
+     * 计算紫微星位置(单参数版本)
      */
     private static int calculateZiWeiPosition(int lunarYear) {
-        try {
-            // 计算年数(需要考虑农历闰月)
-            int yearNumber = lunarYear % 100;
-            
-            // 计算紫微数的修正公式
-            int ziWeiNumber = ((yearNumber + 3) * 5 + 1) % 12;
-            if (ziWeiNumber == 0) {
-                ziWeiNumber = 12;
-            }
-            
-            // 根据紫微数确定紫微星起始位置
-            int[] positionMap = {
-                2,  // 1: 寅宫
-                3,  // 2: 卯宫
-                5,  // 3: 巳宫
-                6,  // 4: 午宫
-                8,  // 5: 申宫
-                9,  // 6: 酉宫
-                11, // 7: 亥宫
-                0,  // 8: 子宫
-                2,  // 9: 寅宫
-                3,  // 10: 卯宫
-                5,  // 11: 巳宫
-                6   // 12: 午宫
-            };
-            
-            // 添加日志记录
-            log.debug("紫微星计算 - 年份: {}, 年数: {}, 紫微数: {}, 位置: {}", 
-                lunarYear, yearNumber, ziWeiNumber, positionMap[ziWeiNumber - 1]);
-            
-            return positionMap[ziWeiNumber - 1];
-            
-        } catch (Exception e) {
-            log.error("紫微星位置计算失败：{}", e.getMessage(), e);
-            throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);
-        }
+        return calculateZiWeiPosition(lunarYear, 0);
+    }
+    
+    /**
+     * 计算紫微星位置(双参数版本)
+     */
+    private static int calculateZiWeiPosition(int lunarDay, int offset) {
+        int position = ((lunarDay + offset) % 12) + 1;
+        return position == 0 ? 12 : position;
     }
     
     /**
@@ -493,51 +464,45 @@ public class StarCalculator {
      * @param ziWeiPosition 紫微星位置
      */
     private static void calculateOtherMainStars(Map<String, Integer> starPositions, int ziWeiPosition) {
-        try {
-            // 天机星位置：紫微顺数2宫
-            starPositions.put("天机", (ziWeiPosition + 2) % 12);
-            
-            // 太阳星位置：紫微顺数3宫
-            starPositions.put("太阳", (ziWeiPosition + 3) % 12);
-            
-            // 武曲星位置：紫微顺数4宫
-            starPositions.put("武曲", (ziWeiPosition + 4) % 12);
-            
-            // 天同星位置：紫微顺数5宫
-            starPositions.put("天同", (ziWeiPosition + 5) % 12);
-            
-            // 廉贞星位置：紫微顺数6宫
-            starPositions.put("廉贞", (ziWeiPosition + 6) % 12);
-            
-            // 天府星位置：紫微对宫
-            int tianFuPosition = (ziWeiPosition + 6) % 12;
-            starPositions.put("天府", tianFuPosition);
-            
-            // 太阴星位置：天府顺数1宫
-            starPositions.put("太阴", (tianFuPosition + 1) % 12);
-            
-            // 贪狼星位置：天府顺数2宫
-            starPositions.put("贪狼", (tianFuPosition + 2) % 12);
-            
-            // 巨门星位置：天府顺数3宫
-            starPositions.put("巨门", (tianFuPosition + 3) % 12);
-            
-            // 天相星位置：天府顺数4宫
-            starPositions.put("天相", (tianFuPosition + 4) % 12);
-            
-            // 天梁星位置：天府顺数5宫
-            starPositions.put("天梁", (tianFuPosition + 5) % 12);
-            
-            // 七杀星位置：天府顺数6宫
-            starPositions.put("七杀", (tianFuPosition + 6) % 12);
-            
-            // 破军星位置：天府顺数7宫
-            starPositions.put("破军", (tianFuPosition + 7) % 12);
-            
-        } catch (Exception e) {
-            log.error("其他主星位置计算失败：{}", e.getMessage(), e);
-            throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);
-        }
+        // 天机星位置：紫微顺数2宫
+        starPositions.put("天机", (ziWeiPosition + 2) % 12);
+        
+        // 太阳星位置：紫微顺数3宫
+        starPositions.put("太阳", (ziWeiPosition + 3) % 12);
+        
+        // 武曲星位置：紫微顺数4宫
+        starPositions.put("武曲", (ziWeiPosition + 4) % 12);
+        
+        // 天同星位置：紫微顺数5宫
+        starPositions.put("天同", (ziWeiPosition + 5) % 12);
+        
+        // 廉贞星位置：紫微顺数6宫
+        starPositions.put("廉贞", (ziWeiPosition + 6) % 12);
+        
+        // 天府星位置：紫微对宫
+        int tianFuPosition = (ziWeiPosition + 6) % 12;
+        starPositions.put("天府", tianFuPosition);
+        
+        // 太阴星位置：天府顺数1宫
+        starPositions.put("太阴", (tianFuPosition + 1) % 12);
+        
+        // 贪狼星位置：天府顺数2宫
+        starPositions.put("贪狼", (tianFuPosition + 2) % 12);
+        
+        // 巨门星位置：天府顺数3宫
+        starPositions.put("巨门", (tianFuPosition + 3) % 12);
+        
+        // 天相星位置：天府顺数4宫
+        starPositions.put("天相", (tianFuPosition + 4) % 12);
+        
+        // 天梁星位置：天府顺数5宫
+        starPositions.put("天梁", (tianFuPosition + 5) % 12);
+        
+        // 七杀星位置：天府顺数6宫
+        starPositions.put("七杀", (tianFuPosition + 6) % 12);
+        
+        // 破军星位置：天府逆数2宫
+        starPositions.put("破军", (tianFuPosition - 2 + 12) % 12);
     }
     
     /**
@@ -1295,7 +1260,7 @@ public class StarCalculator {
         List<Star> stars = new ArrayList<>();
         
         // 计算紫微星位置
-        int ziWeiPosition = calculateZiWeiPosition(lunarYear);
+        int ziWeiPosition = calculateZiWeiPosition(lunarYear, birthHour);
         Star ziWei = new Star();
         ziWei.setName("紫微");
         ziWei.setPosition(ziWeiPosition);

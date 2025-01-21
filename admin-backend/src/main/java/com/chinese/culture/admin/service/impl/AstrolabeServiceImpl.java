@@ -50,13 +50,16 @@ public class AstrolabeServiceImpl implements AstrolabeService {
                 lunarDay = lunarDate[2];
             }
             
+            // 转换性别为字符串
+            String genderStr = queryDTO.getGender() == 1 ? "男" : "女";
+            
             // 计算命盘
             return CoreCalculator.calculate(
                 lunarYear,
                 lunarMonth,
                 lunarDay,
                 birthHour,
-                queryDTO.getGender()
+                genderStr
             );
             
         } catch (BusinessException e) {

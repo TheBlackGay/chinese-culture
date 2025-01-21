@@ -2,98 +2,102 @@ package com.chinese.culture.admin.core.iztro.calculator;
 
 import com.chinese.culture.admin.common.exception.BusinessException;
 import com.chinese.culture.admin.common.result.ResultCode;
+import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
+import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
+import com.chinese.culture.admin.core.iztro.data.Star;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
 /**
- * 四化计算器
+ * 四化星计算器
  */
 @Slf4j
 public class MutagenCalculator {
 
-    // 四化规则
-    private static final Map<String, Map<String, String>> MUTAGEN_RULES = new HashMap<>();
+    // 四化规则表
+    private static final Map<HeavenlyStem, Map<Mutagen, String>> MUTAGEN_RULES = new HashMap<>();
+    
     static {
         // 甲年四化
-        Map<String, String> jiaRules = new HashMap<>();
-        jiaRules.put("廉贞", "化禄");
-        jiaRules.put("破军", "化权");
-        jiaRules.put("武曲", "化科");
-        jiaRules.put("太阳", "化忌");
-        MUTAGEN_RULES.put("甲", jiaRules);
-
+        Map<Mutagen, String> jiaRules = new HashMap<>();
+        jiaRules.put(Mutagen.LUCKY, "廉贞");
+        jiaRules.put(Mutagen.POWER, "破军");
+        jiaRules.put(Mutagen.SKILL, "武曲");
+        jiaRules.put(Mutagen.WEAK, "太阳");
+        MUTAGEN_RULES.put(HeavenlyStem.JIA, jiaRules);
+        
         // 乙年四化
-        Map<String, String> yiRules = new HashMap<>();
-        yiRules.put("天机", "化禄");
-        yiRules.put("天梁", "化权");
-        yiRules.put("紫微", "化科");
-        yiRules.put("太阴", "化忌");
-        MUTAGEN_RULES.put("乙", yiRules);
-
+        Map<Mutagen, String> yiRules = new HashMap<>();
+        yiRules.put(Mutagen.LUCKY, "天机");
+        yiRules.put(Mutagen.POWER, "天梁");
+        yiRules.put(Mutagen.SKILL, "紫微");
+        yiRules.put(Mutagen.WEAK, "太阴");
+        MUTAGEN_RULES.put(HeavenlyStem.YI, yiRules);
+        
         // 丙年四化
-        Map<String, String> bingRules = new HashMap<>();
-        bingRules.put("天同", "化禄");
-        bingRules.put("天机", "化权");
-        bingRules.put("文昌", "化科");
-        bingRules.put("廉贞", "化忌");
-        MUTAGEN_RULES.put("丙", bingRules);
-
+        Map<Mutagen, String> bingRules = new HashMap<>();
+        bingRules.put(Mutagen.LUCKY, "天同");
+        bingRules.put(Mutagen.POWER, "天机");
+        bingRules.put(Mutagen.SKILL, "文昌");
+        bingRules.put(Mutagen.WEAK, "廉贞");
+        MUTAGEN_RULES.put(HeavenlyStem.BING, bingRules);
+        
         // 丁年四化
-        Map<String, String> dingRules = new HashMap<>();
-        dingRules.put("太阳", "化禄");
-        dingRules.put("天同", "化权");
-        dingRules.put("文曲", "化科");
-        dingRules.put("天机", "化忌");
-        MUTAGEN_RULES.put("丁", dingRules);
-
+        Map<Mutagen, String> dingRules = new HashMap<>();
+        dingRules.put(Mutagen.LUCKY, "太阳");
+        dingRules.put(Mutagen.POWER, "武曲");
+        dingRules.put(Mutagen.SKILL, "天同");
+        dingRules.put(Mutagen.WEAK, "天机");
+        MUTAGEN_RULES.put(HeavenlyStem.DING, dingRules);
+        
         // 戊年四化
-        Map<String, String> wuRules = new HashMap<>();
-        wuRules.put("武曲", "化禄");
-        wuRules.put("太阳", "化权");
-        wuRules.put("天魁", "化科");
-        wuRules.put("天同", "化忌");
-        MUTAGEN_RULES.put("戊", wuRules);
-
+        Map<Mutagen, String> wuRules = new HashMap<>();
+        wuRules.put(Mutagen.LUCKY, "武曲");
+        wuRules.put(Mutagen.POWER, "贪狼");
+        wuRules.put(Mutagen.SKILL, "太阴");
+        wuRules.put(Mutagen.WEAK, "天同");
+        MUTAGEN_RULES.put(HeavenlyStem.WU, wuRules);
+        
         // 己年四化
-        Map<String, String> jiRules = new HashMap<>();
-        jiRules.put("太阴", "化禄");
-        jiRules.put("武曲", "化权");
-        jiRules.put("天钺", "化科");
-        jiRules.put("太阳", "化忌");
-        MUTAGEN_RULES.put("己", jiRules);
-
+        Map<Mutagen, String> jiRules = new HashMap<>();
+        jiRules.put(Mutagen.LUCKY, "太阴");
+        jiRules.put(Mutagen.POWER, "紫微");
+        jiRules.put(Mutagen.SKILL, "天梁");
+        jiRules.put(Mutagen.WEAK, "文曲");
+        MUTAGEN_RULES.put(HeavenlyStem.JI, jiRules);
+        
         // 庚年四化
-        Map<String, String> gengRules = new HashMap<>();
-        gengRules.put("贪狼", "化禄");
-        gengRules.put("太阴", "化权");
-        gengRules.put("右弼", "化科");
-        gengRules.put("武曲", "化忌");
-        MUTAGEN_RULES.put("庚", gengRules);
-
+        Map<Mutagen, String> gengRules = new HashMap<>();
+        gengRules.put(Mutagen.LUCKY, "贪狼");
+        gengRules.put(Mutagen.POWER, "太阴");
+        gengRules.put(Mutagen.SKILL, "右弼");
+        gengRules.put(Mutagen.WEAK, "武曲");
+        MUTAGEN_RULES.put(HeavenlyStem.GENG, gengRules);
+        
         // 辛年四化
-        Map<String, String> xinRules = new HashMap<>();
-        xinRules.put("巨门", "化禄");
-        xinRules.put("贪狼", "化权");
-        xinRules.put("左辅", "化科");
-        xinRules.put("太阴", "化忌");
-        MUTAGEN_RULES.put("辛", xinRules);
-
+        Map<Mutagen, String> xinRules = new HashMap<>();
+        xinRules.put(Mutagen.LUCKY, "巨门");
+        xinRules.put(Mutagen.POWER, "天同");
+        xinRules.put(Mutagen.SKILL, "文曲");
+        xinRules.put(Mutagen.WEAK, "贪狼");
+        MUTAGEN_RULES.put(HeavenlyStem.XIN, xinRules);
+        
         // 壬年四化
-        Map<String, String> renRules = new HashMap<>();
-        renRules.put("天梁", "化禄");
-        renRules.put("巨门", "化权");
-        renRules.put("文昌", "化科");
-        renRules.put("贪狼", "化忌");
-        MUTAGEN_RULES.put("壬", renRules);
-
+        Map<Mutagen, String> renRules = new HashMap<>();
+        renRules.put(Mutagen.LUCKY, "天梁");
+        renRules.put(Mutagen.POWER, "文昌");
+        renRules.put(Mutagen.SKILL, "左辅");
+        renRules.put(Mutagen.WEAK, "巨门");
+        MUTAGEN_RULES.put(HeavenlyStem.REN, renRules);
+        
         // 癸年四化
-        Map<String, String> guiRules = new HashMap<>();
-        guiRules.put("紫微", "化禄");
-        guiRules.put("天梁", "化权");
-        guiRules.put("文曲", "化科");
-        guiRules.put("巨门", "化忌");
-        MUTAGEN_RULES.put("癸", guiRules);
+        Map<Mutagen, String> guiRules = new HashMap<>();
+        guiRules.put(Mutagen.LUCKY, "破军");
+        guiRules.put(Mutagen.POWER, "巨门");
+        guiRules.put(Mutagen.SKILL, "廉贞");
+        guiRules.put(Mutagen.WEAK, "文昌");
+        MUTAGEN_RULES.put(HeavenlyStem.GUI, guiRules);
     }
 
     // 四化冲突规则
@@ -106,29 +110,63 @@ public class MutagenCalculator {
     }
 
     /**
+     * 获取星耀的四化
+     * 
+     * @param yearStem 年干
+     * @param star 星耀
+     * @return 四化类型，如果没有四化则返回null
+     */
+    public static Mutagen getMutagen(HeavenlyStem yearStem, Star star) {
+        Map<Mutagen, String> rules = MUTAGEN_RULES.get(yearStem);
+        if (rules != null) {
+            for (Map.Entry<Mutagen, String> entry : rules.entrySet()) {
+                if (entry.getValue().equals(star.getName())) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 获取指定四化对应的星耀
+     * 
+     * @param yearStem 年干
+     * @param mutagen 四化类型
+     * @return 星耀名称
+     */
+    public static String getMutagenStar(HeavenlyStem yearStem, Mutagen mutagen) {
+        Map<Mutagen, String> rules = MUTAGEN_RULES.get(yearStem);
+        if (rules != null) {
+            return rules.get(mutagen);
+        }
+        return null;
+    }
+
+    /**
      * 计算四化关系
      * 
      * @param yearStem 年干
      * @param stars 星耀列表
      * @return 四化关系
      */
-    public static Map<String, List<String>> calculateMutagenRelations(String yearStem, List<String> stars) {
+    public static Map<String, List<String>> calculateMutagenRelations(HeavenlyStem yearStem, List<String> stars) {
         try {
             Map<String, List<String>> relations = new HashMap<>();
-            Map<String, String> yearRules = MUTAGEN_RULES.get(yearStem);
+            Map<Mutagen, String> yearRules = MUTAGEN_RULES.get(yearStem);
             
             if (yearRules != null) {
                 for (String star : stars) {
-                    String mutagen = yearRules.get(star);
-                    if (mutagen != null) {
-                        relations.computeIfAbsent(star, k -> new ArrayList<>())
-                                .add(mutagen);
+                    for (Map.Entry<Mutagen, String> entry : yearRules.entrySet()) {
+                        if (entry.getValue().equals(star)) {
+                            relations.computeIfAbsent(star, k -> new ArrayList<>())
+                                    .add(entry.getKey().getDescription());
+                        }
                     }
                 }
             }
             
             return relations;
-
         } catch (Exception e) {
             log.error("四化关系计算失败：{}", e.getMessage(), e);
             throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);
@@ -199,22 +237,21 @@ public class MutagenCalculator {
      * @param yearStem 年干
      * @return 四化映射
      */
-    public static Map<String, List<String>> calculateTransformations(String yearStem) {
+    public static Map<String, List<String>> calculateTransformations(HeavenlyStem yearStem) {
         try {
             Map<String, List<String>> transformations = new HashMap<>();
-            Map<String, String> yearRules = MUTAGEN_RULES.get(yearStem);
+            Map<Mutagen, String> yearRules = MUTAGEN_RULES.get(yearStem);
             
             if (yearRules != null) {
-                for (Map.Entry<String, String> entry : yearRules.entrySet()) {
-                    String star = entry.getKey();
-                    String mutagen = entry.getValue();
+                for (Map.Entry<Mutagen, String> entry : yearRules.entrySet()) {
+                    String star = entry.getValue();
+                    String mutagen = entry.getKey().getDescription();
                     transformations.computeIfAbsent(star, k -> new ArrayList<>())
                             .add(mutagen);
                 }
             }
             
             return transformations;
-            
         } catch (Exception e) {
             log.error("四化计算失败：{}", e.getMessage(), e);
             throw new BusinessException(ResultCode.HOROSCOPE_CALC_ERROR);

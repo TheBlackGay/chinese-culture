@@ -7,7 +7,6 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson2.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -185,24 +184,6 @@ public class ToolUtils {
         }
     }
 
-    /**
-     * Excel工具类
-     */
-    public static class Excel {
-        /**
-         * 读取Excel
-         */
-        public static <T> List<T> read(String path, Class<T> head) {
-            return EasyExcel.read(path).head(head).sheet().doReadSync();
-        }
-
-        /**
-         * 写入Excel
-         */
-        public static void write(String path, List<?> data) {
-            EasyExcel.write(path).sheet().doWrite(data);
-        }
-    }
 
     /**
      * ID生成工具类
@@ -314,4 +295,4 @@ public class ToolUtils {
             Preconditions.checkArgument(CollectionUtils.isNotEmpty(collection), message);
         }
     }
-} 
+}

@@ -59,19 +59,78 @@ Object
 | data>>palaces>>mutagens | 四化 | 是 | array | | | ["化禄","化科"] |
 | data>>stars | 星耀列表 | 是 | array | | | |
 | data>>yearStem | 年干 | 是 | string | | | 庚 |
+| data>>soul | 命主 | 是 | string | | | 紫微 |
+| data>>body | 身主 | 是 | string | | | 破军 |
+| data>>fiveElements | 五行 | 是 | string | | | 木 |
 
 **测试案例**
 ```bash
 curl -X POST 'http://localhost:8080/api/v1/astrolabe/get' \
 -H 'Content-Type: application/json' \
 -d '{
-    "birthYear": 1990,
-    "birthMonth": 8,
-    "birthDay": 15,
-    "birthHour": 3,
+    "birthYear": 1994,
+    "birthMonth": 12,
+    "birthDay": 8,
+    "birthHour": 5,
     "gender": 1,
     "isLunar": false
 }'
+```
+
+**响应示例**
+```json
+{
+    "code": 200,
+    "message": "操作成功",
+    "data": {
+        "solarDate": "1994年12月8日",
+        "lunarDate": "1994年11月6日",
+        "birthHour": 5,
+        "gender": "男",
+        "age": 0,
+        "palaces": [
+            {
+                "name": "命宫",
+                "heavenlyStem": "辛",
+                "index": 0,
+                "branch": "未",
+                "stars": [
+                    {
+                        "name": "紫微",
+                        "position": 0,
+                        "branch": "未"
+                    },
+                    {
+                        "name": "破军",
+                        "position": 0,
+                        "branch": "未"
+                    }
+                ],
+                "mutagens": [],
+                "body": false,
+                "ming": true
+            }
+            // ... 其他宫位数据 ...
+        ],
+        "stars": [
+            {
+                "name": "紫微",
+                "position": 0,
+                "branch": "未"
+            },
+            {
+                "name": "破军",
+                "position": 0,
+                "branch": "未"
+            }
+            // ... 其他星耀数据 ...
+        ],
+        "yearStem": "甲",
+        "soul": "紫微",
+        "body": "破军",
+        "fiveElements": "木"
+    }
+}
 ```
 
 ## 2. 解析命盘
@@ -232,23 +291,18 @@ curl -X POST 'http://localhost:8080/api/v1/astrolabe/horoscope/batch' \
 }'
 ```
 
-## 4. 分析星耀组合
+## 4. 婚姻感情分析
 
 ### 基本信息
 
 **API Path**
-/api/v1/astrolabe/star-combinations
+/api/v1/astrolabe/analyze/marriage
 
 **请求协议**
 HTTP
 
 **请求方法**
 POST
-
-**相关人员**
-负责人: 钟佳峰
-创建人: 钟佳峰
-最后编辑人: 钟佳峰
 
 **请求体**
 Json
@@ -257,59 +311,37 @@ Object
 | 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
 |--------|------|------|------|-----------|------|------|
 | astrolabe | 命盘数据 | 是 | object | | | |
-| includeTrineAndOpposition | 是否包含三方四正 | 否 | boolean | | | true |
-| includeConvergence | 是否包含星耀会合 | 否 | boolean | | | true |
+| age | 当前年龄 | 是 | int | | | 25 |
 
 **响应内容**
-
-**返回结果**
->成功 (200)
-Json
-Object
-
-| 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
-|--------|------|------|------|-----------|------|------|
-| code | 状态码 | 是 | int | | | 200 |
-| message | 状态信息 | 是 | string | | | success |
-| data | 响应数据 | 是 | object | | | |
-| data>>trine | 三方组合 | 是 | array | | | ["紫微天府同梁组合"] |
-| data>>opposition | 四正组合 | 是 | array | | | ["紫微天府对冲"] |
-| data>>convergence | 会合组合 | 是 | array | | | ["紫微天府同宫"] |
-
-**测试案例**
-```bash
-curl -X POST 'http://localhost:8080/api/v1/astrolabe/star-combinations' \
--H 'Content-Type: application/json' \
--d '{
-    "astrolabe": {
-        "solarDate": "19900101",
-        "lunarDate": "己巳年十二月初五",
-        "gender": 1,
-        "age": 33,
-        "palaces": []
-    },
-    "includeTrineAndOpposition": true,
-    "includeConvergence": true
-}'
+```json
+{
+    "code": 200,
+    "message": "操作成功",
+    "data": {
+        "score": 85,
+        "analysis": {
+            "marriagePalace": "夫妻宫分析",
+            "romanceStars": "桃花星分析",
+            "timing": "婚姻时机",
+            "suggestions": "感情建议"
+        }
+    }
+}
 ```
 
-## 5. 分析宫位关系
+## 5. 事业财运分析
 
 ### 基本信息
 
 **API Path**
-/api/v1/astrolabe/palace-relations
+/api/v1/astrolabe/analyze/career-wealth
 
 **请求协议**
 HTTP
 
 **请求方法**
 POST
-
-**相关人员**
-负责人: 钟佳峰
-创建人: 钟佳峰
-最后编辑人: 钟佳峰
 
 **请求体**
 Json
@@ -318,71 +350,125 @@ Object
 | 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
 |--------|------|------|------|-----------|------|------|
 | astrolabe | 命盘数据 | 是 | object | | | |
-| includePunishments | 是否包含冲克关系 | 否 | boolean | | | true |
-| includeHarmonies | 是否包含合化关系 | 否 | boolean | | | true |
-| includeTrineFormations | 是否包含三合关系 | 否 | boolean | | | true |
+| age | 当前年龄 | 是 | int | | | 25 |
 
 **响应内容**
+```json
+{
+    "code": 200,
+    "message": "操作成功",
+    "data": {
+        "career": {
+            "score": 80,
+            "analysis": "事业分析",
+            "suggestions": "事业建议"
+        },
+        "wealth": {
+            "score": 75,
+            "analysis": "财运分析",
+            "suggestions": "理财建议"
+        }
+    }
+}
+```
 
-**返回结果**
->成功 (200)
+## 6. 健康状况分析
+
+### 基本信息
+
+**API Path**
+/api/v1/astrolabe/analyze/health
+
+**请求协议**
+HTTP
+
+**请求方法**
+POST
+
+**请求体**
 Json
 Object
 
 | 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
 |--------|------|------|------|-----------|------|------|
-| code | 状态码 | 是 | int | | | 200 |
-| message | 状态信息 | 是 | string | | | success |
-| data | 响应数据 | 是 | object | | | |
-| data>>punishments | 冲克关系 | 是 | array | | | ["命宫冲克财帛宫"] |
-| data>>harmonies | 合化关系 | 是 | array | | | ["命宫与官禄宫合化"] |
-| data>>trineFormations | 三合关系 | 是 | array | | | ["命宫、财帛宫、官禄宫三合"] |
+| astrolabe | 命盘数据 | 是 | object | | | |
+| age | 当前年龄 | 是 | int | | | 25 |
 
-**测试案例**
-```bash
-curl -X POST 'http://localhost:8080/api/v1/astrolabe/palace-relations' \
--H 'Content-Type: application/json' \
--d '{
-    "astrolabe": {
-        "solarDate": "19900101",
-        "lunarDate": "己巳年十二月初五",
-        "gender": 1,
-        "age": 33,
-        "palaces": []
-    },
-    "includePunishments": true,
-    "includeHarmonies": true,
-    "includeTrineFormations": true
-}'
+**响应内容**
+```json
+{
+    "code": 200,
+    "message": "操作成功",
+    "data": {
+        "score": 90,
+        "analysis": {
+            "constitution": "体质分析",
+            "potentialIssues": "潜在问题",
+            "suggestions": "健康建议"
+        }
+    }
+}
+```
+
+## 7. 学业考试分析
+
+### 基本信息
+
+**API Path**
+/api/v1/astrolabe/analyze/study
+
+**请求协议**
+HTTP
+
+**请求方法**
+POST
+
+**请求体**
+Json
+Object
+
+| 参数名 | 说明 | 必填 | 类型 | 值可能性 | 限制 | 示例 |
+|--------|------|------|------|-----------|------|------|
+| astrolabe | 命盘数据 | 是 | object | | | |
+| age | 当前年龄 | 是 | int | | | 25 |
+
+**响应内容**
+```json
+{
+    "code": 200,
+    "message": "操作成功",
+    "data": {
+        "score": 85,
+        "analysis": {
+            "studyAbility": "学习能力",
+            "subjects": "擅长科目",
+            "suggestions": "学习建议"
+        }
+    }
+}
 ```
 
 ## 错误码说明
 
-### 系统级错误码
-| 错误码 | 说明 |
-|--------|------|
-| 200 | 操作成功 |
-| 400 | 请求参数错误 |
-| 401 | 未授权 |
-| 403 | 禁止访问 |
-| 404 | 资源不存在 |
-| 500 | 服务器内部错误 |
+### 系统错误
+- 200: 成功
+- 400: 请求参数错误
+- 401: 未授权
+- 403: 禁止访问
+- 500: 服务器内部错误
 
-### 业务级错误码
-| 错误码 | 说明 |
-|--------|------|
-| 1001 | 命盘计算错误 |
-| 1002 | 运限计算错误 |
-| 1003 | 星耀组合分析错误 |
-| 1004 | 宫位关系分析错误 |
-| 1005 | 出生时间错误 |
+### 业务错误
+- 1001: 生日参数无效
+- 1002: 命盘生成失败
+- 1003: 分析计算异常
+- 1004: 数据不完整
+- 1005: 年龄参数无效
+- 1006: 分析类型不支持
 
-## 注意事项
-
-1. 所有POST请求必须设置Content-Type为application/json
-2. 日期时间格式统一使用yyyyMMddHHmmss格式
-3. 批量查询运限时,年龄列表大小限制在1-100之间
-4. 建议使用HTTPS协议进行请求
-5. 接口调用频率限制:
-   - 单个IP每秒最多请求10次
-   - 单个用户每天最多请求1000次 
+## 使用说明
+1. 所有请求需要包含header: `Content-Type: application/json`
+2. 日期格式统一使用: `YYYY-MM-DD`
+3. 时间采用24小时制
+4. 分数范围: 0-100
+5. 建议先调用获取命盘接口,再进行其他分析
+6. 分析接口的age参数需要与实际年龄相符 

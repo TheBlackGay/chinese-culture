@@ -120,11 +120,11 @@ public class StarCalculatorTest {
     }
     
     @Test
-    public void testCalculateStarBrightness() {
+    public void testCalculateBrightness() {
         // 测试星耀亮度计算
         // 以1990年为例，紫微星在午宫
         Map<String, Integer> starPositions = StarCalculator.calculateMainStars(2, 1990);
-        int brightness = StarCalculator.calculateStarBrightness("紫微", 6, "甲子");
+        int brightness = StarCalculator.calculateBrightness("紫微", 6, "甲子");
         
         // 验证亮度等级
         assertTrue(brightness >= 0 && brightness <= 4);
