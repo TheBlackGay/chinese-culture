@@ -17,7 +17,7 @@ import java.util.List;
  * 基于tyme包的实现
  */
 public class LunarUtils {
-    
+
     /**
      * 将阳历日期转换为农历日期
      * @param solarDate 阳历日期
@@ -70,7 +70,8 @@ public class LunarUtils {
      */
     public static String getTimeName(LocalTime time) {
         // 获取当前日期，仅用于构造LunarHour对象
-        LunarDay today = SolarDay.fromDate(LocalDate.now()).getLunarDay();
+        LocalDate now = LocalDate.now();
+        LunarDay today = SolarDay.fromYmd(now.getYear(), now.getMonthValue(), now.getDayOfMonth()).getLunarDay();
         LunarHour hour = LunarHour.fromYmdHms(
             today.getYear(),
             today.getMonth(),
@@ -126,7 +127,7 @@ public class LunarUtils {
      * @return 天干地支，例如："甲子"
      */
     public static String getHourGanZhi(LocalDate date, LocalTime time) {
-        SolarDay solarDay = SolarDay.fromDate(date);
+        SolarDay solarDay = SolarDay.fromYmd(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
         LunarDay lunarDay = solarDay.getLunarDay();
         LunarHour hour = LunarHour.fromYmdHms(
             lunarDay.getYear(),
@@ -168,7 +169,7 @@ public class LunarUtils {
      * @return 节气名称，如果不是节气日期则返回null
      */
     public static String getSolarTerm(LocalDate date) {
-        SolarDay solarDay = SolarDay.fromDate(date);
+        SolarDay solarDay = SolarDay.fromYmd(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
         SolarTerm term = solarDay.getTerm();
         return term != null ? term.getName() : null;
     }
@@ -179,13 +180,24 @@ public class LunarUtils {
      * @return 下一个节气的日期和名称
      */
     public static String getNextSolarTerm(LocalDate date) {
-        SolarDay solarDay = SolarDay.fromDate(date);
-        SolarTerm nextTerm = solarDay.getNextTerm();
-        if (nextTerm == null) {
+        LocalDate current = date;
+        SolarTerm term = null;
+        
+        // 向后查找最多60天，直到找到下一个节气
+        for (int i = 1; i <= 60; i++) {
+            current = current.plusDays(1);
+            SolarDay solarDay = SolarDay.fromYmd(current.getYear(), current.getMonthValue(), current.getDayOfMonth());
+            term = solarDay.getTerm();
+            if (term != null) {
+                break;
+            }
+        }
+        
+        if (term == null) {
             return null;
         }
-        SolarDay termDay = nextTerm.getJulianDay().getSolarDay();
+        
         return String.format("%d年%d月%d日 %s", 
-            termDay.getYear(), termDay.getMonth(), termDay.getDay(), nextTerm.getName());
+            current.getYear(), current.getMonthValue(), current.getDayOfMonth(), term.getName());
     }
-} 
+}
