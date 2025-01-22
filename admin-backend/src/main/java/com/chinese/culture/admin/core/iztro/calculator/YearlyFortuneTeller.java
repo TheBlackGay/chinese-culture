@@ -6,6 +6,7 @@ import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
 import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
 import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
 import com.chinese.culture.admin.core.iztro.data.enums.StarType;
+import com.chinese.culture.admin.core.iztro.analyzer.PalaceAuspiciousnessAnalyzer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -87,8 +88,8 @@ public class YearlyFortuneTeller {
     private static Map<String, Object> analyzePalaceForYear(Palace yearlyPalace) {
         Map<String, Object> analysis = new HashMap<>();
         
-        // 获取宫位吉凶分析
-        Map<String, Object> auspiciousness = PalaceAuspiciousnessCalculator.getDetailedAnalysis(yearlyPalace);
+        // 获取流年宫位吉凶分析
+        Map<String, Object> auspiciousness = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(yearlyPalace);
         analysis.put("auspiciousness", auspiciousness);
         
         // 分析宫位主题
@@ -214,8 +215,8 @@ public class YearlyFortuneTeller {
             .orElse(null);
         
         if (majorLimitPalace != null) {
-            Map<String, Object> majorLimitAnalysis = PalaceAuspiciousnessCalculator.getDetailedAnalysis(majorLimitPalace);
-            analysis.put("majorLimit", majorLimitAnalysis);
+            Map<String, Object> majorLimitAnalysis = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(majorLimitPalace);
+            analysis.put("majorLimitAnalysis", majorLimitAnalysis);
         }
         
         // 获取当前小限宫位
@@ -225,8 +226,8 @@ public class YearlyFortuneTeller {
             .orElse(null);
         
         if (minorLimitPalace != null) {
-            Map<String, Object> minorLimitAnalysis = PalaceAuspiciousnessCalculator.getDetailedAnalysis(minorLimitPalace);
-            analysis.put("minorLimit", minorLimitAnalysis);
+            Map<String, Object> minorLimitAnalysis = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(minorLimitPalace);
+            analysis.put("minorLimitAnalysis", minorLimitAnalysis);
         }
         
         return analysis;
@@ -267,16 +268,16 @@ public class YearlyFortuneTeller {
         interpretation.append(mutagenAnalysis.get("interpretation")).append("\n");
         
         // 5. 大小限分析
-        if (limitAnalysis.containsKey("majorLimit")) {
+        if (limitAnalysis.containsKey("majorLimitAnalysis")) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> majorLimit = (Map<String, Object>) limitAnalysis.get("majorLimit");
-            interpretation.append("大限运势：").append(majorLimit.get("interpretation")).append("\n");
+            Map<String, Object> majorLimitAnalysis = (Map<String, Object>) limitAnalysis.get("majorLimitAnalysis");
+            interpretation.append("大限运势：").append(majorLimitAnalysis.get("interpretation")).append("\n");
         }
         
-        if (limitAnalysis.containsKey("minorLimit")) {
+        if (limitAnalysis.containsKey("minorLimitAnalysis")) {
             @SuppressWarnings("unchecked")
-            Map<String, Object> minorLimit = (Map<String, Object>) limitAnalysis.get("minorLimit");
-            interpretation.append("小限运势：").append(minorLimit.get("interpretation")).append("\n");
+            Map<String, Object> minorLimitAnalysis = (Map<String, Object>) limitAnalysis.get("minorLimitAnalysis");
+            interpretation.append("小限运势：").append(minorLimitAnalysis.get("interpretation")).append("\n");
         }
         
         return interpretation.toString();

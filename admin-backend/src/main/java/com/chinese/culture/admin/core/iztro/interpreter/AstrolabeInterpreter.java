@@ -11,6 +11,7 @@ import com.chinese.culture.admin.core.iztro.data.AstrolabeInterpretation;
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -151,11 +152,12 @@ public class AstrolabeInterpreter {
         // 转换星耀列表为名称列表
         List<String> starNames = stars.stream()
                 .map(Star::getName)
+                .map(StarName::getDescription)
                 .collect(Collectors.toList());
 
         // 转换星耀列表为位置映射
         Map<String, Integer> starPositions = stars.stream()
-                .collect(Collectors.toMap(Star::getName, Star::getPosition));
+                .collect(Collectors.toMap(it->it.getName().getDescription(), Star::getPosition));
 
         // 计算四化关系
         relations.setMutagenRelations(MutagenCalculator.calculateMutagenRelations(HeavenlyStem.fromDescription(yearStem), starNames));

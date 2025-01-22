@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
   # 开发环境禁用缓存
@@ -24,4 +24,4 @@ springfox:
 app:
   # 开发环境关闭限流
   rate-limit:
-    enabled: false 
+    enabled: false

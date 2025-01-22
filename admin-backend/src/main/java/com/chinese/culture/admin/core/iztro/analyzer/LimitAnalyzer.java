@@ -1,4 +1,4 @@
-package com.chinese.culture.admin.core.iztro.calculator;
+package com.chinese.culture.admin.core.iztro.analyzer;
 
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
@@ -162,7 +162,8 @@ public class LimitAnalyzer {
         }
 
         // 1. 计算宫位强度
-        int strength = PalaceAuspiciousnessCalculator.calculateAuspiciousness(palace);
+        Map<String, Object> result = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(palace);
+        int strength = (int) result.get("score");
         analysis.put("strength", strength);
 
         // 2. 分析主星

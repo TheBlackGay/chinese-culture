@@ -91,9 +91,27 @@ class StarCombinationAnalyzerTest {
         assertTrue(combinations.contains("贵人提携")); // 天魁天钺组合
     }
 
+    @Test
+    void testAnalyzeStarCombination() {
+        // 创建测试数据
+        Palace palace = new Palace(EarthlyBranch.CHEN);
+        palace.setName("命宫");
+        
+        // 添加星耀
+        Star star = new Star(StarName.ZIWEI, StarType.MAJOR);
+        palace.addMajorStar(star);
+        
+        // 添加四化
+        star.addMutagen(Mutagen.LUCKY);
+        
+        // 测试分析结果
+        String combination = StarCombinationAnalyzer.analyzeStarCombination(palace);
+        assertNotNull(combination);
+        assertTrue(combination.contains("紫微"));
+    }
+
     private Star createStar(String name, int position) {
-        Star star = new Star();
-        star.setName(name);
+        Star star = new Star(StarName.valueOf(name), StarType.MAJOR);
         star.setPosition(position);
         return star;
     }

@@ -1,5 +1,10 @@
 package com.chinese.culture.admin.core.iztro.calculator;
 
+import com.chinese.culture.admin.core.iztro.data.Star;
+import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
+import com.chinese.culture.admin.core.iztro.data.enums.StarType;
+import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
 import org.junit.jupiter.api.Test;
 import java.util.*;
 
@@ -10,77 +15,87 @@ class MutagenCalculatorTest {
     @Test
     void testCalculateMutagenRelationsForJia() {
         // 准备测试数据
-        String yearStem = "甲";
-        List<String> stars = Arrays.asList("廉贞", "破军", "武曲", "太阳");
+        HeavenlyStem yearStem = HeavenlyStem.JIA;
+        List<Star> stars = Arrays.asList(
+            new Star(StarName.LIANZHEN, StarType.MAJOR),
+            new Star(StarName.POJUN, StarType.MAJOR),
+            new Star(StarName.WUQU, StarType.MAJOR),
+            new Star(StarName.TAIYANG, StarType.MAJOR)
+        );
 
         // 执行测试
-        Map<String, List<String>> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
+        Map<Star, Mutagen> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
 
         // 验证结果
         assertNotNull(relations);
-        assertTrue(relations.containsKey("廉贞"));
-        assertTrue(relations.get("廉贞").contains("化禄"));
-        assertTrue(relations.containsKey("破军"));
-        assertTrue(relations.get("破军").contains("化权"));
-        assertTrue(relations.containsKey("武曲"));
-        assertTrue(relations.get("武曲").contains("化科"));
-        assertTrue(relations.containsKey("太阳"));
-        assertTrue(relations.get("太阳").contains("化忌"));
+        assertTrue(relations.containsKey(stars.get(0)));
+        assertEquals(Mutagen.LU, relations.get(stars.get(0)));
+        assertTrue(relations.containsKey(stars.get(1)));
+        assertEquals(Mutagen.QUAN, relations.get(stars.get(1)));
+        assertTrue(relations.containsKey(stars.get(2)));
+        assertEquals(Mutagen.KE, relations.get(stars.get(2)));
+        assertTrue(relations.containsKey(stars.get(3)));
+        assertEquals(Mutagen.JI, relations.get(stars.get(3)));
     }
 
     @Test
     void testCalculateMutagenRelationsForYi() {
         // 准备测试数据
-        String yearStem = "乙";
-        List<String> stars = Arrays.asList("天机", "天梁", "紫微", "太阴");
+        HeavenlyStem yearStem = HeavenlyStem.YI;
+        List<Star> stars = Arrays.asList(
+            new Star(StarName.TIANJI, StarType.MAJOR),
+            new Star(StarName.TIANXIANG, StarType.MAJOR),
+            new Star(StarName.ZIWEI, StarType.MAJOR),
+            new Star(StarName.TAIYIN, StarType.MAJOR)
+        );
 
         // 执行测试
-        Map<String, List<String>> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
+        Map<Star, Mutagen> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
 
         // 验证结果
         assertNotNull(relations);
-        assertTrue(relations.containsKey("天机"));
-        assertTrue(relations.get("天机").contains("化禄"));
-        assertTrue(relations.containsKey("天梁"));
-        assertTrue(relations.get("天梁").contains("化权"));
-        assertTrue(relations.containsKey("紫微"));
-        assertTrue(relations.get("紫微").contains("化科"));
-        assertTrue(relations.containsKey("太阴"));
-        assertTrue(relations.get("太阴").contains("化忌"));
+        assertTrue(relations.containsKey(stars.get(0)));
+        assertEquals(Mutagen.LU, relations.get(stars.get(0)));
+        assertTrue(relations.containsKey(stars.get(1)));
+        assertEquals(Mutagen.QUAN, relations.get(stars.get(1)));
+        assertTrue(relations.containsKey(stars.get(2)));
+        assertEquals(Mutagen.KE, relations.get(stars.get(2)));
+        assertTrue(relations.containsKey(stars.get(3)));
+        assertEquals(Mutagen.JI, relations.get(stars.get(3)));
     }
 
     @Test
     void testCalculateStarConflictsWithConflict() {
         // 准备测试数据
-        Map<String, Integer> starPositions = new HashMap<>();
-        starPositions.put("化禄", 0);
-        starPositions.put("化忌", 0);
-        starPositions.put("化权", 0);
+        Map<Mutagen, Integer> starPositions = new HashMap<>();
+        starPositions.put(Mutagen.LU, 0);
+        starPositions.put(Mutagen.JI, 0);
+        starPositions.put(Mutagen.QUAN, 0);
 
         // 执行测试
-        Map<String, List<String>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
+        Map<Mutagen, List<Mutagen>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
 
         // 验证结果
         assertNotNull(conflicts);
-        assertTrue(conflicts.containsKey("化禄"));
-        assertTrue(conflicts.get("化禄").contains("化忌"));
-        assertTrue(conflicts.containsKey("化权"));
-        assertTrue(conflicts.get("化权").contains("化忌"));
-        assertTrue(conflicts.containsKey("化忌"));
-        assertTrue(conflicts.get("化忌").containsAll(Arrays.asList("化禄", "化权")));
+        assertTrue(conflicts.containsKey(Mutagen.LU));
+        assertTrue(conflicts.get(Mutagen.LU).contains(Mutagen.JI));
+        assertTrue(conflicts.containsKey(Mutagen.QUAN));
+        assertTrue(conflicts.get(Mutagen.QUAN).contains(Mutagen.JI));
+        assertTrue(conflicts.containsKey(Mutagen.JI));
+        assertTrue(conflicts.get(Mutagen.JI).containsAll(Arrays.asList(Mutagen.LU, Mutagen.QUAN)));
     }
 
     @Test
     void testCalculateStarConflictsWithoutConflict() {
         // 准备测试数据
-        Map<String, Integer> starPositions = new HashMap<>();
-        starPositions.put("化禄", 0);
-        starPositions.put("化权", 1);
-        starPositions.put("化科", 2);
-        starPositions.put("化忌", 3);
+        Map<Mutagen, Integer> starPositions = new HashMap<>();
+        starPositions.put(Mutagen.LU, 0);
+        starPositions.put(Mutagen.QUAN, 1);
+        starPositions.put(Mutagen.KE, 2);
+        starPositions.put(Mutagen.JI, 3);
 
         // 执行测试
-        Map<String, List<String>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
+        Map<Mutagen, List<Mutagen>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
 
         // 验证结果
         assertNotNull(conflicts);
@@ -90,11 +105,16 @@ class MutagenCalculatorTest {
     @Test
     void testCalculateMutagenRelationsWithInvalidYearStem() {
         // 准备测试数据
-        String yearStem = "无效";
-        List<String> stars = Arrays.asList("廉贞", "破军", "武曲", "太阳");
+        HeavenlyStem yearStem = null;
+        List<Star> stars = Arrays.asList(
+            new Star(StarName.LIANZHEN, StarType.MAJOR),
+            new Star(StarName.POJUN, StarType.MAJOR),
+            new Star(StarName.WUQU, StarType.MAJOR),
+            new Star(StarName.TAIYANG, StarType.MAJOR)
+        );
 
         // 执行测试
-        Map<String, List<String>> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
+        Map<Star, Mutagen> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
 
         // 验证结果
         assertNotNull(relations);
@@ -104,11 +124,11 @@ class MutagenCalculatorTest {
     @Test
     void testCalculateMutagenRelationsWithEmptyStars() {
         // 准备测试数据
-        String yearStem = "甲";
-        List<String> stars = new ArrayList<>();
+        HeavenlyStem yearStem = HeavenlyStem.JIA;
+        List<Star> stars = new ArrayList<>();
 
         // 执行测试
-        Map<String, List<String>> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
+        Map<Star, Mutagen> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
 
         // 验证结果
         assertNotNull(relations);
@@ -118,10 +138,10 @@ class MutagenCalculatorTest {
     @Test
     void testCalculateStarConflictsWithEmptyPositions() {
         // 准备测试数据
-        Map<String, Integer> starPositions = new HashMap<>();
+        Map<Mutagen, Integer> starPositions = new HashMap<>();
 
         // 执行测试
-        Map<String, List<String>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
+        Map<Mutagen, List<Mutagen>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
 
         // 验证结果
         assertNotNull(conflicts);
@@ -131,29 +151,41 @@ class MutagenCalculatorTest {
     @Test
     void calculateMutagenRelations() {
         // 测试甲年四化
-        String yearStem = "甲";
-        List<String> stars = Arrays.asList("廉贞", "破军", "武曲", "太阳", "天机");
+        HeavenlyStem yearStem = HeavenlyStem.JIA;
+        List<Star> stars = Arrays.asList(
+            new Star(StarName.LIANZHEN, StarType.MAJOR),
+            new Star(StarName.POJUN, StarType.MAJOR),
+            new Star(StarName.WUQU, StarType.MAJOR),
+            new Star(StarName.TAIYANG, StarType.MAJOR),
+            new Star(StarName.TIANJI, StarType.MAJOR)
+        );
         
-        Map<String, List<String>> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
+        Map<Star, Mutagen> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
         
         assertNotNull(relations);
-        assertTrue(relations.containsKey("廉贞"));
-        assertTrue(relations.get("廉贞").contains("化禄"));
-        assertTrue(relations.containsKey("破军"));
-        assertTrue(relations.get("破军").contains("化权"));
-        assertTrue(relations.containsKey("武曲"));
-        assertTrue(relations.get("武曲").contains("化科"));
-        assertTrue(relations.containsKey("太阳"));
-        assertTrue(relations.get("太阳").contains("化忌"));
+        assertTrue(relations.containsKey(stars.get(0)));
+        assertEquals(Mutagen.LU, relations.get(stars.get(0)));
+        assertTrue(relations.containsKey(stars.get(1)));
+        assertEquals(Mutagen.QUAN, relations.get(stars.get(1)));
+        assertTrue(relations.containsKey(stars.get(2)));
+        assertEquals(Mutagen.KE, relations.get(stars.get(2)));
+        assertTrue(relations.containsKey(stars.get(3)));
+        assertEquals(Mutagen.JI, relations.get(stars.get(3)));
     }
 
     @Test
     void calculateMutagenRelationsWithInvalidYear() {
         // 测试无效年干
-        String yearStem = "无效";
-        List<String> stars = Arrays.asList("廉贞", "破军", "武曲", "太阳");
+        HeavenlyStem yearStem = null;
+        List<Star> stars = Arrays.asList(
+            new Star(StarName.LIANZHEN, StarType.MAJOR),
+            new Star(StarName.POJUN, StarType.MAJOR),
+            new Star(StarName.WUQU, StarType.MAJOR),
+            new Star(StarName.TAIYANG, StarType.MAJOR),
+            new Star(StarName.TIANJI, StarType.MAJOR)
+        );
         
-        Map<String, List<String>> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
+        Map<Star, Mutagen> relations = MutagenCalculator.calculateMutagenRelations(yearStem, stars);
         
         assertNotNull(relations);
         assertTrue(relations.isEmpty());
@@ -162,36 +194,36 @@ class MutagenCalculatorTest {
     @Test
     void calculateStarConflicts() {
         // 创建测试数据
-        Map<String, Integer> starPositions = new HashMap<>();
+        Map<Mutagen, Integer> starPositions = new HashMap<>();
         
         // 设置同宫四化冲突
-        starPositions.put("化禄", 0);
-        starPositions.put("化忌", 0);
-        starPositions.put("化权", 0);
+        starPositions.put(Mutagen.LU, 0);
+        starPositions.put(Mutagen.JI, 0);
+        starPositions.put(Mutagen.QUAN, 0);
         
-        Map<String, List<String>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
+        Map<Mutagen, List<Mutagen>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
         
         assertNotNull(conflicts);
-        assertTrue(conflicts.containsKey("化禄"));
-        assertTrue(conflicts.get("化禄").contains("化忌"));
-        assertTrue(conflicts.containsKey("化权"));
-        assertTrue(conflicts.get("化权").contains("化忌"));
-        assertTrue(conflicts.containsKey("化忌"));
-        assertTrue(conflicts.get("化忌").containsAll(Arrays.asList("化禄", "化权")));
+        assertTrue(conflicts.containsKey(Mutagen.LU));
+        assertTrue(conflicts.get(Mutagen.LU).contains(Mutagen.JI));
+        assertTrue(conflicts.containsKey(Mutagen.QUAN));
+        assertTrue(conflicts.get(Mutagen.QUAN).contains(Mutagen.JI));
+        assertTrue(conflicts.containsKey(Mutagen.JI));
+        assertTrue(conflicts.get(Mutagen.JI).containsAll(Arrays.asList(Mutagen.LU, Mutagen.QUAN)));
     }
 
     @Test
     void calculateStarConflictsWithNoConflicts() {
         // 创建测试数据
-        Map<String, Integer> starPositions = new HashMap<>();
+        Map<Mutagen, Integer> starPositions = new HashMap<>();
         
         // 设置无冲突的位置
-        starPositions.put("化禄", 0);
-        starPositions.put("化权", 1);
-        starPositions.put("化科", 2);
-        starPositions.put("化忌", 3);
+        starPositions.put(Mutagen.LU, 0);
+        starPositions.put(Mutagen.QUAN, 1);
+        starPositions.put(Mutagen.KE, 2);
+        starPositions.put(Mutagen.JI, 3);
         
-        Map<String, List<String>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
+        Map<Mutagen, List<Mutagen>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
         
         assertNotNull(conflicts);
         assertTrue(conflicts.isEmpty());
@@ -200,24 +232,24 @@ class MutagenCalculatorTest {
     @Test
     void calculateMultipleStarConflicts() {
         // 创建测试数据
-        Map<String, Integer> starPositions = new HashMap<>();
+        Map<Mutagen, Integer> starPositions = new HashMap<>();
         
         // 设置多重四化冲突
-        starPositions.put("化禄", 0);
-        starPositions.put("化忌", 0);
-        starPositions.put("化权", 0);
-        starPositions.put("化科", 0);
+        starPositions.put(Mutagen.LU, 0);
+        starPositions.put(Mutagen.JI, 0);
+        starPositions.put(Mutagen.QUAN, 0);
+        starPositions.put(Mutagen.KE, 0);
         
-        Map<String, List<String>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
+        Map<Mutagen, List<Mutagen>> conflicts = MutagenCalculator.calculateStarConflicts(starPositions);
         
         assertNotNull(conflicts);
-        assertTrue(conflicts.containsKey("化禄"));
-        assertTrue(conflicts.get("化禄").contains("化忌"));
-        assertTrue(conflicts.containsKey("化权"));
-        assertTrue(conflicts.get("化权").contains("化忌"));
-        assertTrue(conflicts.containsKey("化科"));
-        assertTrue(conflicts.get("化科").contains("化忌"));
-        assertTrue(conflicts.containsKey("化忌"));
-        assertTrue(conflicts.get("化忌").containsAll(Arrays.asList("化禄", "化权", "化科")));
+        assertTrue(conflicts.containsKey(Mutagen.LU));
+        assertTrue(conflicts.get(Mutagen.LU).contains(Mutagen.JI));
+        assertTrue(conflicts.containsKey(Mutagen.QUAN));
+        assertTrue(conflicts.get(Mutagen.QUAN).contains(Mutagen.JI));
+        assertTrue(conflicts.containsKey(Mutagen.KE));
+        assertTrue(conflicts.get(Mutagen.KE).contains(Mutagen.JI));
+        assertTrue(conflicts.containsKey(Mutagen.JI));
+        assertTrue(conflicts.get(Mutagen.JI).containsAll(Arrays.asList(Mutagen.LU, Mutagen.QUAN, Mutagen.KE)));
     }
 } 

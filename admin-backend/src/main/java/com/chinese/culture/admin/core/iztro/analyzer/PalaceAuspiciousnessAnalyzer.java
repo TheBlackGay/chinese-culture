@@ -1,17 +1,22 @@
-package com.chinese.culture.admin.core.iztro.calculator;
+package com.chinese.culture.admin.core.iztro.analyzer;
 
+import com.chinese.culture.admin.core.iztro.calculator.BrightnessCalculator;
+import com.chinese.culture.admin.core.iztro.constants.AstroConstants;
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
-import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
 import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
-import com.chinese.culture.admin.core.iztro.constants.AstroConstants;
+import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
+import org.springframework.stereotype.Component;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 宫位吉凶判定器
+ * 宫位吉凶分析器
  */
-public class PalaceAuspiciousnessJudger {
+@Component
+public class PalaceAuspiciousnessAnalyzer {
 
     /**
      * 判定宫位吉凶
@@ -46,13 +51,14 @@ public class PalaceAuspiciousnessJudger {
 
         // 生成结果
         return generateResult(palace, analysisResult, luckyScore, unluckyScore,
-            brightnessBonus, mutagenBonus, finalScore);
+                brightnessBonus, mutagenBonus, finalScore);
     }
 
     /**
      * 分析星耀信息
      */
     private static StarAnalysisResult analyzeStars(List<Star> stars, Palace palace) {
+
         StarAnalysisResult result = new StarAnalysisResult();
 
         for (Star star : stars) {
@@ -78,8 +84,8 @@ public class PalaceAuspiciousnessJudger {
             // 收集四化信息
             for (Mutagen mutagen : star.getMutagens()) {
                 result.getMutagenInfo()
-                    .computeIfAbsent(mutagen, k -> new ArrayList<>())
-                    .add(star);
+                        .computeIfAbsent(mutagen, k -> new ArrayList<>())
+                        .add(star);
             }
         }
 
@@ -90,46 +96,49 @@ public class PalaceAuspiciousnessJudger {
      * 计算吉星分数
      */
     private static int calculateLuckyScore(List<Star> luckyStars) {
+
         return luckyStars.stream()
-            .mapToInt(star -> {
-                switch (star.getType()) {
-                    case MAJOR:
-                        return AstroConstants.MAJOR_STAR_WEIGHT;
-                    case MINOR:
-                        return AstroConstants.MINOR_STAR_WEIGHT;
-                    case ADJECTIVE:
-                        return AstroConstants.ADJECTIVE_STAR_WEIGHT;
-                    default:
-                        return 0;
-                }
-            })
-            .sum() * AstroConstants.SCORE_MULTIPLIER;
+                .mapToInt(star -> {
+                    switch (star.getType()) {
+                        case MAJOR:
+                            return AstroConstants.MAJOR_STAR_WEIGHT;
+                        case MINOR:
+                            return AstroConstants.MINOR_STAR_WEIGHT;
+                        case ADJECTIVE:
+                            return AstroConstants.ADJECTIVE_STAR_WEIGHT;
+                        default:
+                            return 0;
+                    }
+                })
+                .sum() * AstroConstants.SCORE_MULTIPLIER;
     }
 
     /**
      * 计算凶星分数
      */
     private static int calculateUnluckyScore(List<Star> unluckyStars) {
+
         return unluckyStars.stream()
-            .mapToInt(star -> {
-                switch (star.getType()) {
-                    case MAJOR:
-                        return AstroConstants.MAJOR_STAR_WEIGHT;
-                    case MINOR:
-                        return AstroConstants.MINOR_STAR_WEIGHT;
-                    case ADJECTIVE:
-                        return AstroConstants.ADJECTIVE_STAR_WEIGHT;
-                    default:
-                        return 0;
-                }
-            })
-            .sum() * AstroConstants.SCORE_MULTIPLIER;
+                .mapToInt(star -> {
+                    switch (star.getType()) {
+                        case MAJOR:
+                            return AstroConstants.MAJOR_STAR_WEIGHT;
+                        case MINOR:
+                            return AstroConstants.MINOR_STAR_WEIGHT;
+                        case ADJECTIVE:
+                            return AstroConstants.ADJECTIVE_STAR_WEIGHT;
+                        default:
+                            return 0;
+                    }
+                })
+                .sum() * AstroConstants.SCORE_MULTIPLIER;
     }
 
     /**
      * 计算亮度加成
      */
     private static int calculateBrightnessBonus(StarAnalysisResult result) {
+
         int bonus = 0;
         bonus += result.getBrightStars().size() * AstroConstants.BRIGHT_BONUS;
         bonus += result.getDeadStars().size() * AstroConstants.DEAD_PENALTY;
@@ -140,6 +149,7 @@ public class PalaceAuspiciousnessJudger {
      * 计算四化加成
      */
     private static int calculateMutagenBonus(Map<Mutagen, List<Star>> mutagenInfo) {
+
         int bonus = 0;
         for (Map.Entry<Mutagen, List<Star>> entry : mutagenInfo.entrySet()) {
             switch (entry.getKey()) {
@@ -162,17 +172,19 @@ public class PalaceAuspiciousnessJudger {
      * 计算最终分数
      */
     private static int calculateFinalScore(int luckyScore, int unluckyScore,
-            int brightnessBonus, int mutagenBonus) {
+                                           int brightnessBonus, int mutagenBonus) {
+
         int finalScore = AstroConstants.BASE_SCORE +
-            (luckyScore - unluckyScore) + brightnessBonus + mutagenBonus;
+                (luckyScore - unluckyScore) + brightnessBonus + mutagenBonus;
         return Math.min(AstroConstants.MAX_SCORE,
-            Math.max(AstroConstants.MIN_SCORE, finalScore));
+                Math.max(AstroConstants.MIN_SCORE, finalScore));
     }
 
     /**
      * 获取吉凶等级
      */
     private static String getAuspiciousnessLevel(int score) {
+
         if (score >= AstroConstants.GREAT_AUSPICIOUS_THRESHOLD) {
             return "大吉";
         } else if (score >= AstroConstants.AUSPICIOUS_THRESHOLD) {
@@ -194,26 +206,28 @@ public class PalaceAuspiciousnessJudger {
      * 生成结果
      */
     private static Map<String, Object> generateResult(Palace palace, StarAnalysisResult analysisResult,
-            int luckyScore, int unluckyScore, int brightnessBonus, int mutagenBonus, int finalScore) {
+                                                      int luckyScore, int unluckyScore, int brightnessBonus, int mutagenBonus, int finalScore) {
+
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> analysis = new HashMap<>();
 
         // 转换星耀名称列表
         analysis.put("luckyStars", analysisResult.getLuckyStars().stream()
-            .map(Star::getName).collect(Collectors.toList()));
+                .map(Star::getName).collect(Collectors.toList()));
         analysis.put("unluckyStars", analysisResult.getUnluckyStars().stream()
-            .map(Star::getName).collect(Collectors.toList()));
+                .map(Star::getName).collect(Collectors.toList()));
         analysis.put("brightStars", analysisResult.getBrightStars().stream()
-            .map(Star::getName).collect(Collectors.toList()));
+                .map(Star::getName).collect(Collectors.toList()));
         analysis.put("deadStars", analysisResult.getDeadStars().stream()
-            .map(Star::getName).collect(Collectors.toList()));
+                .map(Star::getName).collect(Collectors.toList()));
 
         // 转换四化信息
         Map<String, List<String>> mutagenInfo = new HashMap<>();
         analysisResult.getMutagenInfo().forEach((mutagen, stars) ->
-            mutagenInfo.put(mutagen.name(), stars.stream()
-                .map(Star::getName)
-                .collect(Collectors.toList())));
+                mutagenInfo.put(mutagen.name(), stars.stream()
+                        .map(Star::getName)
+                        .map(StarName::getDescription)
+                        .collect(Collectors.toList())));
         analysis.put("mutagenInfo", mutagenInfo);
 
         // 添加分数信息
@@ -241,6 +255,7 @@ public class PalaceAuspiciousnessJudger {
      * 生成描述文本
      */
     private static String generateDescription(Palace palace, StarAnalysisResult result, int finalScore) {
+
         StringBuilder description = new StringBuilder();
 
         // 1. 宫位基本信息
@@ -249,40 +264,45 @@ public class PalaceAuspiciousnessJudger {
         // 2. 吉凶星耀分析
         if (!result.getLuckyStars().isEmpty()) {
             description.append(String.format("吉星有%s；",
-                result.getLuckyStars().stream()
-                    .map(Star::getName)
-                    .collect(Collectors.joining("、"))));
+                    result.getLuckyStars().stream()
+                            .map(Star::getName)
+                            .map(it -> it.getDescription())
+                            .collect(Collectors.joining("、"))));
         }
         if (!result.getUnluckyStars().isEmpty()) {
             description.append(String.format("凶星有%s；",
-                result.getUnluckyStars().stream()
-                    .map(Star::getName)
-                    .collect(Collectors.joining("、"))));
+                    result.getUnluckyStars().stream()
+                            .map(Star::getName)
+                            .map(it -> it.getDescription())
+                            .collect(Collectors.joining("、"))));
         }
 
         // 3. 星耀亮度分析
         if (!result.getBrightStars().isEmpty()) {
             description.append(String.format("明亮星耀有%s；",
-                result.getBrightStars().stream()
-                    .map(Star::getName)
-                    .collect(Collectors.joining("、"))));
+                    result.getBrightStars().stream()
+                            .map(Star::getName)
+                            .map(it -> it.getDescription())
+                            .collect(Collectors.joining("、"))));
         }
         if (!result.getDeadStars().isEmpty()) {
             description.append(String.format("失辉星耀有%s；",
-                result.getDeadStars().stream()
-                    .map(Star::getName)
-                    .collect(Collectors.joining("、"))));
+                    result.getDeadStars().stream()
+                            .map(Star::getName)
+                            .map(it -> it.getDescription())
+                            .collect(Collectors.joining("、"))));
         }
 
         // 4. 四化分析
         if (!result.getMutagenInfo().isEmpty()) {
             description.append("四化情况：");
             result.getMutagenInfo().forEach((mutagen, stars) ->
-                description.append(String.format("%s化：%s；",
-                    mutagen.name(),
-                    stars.stream()
-                        .map(Star::getName)
-                        .collect(Collectors.joining("、")))));
+                    description.append(String.format("%s化：%s；",
+                            mutagen.name(),
+                            stars.stream()
+                                    .map(Star::getName)
+                                    .map(it -> it.getDescription())
+                                    .collect(Collectors.joining("、")))));
         }
 
         // 5. 总体评价
@@ -295,16 +315,42 @@ public class PalaceAuspiciousnessJudger {
      * 星耀分析结果类
      */
     private static class StarAnalysisResult {
+
         private final List<Star> luckyStars = new ArrayList<>();
+
         private final List<Star> unluckyStars = new ArrayList<>();
+
         private final List<Star> brightStars = new ArrayList<>();
+
         private final List<Star> deadStars = new ArrayList<>();
+
         private final Map<Mutagen, List<Star>> mutagenInfo = new HashMap<>();
 
-        public List<Star> getLuckyStars() { return luckyStars; }
-        public List<Star> getUnluckyStars() { return unluckyStars; }
-        public List<Star> getBrightStars() { return brightStars; }
-        public List<Star> getDeadStars() { return deadStars; }
-        public Map<Mutagen, List<Star>> getMutagenInfo() { return mutagenInfo; }
+        public List<Star> getLuckyStars() {
+
+            return luckyStars;
+        }
+
+        public List<Star> getUnluckyStars() {
+
+            return unluckyStars;
+        }
+
+        public List<Star> getBrightStars() {
+
+            return brightStars;
+        }
+
+        public List<Star> getDeadStars() {
+
+            return deadStars;
+        }
+
+        public Map<Mutagen, List<Star>> getMutagenInfo() {
+
+            return mutagenInfo;
+        }
+
     }
+
 }

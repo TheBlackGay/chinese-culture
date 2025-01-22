@@ -1,9 +1,13 @@
-package com.chinese.culture.admin.core.iztro.calculator;
+package com.chinese.culture.admin.core.iztro.interpreter;
 
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
 import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
+import com.chinese.culture.admin.core.iztro.analyzer.PalaceAuspiciousnessAnalyzer;
+import com.chinese.culture.admin.core.iztro.calculator.LuckCalculator;
+import com.chinese.culture.admin.core.iztro.calculator.StarConvergenceCalculator;
+import com.chinese.culture.admin.core.iztro.calculator.PalaceRelationCalculator;
 
 import java.util.*;
 
@@ -28,7 +32,7 @@ public class LimitInterpreter {
         int currentLimit = LuckCalculator.calculateCurrentMajorLimit(age, majorLimitYears);
         
         // 2. 获取宫位吉凶分析
-        Map<String, Object> auspiciousness = PalaceAuspiciousnessCalculator.getDetailedAnalysis(palace);
+        Map<String, Object> auspiciousness = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(palace);
         interpretation.put("auspiciousness", auspiciousness);
         
         // 3. 分析星耀组合
@@ -75,7 +79,7 @@ public class LimitInterpreter {
         Map<String, Object> interpretation = new HashMap<>();
         
         // 1. 获取宫位吉凶分析
-        Map<String, Object> auspiciousness = PalaceAuspiciousnessCalculator.getDetailedAnalysis(palace);
+        Map<String, Object> auspiciousness = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(palace);
         interpretation.put("auspiciousness", auspiciousness);
         
         // 2. 分析星耀组合
@@ -155,8 +159,8 @@ public class LimitInterpreter {
             majorLimitPalace.getName(), yearlyPalace.getName(), relation));
         
         // 2. 分析吉凶组合
-        int majorScore = PalaceAuspiciousnessCalculator.calculateAuspiciousness(majorLimitPalace);
-        int yearlyScore = PalaceAuspiciousnessCalculator.calculateAuspiciousness(yearlyPalace);
+        int majorScore = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(majorLimitPalace).get("score");
+        int yearlyScore = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(yearlyPalace).get("score");
         
         if (majorScore >= 60 && yearlyScore >= 60) {
             interpretation.append("大运与流年相生，运势畅通。");
@@ -189,8 +193,8 @@ public class LimitInterpreter {
             minorLimitPalace.getName(), yearlyPalace.getName(), relation));
         
         // 2. 分析吉凶组合
-        int minorScore = PalaceAuspiciousnessCalculator.calculateAuspiciousness(minorLimitPalace);
-        int yearlyScore = PalaceAuspiciousnessCalculator.calculateAuspiciousness(yearlyPalace);
+        int minorScore = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(minorLimitPalace).get("score");
+        int yearlyScore = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(yearlyPalace).get("score");
         
         if (minorScore >= 60 && yearlyScore >= 60) {
             interpretation.append("小限与流年相生，有利发展。");

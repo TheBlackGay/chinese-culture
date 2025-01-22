@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.HashMap;
 
 /**
  * 宫位
@@ -23,67 +24,67 @@ public class Palace {
      * 宫位名称
      */
     private String name;
-    
+
     /**
      * 天干
      */
     private String heavenlyStem;
-    
+
     /**
      * 宫位序号(1-12)
      */
     private int index;
-    
+
     /**
      * 地支
      */
     private String branch;
-    
+
     /**
      * 主星列表
      */
     private List<Star> majorStars = new ArrayList<>();
-    
+
     /**
      * 辅星列表
      */
     private List<Star> minorStars = new ArrayList<>();
-    
+
     /**
      * 杂耀列表
      */
     private List<Star> adjectiveStars = new ArrayList<>();
-    
+
     /**
      * 四化列表
      */
     private List<String> mutagens = new ArrayList<>();
-    
+
     /**
      * 长生十二神
      */
     private String mutagen12;
-    
+
     /**
      * 是否为命宫
      */
     private boolean ming;
-    
+
     /**
      * 是否为身宫
      */
     private boolean body;
-    
+
     /**
      * 宫位阴阳属性
      */
     private PalaceAttribute attribute;
-    
+
     /**
      * 五行属性
      */
     private FiveElements fiveElements;
-    
+
     /**
      * 宫位关系映射
      */
@@ -98,6 +99,15 @@ public class Palace {
     private boolean currentMajorLimit;
     private boolean currentMinorLimit;
     private boolean currentYearlyFlow;
+
+    public Palace() {
+        this.majorStars = new ArrayList<>();
+        this.minorStars = new ArrayList<>();
+        this.adjectiveStars = new ArrayList<>();
+        this.mutagens = new ArrayList<>();
+        this.stars = new ArrayList<>();
+        this.relatedPalaces = new HashMap<>();
+    }
 
     /**
      * 获取所有星耀
@@ -152,6 +162,9 @@ public class Palace {
      * 获取对宫
      */
     public Optional<Palace> getOppositePalace() {
+        if (relatedPalaces == null) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(relatedPalaces.get(PalaceRelation.OPPOSITE));
     }
 
@@ -201,11 +214,11 @@ public class Palace {
         if (stars == null) {
             return;
         }
-        
+
         majorStars.clear();
         minorStars.clear();
         adjectiveStars.clear();
-        
+
         for (Star star : stars) {
             switch (star.getType()) {
                 case MAJOR:
@@ -239,41 +252,6 @@ public class Palace {
         return this.minorLimit != 0 && this.minorLimit <= age && age <= this.minorLimit;
     }
 
-    public boolean isMing() {
-        return ming;
-    }
-
-    public boolean isBody() {
-        return body;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public List<String> getMutagens() {
-        return mutagens;
-    }
-
-    public List<Star> getMajorStars() {
-        return majorStars;
-    }
-
-    public List<Star> getMinorStars() {
-        return minorStars;
-    }
-
-    public List<Star> getAdjectiveStars() {
-        return adjectiveStars;
-    }
-
-    public List<Star> getStars() {
-        return stars;
-    }
 
     public void addMajorStar(Star star) {
         stars.add(star);
@@ -290,19 +268,7 @@ public class Palace {
         star.setPalace(this);
     }
 
-    public void setCurrentMajorLimit(boolean currentMajorLimit) {
-        this.currentMajorLimit = currentMajorLimit;
-    }
-
-    public void setCurrentMinorLimit(boolean currentMinorLimit) {
-        this.currentMinorLimit = currentMinorLimit;
-    }
-
-    public void setCurrentYearlyFlow(boolean currentYearlyFlow) {
-        this.currentYearlyFlow = currentYearlyFlow;
-    }
-
     public void setEarthlyBranch(EarthlyBranch branch) {
         this.branch = branch.toString();
     }
-} 
+}

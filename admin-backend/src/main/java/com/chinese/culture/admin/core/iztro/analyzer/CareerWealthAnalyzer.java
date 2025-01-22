@@ -4,9 +4,13 @@ import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
 import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+
+import static com.chinese.culture.admin.core.iztro.data.enums.Mutagen.*;
+import static com.chinese.culture.admin.core.iztro.data.enums.StarName.*;
 
 /**
  * 事业财运分析器
@@ -15,24 +19,28 @@ import java.util.*;
 public class CareerWealthAnalyzer {
     
     // 事业吉星列表
-    private static final List<String> CAREER_LUCKY_STARS = Arrays.asList(
-        "紫微", "天机", "太阳", "武曲", "天同", "天府", "贪狼",
-        "左辅", "右弼", "文昌", "文曲", "天魁", "天钺"
+    private static final List<StarName> CAREER_LUCKY_STARS = Arrays.asList(
+        StarName.ZIWEI, StarName.TIANJI, StarName.TAIYANG,
+        StarName.WUQU, StarName.TIANFU, StarName.TIANXIANG,
+        StarName.TIANLIANG
     );
     
     // 事业煞星列表
-    private static final List<String> CAREER_EVIL_STARS = Arrays.asList(
-        "七杀", "破军", "天刑", "火星", "铃星", "地空", "地劫"
+    private static final List<StarName> CAREER_EVIL_STARS = Arrays.asList(
+        StarName.POJUN, StarName.QISHA, StarName.TIANXING,
+        StarName.HUOXING, StarName.LINGXING
     );
     
     // 财运吉星列表
-    private static final List<String> WEALTH_LUCKY_STARS = Arrays.asList(
-        "武曲", "天同", "天府", "太阳", "贪狼", "右弼"
+    private static final List<StarName> WEALTH_LUCKY_STARS = Arrays.asList(
+        StarName.WUQU, StarName.TIANFU, StarName.TAIYIN,
+        StarName.TANLANG, StarName.ZUOFU, StarName.YOUBI
     );
     
     // 财运煞星列表
-    private static final List<String> WEALTH_EVIL_STARS = Arrays.asList(
-        "七杀", "破军", "火星", "铃星"
+    private static final List<StarName> WEALTH_EVIL_STARS = Arrays.asList(
+        StarName.POJUN, StarName.QISHA, StarName.HUOXING,
+        StarName.LINGXING, StarName.DIKONG, StarName.DIJIE
     );
     
     /**
@@ -107,71 +115,79 @@ public class CareerWealthAnalyzer {
         int score = 60;  // 基础分数
 
         // 分析官禄宫星耀亮度
-        for (Star star : officePalace.getAllStars()) {
-            Brightness Brightness = (star.getBrightness());
-            if (Brightness == Brightness.TEMPLE) {
-                score += 10;
-            } else if (Brightness == Brightness.GAIN) {
-                score -= 5;
-            } else if (Brightness == Brightness.TRAPPED) {
-                score -= 10;
+        if (officePalace != null) {
+            for (Star star : officePalace.getAllStars()) {
+                Brightness brightness = star.getBrightness();
+                if (brightness == Brightness.TEMPLE) {
+                    score += 10;
+                } else if (brightness == Brightness.GAIN) {
+                    score -= 5;
+                } else if (brightness == Brightness.TRAPPED) {
+                    score -= 10;
+                }
             }
         }
 
         // 分析事业宫星耀亮度
-        for (Star star : careerPalace.getAllStars()) {
-            Brightness Brightness = (star.getBrightness());
-            if (Brightness == Brightness.TEMPLE) {
-                score += 10;
-            } else if (Brightness == Brightness.GAIN) {
-                score -= 5;
-            } else if (Brightness == Brightness.TRAPPED) {
-                score -= 10;
+        if (careerPalace != null) {
+            for (Star star : careerPalace.getAllStars()) {
+                Brightness brightness = star.getBrightness();
+                if (brightness == Brightness.TEMPLE) {
+                    score += 10;
+                } else if (brightness == Brightness.GAIN) {
+                    score -= 5;
+                } else if (brightness == Brightness.TRAPPED) {
+                    score -= 10;
+                }
             }
         }
 
         // 分析四化
-        for (String mutagenStr : officePalace.getMutagens()) {
-            try {
-                Mutagen mutagen = Mutagen.fromString(mutagenStr);
-                switch (mutagen) {
-                    case LUCKY:
-                        score -= 5;
-                        break;
-                    case POWER:
-                        score += 5;
-                        break;
-                    case SKILL:
-                        score += 3;
-                        break;
-                    case WEAK:
-                        score -= 5;
-                        break;
+        if (officePalace != null) {
+            for (String mutagenStr : officePalace.getMutagens()) {
+                try {
+                    Mutagen mutagen = Mutagen.fromString(mutagenStr);
+                    switch (mutagen) {
+                        case LUCKY:
+                            score -= 5;
+                            break;
+                        case POWER:
+                            score += 5;
+                            break;
+                        case SKILL:
+                            score += 3;
+                            break;
+                        case WEAK:
+                            score -= 5;
+                            break;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // 忽略无效的四化值
                 }
-            } catch (IllegalArgumentException e) {
-                // 忽略无效的四化值
             }
         }
 
-        for (String mutagenStr : careerPalace.getMutagens()) {
-            try {
-                Mutagen mutagen = Mutagen.fromString(mutagenStr);
-                switch (mutagen) {
-                    case LUCKY:
-                        score -= 5;
-                        break;
-                    case POWER:
-                        score += 5;
-                        break;
-                    case SKILL:
-                        score += 3;
-                        break;
-                    case WEAK:
-                        score -= 5;
-                        break;
+        if (careerPalace != null) {
+            for (String mutagenStr : careerPalace.getMutagens()) {
+                try {
+                    Mutagen mutagen = Mutagen.fromString(mutagenStr);
+                    switch (mutagen) {
+                        case LUCKY:
+                            score -= 5;
+                            break;
+                        case POWER:
+                            score += 5;
+                            break;
+                        case SKILL:
+                            score += 3;
+                            break;
+                        case WEAK:
+                            score -= 5;
+                            break;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // 忽略无效的四化值
                 }
-            } catch (IllegalArgumentException e) {
-                // 忽略无效的四化值
             }
         }
 
@@ -190,28 +206,28 @@ public class CareerWealthAnalyzer {
         if (officePalace != null) {
             for (Star star : officePalace.getAllStars()) {
                 switch (star.getName()) {
-                    case "紫微":
-                    case "天府":
+                    case ZIWEI:
+                    case TIANFU:
                         industries.add("管理");
                         industries.add("行政");
                         break;
-                    case "天机":
-                    case "文昌":
-                    case "文曲":
+                    case TIANJI:
+                    case WENCHANG:
+                    case WENQU:
                         industries.add("教育");
                         industries.add("文化");
                         industries.add("科技");
                         break;
-                    case "太阳":
-                    case "武曲":
+                    case TAIYANG:
+                    case WUQU:
                         industries.add("金融");
                         industries.add("商业");
                         break;
-                    case "天同":
+                    case TIANTONG:
                         industries.add("医疗");
                         industries.add("服务");
                         break;
-                    case "贪狼":
+                    case TANLANG:
                         industries.add("销售");
                         industries.add("传媒");
                         break;
@@ -223,13 +239,13 @@ public class CareerWealthAnalyzer {
         if (careerPalace != null) {
             for (Star star : careerPalace.getAllStars()) {
                 switch (star.getName()) {
-                    case "左辅":
-                    case "右弼":
+                    case ZUOFU:
+                    case YOUBI:
                         industries.add("咨询");
                         industries.add("服务");
                         break;
-                    case "天魁":
-                    case "天钺":
+                    case TIANNUO:
+                    case TIANCAI:
                         industries.add("公务");
                         industries.add("事业单位");
                         break;
@@ -317,38 +333,42 @@ public class CareerWealthAnalyzer {
         StringBuilder description = new StringBuilder();
 
         // 分析财帛宫星耀亮度
-        for (Star star : wealthPalace.getAllStars()) {
-            Brightness Brightness = (star.getBrightness());
-            if (Brightness == Brightness.TEMPLE) {
-                score += 10;
-            } else if (Brightness == Brightness.GAIN) {
-                score -= 5;
-            } else if (Brightness == Brightness.TRAPPED) {
-                score -= 10;
+        if (wealthPalace != null) {
+            for (Star star : wealthPalace.getAllStars()) {
+                Brightness brightness = star.getBrightness();
+                if (brightness == Brightness.TEMPLE) {
+                    score += 10;
+                } else if (brightness == Brightness.GAIN) {
+                    score -= 5;
+                } else if (brightness == Brightness.TRAPPED) {
+                    score -= 10;
+                }
             }
         }
 
         // 分析四化
-        for (String mutagenStr : wealthPalace.getMutagens()) {
-            try {
-                Mutagen mutagen = Mutagen.fromString(mutagenStr);
-                switch (mutagen) {
-                    case LUCKY:
-                        score += 3;
-                        description.append("，有化禄星，财运强盛");
-                        break;
-                    case POWER:
-                        score += 2;
-                        break;
-                    case SKILL:
-                        score += 1;
-                        break;
-                    case WEAK:
-                        score -= 5;
-                        break;
+        if (wealthPalace != null) {
+            for (String mutagenStr : wealthPalace.getMutagens()) {
+                try {
+                    Mutagen mutagen = Mutagen.fromString(mutagenStr);
+                    switch (mutagen) {
+                        case LUCKY:
+                            score += 3;
+                            description.append("，有化禄星，财运强盛");
+                            break;
+                        case POWER:
+                            score += 2;
+                            break;
+                        case SKILL:
+                            score += 1;
+                            break;
+                        case WEAK:
+                            score -= 5;
+                            break;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // 忽略无效的四化值
                 }
-            } catch (IllegalArgumentException e) {
-                // 忽略无效的四化值
             }
         }
 
@@ -365,23 +385,23 @@ public class CareerWealthAnalyzer {
         if (wealthPalace != null) {
             for (Star star : wealthPalace.getAllStars()) {
                 switch (star.getName()) {
-                    case "武曲":
+                    case WUQU:
                         sources.add("工作收入");
                         sources.add("经商收益");
                         break;
-                    case "天同":
+                    case TIANTONG:
                         sources.add("偶然收入");
                         sources.add("意外之财");
                         break;
-                    case "天府":
+                    case TIANFU:
                         sources.add("固定收入");
                         sources.add("投资收益");
                         break;
-                    case "太阳":
+                    case TAIYANG:
                         sources.add("正财");
                         sources.add("事业收入");
                         break;
-                    case "贪狼":
+                    case TANLANG:
                         sources.add("销售收入");
                         sources.add("佣金提成");
                         break;
@@ -589,12 +609,12 @@ public class CareerWealthAnalyzer {
                 }
                 
                 // 计算星耀亮度
-                Brightness Brightness = (star.getBrightness());
-                if (Brightness == Brightness.TEMPLE) {
+                Brightness brightness = star.getBrightness();
+                if (brightness == Brightness.TEMPLE) {
                     score += 10;
-                } else if (Brightness == Brightness.GAIN) {
+                } else if (brightness == Brightness.GAIN) {
                     score -= 5;
-                } else if (Brightness == Brightness.TRAPPED) {
+                } else if (brightness == Brightness.TRAPPED) {
                     score -= 10;
                 }
             }
@@ -626,5 +646,126 @@ public class CareerWealthAnalyzer {
         result.put("score", score);
         
         return result;
+    }
+
+    /**
+     * 分析事业特点
+     */
+    private static void analyzeCareerCharacteristics(Star star, Map<String, Object> result) {
+        switch (star.getName()) {
+            case ZIWEI:
+                result.put("leadership", true);
+                result.put("authority", true);
+                break;
+            case TIANJI:
+                result.put("strategic", true);
+                result.put("innovative", true);
+                break;
+            case TAIYANG:
+                result.put("influential", true);
+                result.put("prestigious", true);
+                break;
+            case WUQU:
+                result.put("managerial", true);
+                result.put("practical", true);
+                break;
+            case TIANFU:
+                result.put("administrative", true);
+                result.put("organized", true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 分析财富特点
+     */
+    private static void analyzeWealthCharacteristics(Star star, Map<String, Object> result) {
+        switch (star.getName()) {
+            case WUQU:
+                result.put("business", true);
+                result.put("investment", true);
+                break;
+            case TIANFU:
+                result.put("savings", true);
+                result.put("property", true);
+                break;
+            case TAIYIN:
+                result.put("passive_income", true);
+                result.put("inheritance", true);
+                break;
+            case TANLANG:
+                result.put("entrepreneurship", true);
+                result.put("risk_taking", true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 分析财运状况
+     */
+    private static Map<String, Object> analyzeDetailedWealth(Palace wealthPalace, int age) {
+        Map<String, Object> result = new HashMap<>();
+        int score = 60;  // 基础分数
+
+        // 分析星耀亮度
+        for (Star star : wealthPalace.getAllStars()) {
+            Brightness brightness = star.getBrightness();
+            if (brightness == Brightness.TEMPLE) {
+                score += 10;
+            } else if (brightness == Brightness.GAIN) {
+                score -= 5;
+            } else if (brightness == Brightness.TRAPPED) {
+                score -= 10;
+            }
+        }
+
+        // 分析四化
+        for (String mutagen : wealthPalace.getMutagens()) {
+            switch (Mutagen.fromString(mutagen)) {
+                case LUCKY:
+                    score += 5;
+                    break;
+                case POWER:
+                    score += 5;
+                    break;
+                case SKILL:
+                    score += 3;
+                    break;
+                case WEAK:
+                    score -= 5;
+                    break;
+            }
+        }
+
+        // 确保分数在0-100范围内
+        score = Math.max(0, Math.min(100, score));
+        result.put("score", score);
+
+        // 分析财富特点
+        for (Star star : wealthPalace.getMajorStars()) {
+            analyzeWealthCharacteristics(star, result);
+        }
+
+        return result;
+    }
+
+    private static int calculateBrightnessEffect(Star star) {
+        Brightness brightness = star.getBrightness();
+        switch (brightness) {
+            case TEMPLE:
+                return 2;
+            case STRONG:
+                return 1;
+            case GAIN:
+                return -1;
+            case TRAPPED:
+                return -2;
+            default:
+                return 0;
+        }
     }
 } 

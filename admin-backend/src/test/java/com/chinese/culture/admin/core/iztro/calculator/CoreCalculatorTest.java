@@ -4,6 +4,8 @@ import com.chinese.culture.admin.common.exception.BusinessException;
 import com.chinese.culture.admin.core.iztro.data.Astrolabe;
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
+import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -41,18 +43,18 @@ class CoreCalculatorTest {
         assertFalse(stars.isEmpty());
 
         // 验证主星
-        assertTrue(stars.stream().anyMatch(star -> "紫微".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "天机".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "太阳".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "武曲".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "天同".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "廉贞".equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.ZIWEI.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.TIANJI.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.TAIYANG.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.WUQU.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.TIANTONG.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.LIANZHEN.equals(star.getName())));
 
         // 验证辅星
-        assertTrue(stars.stream().anyMatch(star -> "文昌".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "文曲".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "左辅".equals(star.getName())));
-        assertTrue(stars.stream().anyMatch(star -> "右弼".equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.WENCHANG.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.WENQU.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.ZUOFU.equals(star.getName())));
+        assertTrue(stars.stream().anyMatch(star -> StarName.YOUBI.equals(star.getName())));
 
         // 验证四化
         boolean hasTransformation = false;
@@ -96,9 +98,9 @@ class CoreCalculatorTest {
         
         // 验证地支顺序
         for (int i = 0; i < palaces.size() - 1; i++) {
-            int currentIndex = "子丑寅卯辰巳午未申酉戌亥".indexOf(palaces.get(i).getBranch());
-            int nextIndex = "子丑寅卯辰巳午未申酉戌亥".indexOf(palaces.get(i + 1).getBranch());
-            assertEquals(1, (nextIndex - currentIndex + 12) % 12, 
+            EarthlyBranch current = palaces.get(i).getBranch();
+            EarthlyBranch next = palaces.get(i + 1).getBranch();
+            assertEquals(1, (next.ordinal() - current.ordinal() + 12) % 12, 
                 "地支顺序应该是连续的");
         }
     }

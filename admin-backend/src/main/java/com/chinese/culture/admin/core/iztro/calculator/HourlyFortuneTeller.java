@@ -3,6 +3,7 @@ package com.chinese.culture.admin.core.iztro.calculator;
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
+import com.chinese.culture.admin.core.iztro.analyzer.PalaceAuspiciousnessAnalyzer;
 
 import java.util.*;
 
@@ -33,7 +34,8 @@ public class HourlyFortuneTeller {
         result.put("hourlyPalace", hourlyPalace);
 
         // 3. 分析流时宫位吉凶
-        int score = PalaceAuspiciousnessCalculator.calculateAuspiciousness(hourlyPalace);
+        Map<String, Object> scoreResult = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(hourlyPalace);
+        int score = (int) scoreResult.get("score");
         result.put("score", score);
 
         // 4. 生成运势描述

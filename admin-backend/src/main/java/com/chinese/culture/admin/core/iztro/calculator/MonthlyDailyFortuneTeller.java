@@ -4,6 +4,7 @@ import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
 import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
+import com.chinese.culture.admin.core.iztro.analyzer.PalaceAuspiciousnessAnalyzer;
 
 import java.util.*;
 
@@ -34,7 +35,8 @@ public class MonthlyDailyFortuneTeller {
         result.put("monthlyPalace", monthlyPalace);
         
         // 3. 分析流月宫位吉凶
-        int score = PalaceAuspiciousnessCalculator.calculateAuspiciousness(monthlyPalace);
+        Map<String, Object> monthResult = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(monthlyPalace);
+        int score = (int) monthResult.get("score");
         result.put("score", score);
         
         // 4. 生成运势描述
@@ -70,7 +72,8 @@ public class MonthlyDailyFortuneTeller {
         result.put("dailyPalace", dailyPalace);
         
         // 3. 分析流日宫位吉凶
-        int score = PalaceAuspiciousnessCalculator.calculateAuspiciousness(dailyPalace);
+        Map<String, Object> dayResult = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(dailyPalace);
+        int score = (int) dayResult.get("score");
         result.put("score", score);
         
         // 4. 生成运势描述

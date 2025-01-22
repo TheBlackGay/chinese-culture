@@ -4,8 +4,12 @@ import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
 import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
 
 import java.util.*;
+
+import static com.chinese.culture.admin.core.iztro.data.enums.Mutagen.*;
+import static com.chinese.culture.admin.core.iztro.data.enums.StarName.*;
 
 /**
  * 学业考试分析器
@@ -13,25 +17,25 @@ import java.util.*;
 public class StudyAnalyzer {
 
     // 学业吉星列表
-    private static final List<String> STUDY_LUCKY_STARS = Arrays.asList(
-        "文昌", "文曲", "天机", "左辅", "右弼", "天魁", "天钺"
+    private static final List<StarName> STUDY_LUCKY_STARS = Arrays.asList(
+        StarName.TIANJI, StarName.WENCHANG, StarName.WENQU,
+        StarName.ZUOFU, StarName.YOUBI, StarName.TAIYANG
     );
 
     // 学业煞星列表
-    private static final List<String> STUDY_EVIL_STARS = Arrays.asList(
-        "七杀", "破军", "火星", "铃星"
+    private static final List<StarName> STUDY_EVIL_STARS = Arrays.asList(
+        StarName.POJUN, StarName.TIANXING, StarName.HUOXING,
+        StarName.LINGXING, StarName.DIKONG, StarName.DIJIE
     );
 
     // 学科优势映射
-    private static final Map<String, List<String>> SUBJECT_STRENGTHS = new HashMap<>();
+    private static final Map<StarName, List<String>> SUBJECT_STRENGTHS = new HashMap<>();
     static {
-        SUBJECT_STRENGTHS.put("天机", Arrays.asList("数学", "物理", "计算机"));
-        SUBJECT_STRENGTHS.put("文昌", Arrays.asList("语文", "文学", "历史"));
-        SUBJECT_STRENGTHS.put("文曲", Arrays.asList("外语", "艺术", "音乐"));
-        SUBJECT_STRENGTHS.put("太阳", Arrays.asList("物理", "化学", "生物"));
-        SUBJECT_STRENGTHS.put("武曲", Arrays.asList("数学", "经济", "管理"));
-        SUBJECT_STRENGTHS.put("天同", Arrays.asList("医学", "心理", "教育"));
-        SUBJECT_STRENGTHS.put("贪狼", Arrays.asList("体育", "军事", "竞技"));
+        SUBJECT_STRENGTHS.put(StarName.TIANJI, Arrays.asList("数学", "物理", "计算机"));
+        SUBJECT_STRENGTHS.put(StarName.WENCHANG, Arrays.asList("语文", "历史", "文学"));
+        SUBJECT_STRENGTHS.put(StarName.WENQU, Arrays.asList("外语", "艺术", "音乐"));
+        SUBJECT_STRENGTHS.put(StarName.TAIYANG, Arrays.asList("物理", "化学", "生物"));
+        SUBJECT_STRENGTHS.put(StarName.TIANXIANG, Arrays.asList("政治", "哲学", "心理"));
     }
 
     /**
@@ -92,11 +96,14 @@ public class StudyAnalyzer {
             }
 
             // 分析四化
-            for (String mutagen : mingGong.getMutagens()) {
-
-                Mutagen mutagen1 = Mutagen.fromString(mutagen);
-                if (mutagen1 == Mutagen.LUCKY || mutagen1 == Mutagen.SKILL) {
-                    score += 5;
+            for (String mutagenStr : mingGong.getMutagens()) {
+                try {
+                    Mutagen mutagen = Mutagen.fromString(mutagenStr);
+                    if (mutagen == LUCKY || mutagen == SKILL) {
+                        score += 5;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // 忽略无效的四化值
                 }
             }
         }
@@ -113,17 +120,27 @@ public class StudyAnalyzer {
             }
 
             // 分析四化
-            for (String mutagen : wenchangGong.getMutagens()) {
-
-                Mutagen mutagen1 = Mutagen.fromString(mutagen);
-                if (mutagen1 == Mutagen.LUCKY || mutagen1 == Mutagen.SKILL) {
-                    score += 5;
+            for (String mutagenStr : wenchangGong.getMutagens()) {
+                try {
+                    Mutagen mutagen = Mutagen.fromString(mutagenStr);
+                    if (mutagen == LUCKY || mutagen == SKILL) {
+                        score += 5;
+                    }
+                } catch (IllegalArgumentException e) {
+                    // 忽略无效的四化值
                 }
             }
 
             // 分析星耀亮度
             for (Star star : wenchangGong.getMajorStars()) {
-                score += calculateBrightnessEffect(star);
+                Brightness brightness = star.getBrightness();
+                if (brightness == Brightness.TEMPLE) {
+                    score += 10;
+                } else if (brightness == Brightness.GAIN) {
+                    score -= 5;
+                } else if (brightness == Brightness.TRAPPED) {
+                    score -= 10;
+                }
             }
         }
 
@@ -173,46 +190,14 @@ public class StudyAnalyzer {
         // 1. 分析命宫特点
         if (mingGong != null) {
             for (Star star : mingGong.getAllStars()) {
-                switch (star.getName()) {
-                    case "天机":
-                        strengths.add("思维敏捷，善于分析");
-                        break;
-                    case "文昌":
-                    case "文曲":
-                        strengths.add("记忆力强，善于表达");
-                        break;
-                    case "左辅":
-                    case "右弼":
-                        strengths.add("专注力强，善于钻研");
-                        break;
-                    case "七杀":
-                    case "破军":
-                        weaknesses.add("注意力容易分散");
-                        break;
-                }
+                analyzeStudyCharacteristics(star, result);
             }
         }
 
         // 2. 分析文昌宫特点
         if (wenchangGong != null) {
             for (Star star : wenchangGong.getAllStars()) {
-                switch (star.getName()) {
-                    case "天魁":
-                    case "天钺":
-                        strengths.add("学习态度认真");
-                        break;
-                    case "火星":
-                    case "铃星":
-                        weaknesses.add("学习容易浮躁");
-                        break;
-                }
-            }
-
-            // 分析四化
-            if (!wenchangGong.getMutagens().isEmpty()) {
-                if (wenchangGong.getMutagens().contains(Mutagen.SKILL)) {
-                    strengths.add("学习能力突出");
-                }
+                analyzeStudyCharacteristics(star, result);
             }
         }
 
@@ -223,6 +208,61 @@ public class StudyAnalyzer {
     }
 
     /**
+     * 分析学习方法
+     */
+    private static void analyzeStudyMethods(Star star, Map<String, Object> result) {
+        switch (star.getName()) {
+            case TIANJI:
+                result.put("method", "善于思考，擅长逻辑推理");
+                break;
+            case WENCHANG:
+                result.put("method", "文笔优秀，善于表达");
+                break;
+            case WENQU:
+                result.put("method", "悟性较高，善于理解");
+                break;
+            case TAIYANG:
+                result.put("method", "实践能力强，善于实验");
+                break;
+            case TIANXIANG:
+                result.put("method", "思维深入，善于分析");
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 分析学习特点
+     */
+    private static void analyzeStudyCharacteristics(Star star, Map<String, Object> result) {
+        switch (star.getName()) {
+            case TIANJI:
+                result.put("logical", true);
+                result.put("analytical", true);
+                break;
+            case WENCHANG:
+                result.put("literary", true);
+                result.put("creative", true);
+                break;
+            case WENQU:
+                result.put("artistic", true);
+                result.put("linguistic", true);
+                break;
+            case TAIYANG:
+                result.put("scientific", true);
+                result.put("experimental", true);
+                break;
+            case TIANXIANG:
+                result.put("philosophical", true);
+                result.put("psychological", true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * 生成学业建议
      */
     private static String generateStudySuggestion(int score,
@@ -230,7 +270,7 @@ public class StudyAnalyzer {
                                                 int age) {
         StringBuilder suggestion = new StringBuilder();
 
-        // 1. 根据学业评分给出建议
+        // 根据学业评分给出建议
         if (score >= 80) {
             suggestion.append("学习天赋优异，");
             if (age < 18) {
@@ -245,67 +285,27 @@ public class StudyAnalyzer {
             if (age < 18) {
                 suggestion.append("建议制定合理计划，循序渐进。");
             } else if (age < 25) {
-                suggestion.append("建议明确目标，努力提升。");
+                suggestion.append("建议选择适合的专业方向。");
             } else {
-                suggestion.append("建议选择适合的领域发展。");
+                suggestion.append("建议根据兴趣选择学习内容。");
             }
         } else {
-            suggestion.append("学习有一定困难，");
+            suggestion.append("学习能力有待提升，");
             if (age < 18) {
-                suggestion.append("建议找到适合的学习方法，打好基础。");
+                suggestion.append("建议多加练习，打好基础。");
             } else if (age < 25) {
-                suggestion.append("建议发展实践能力，找准方向。");
+                suggestion.append("建议选择实践性较强的方向。");
             } else {
-                suggestion.append("建议结合实际，学以致用。");
+                suggestion.append("建议从兴趣爱好入手，培养学习习惯。");
             }
         }
 
-        // 2. 根据学科优势给出建议
+        // 根据学科优势给出建议
         if (!strongSubjects.isEmpty()) {
-            suggestion.append("在");
-            for (int i = 0; i < strongSubjects.size(); i++) {
-                if (i > 0) {
-                    suggestion.append("、");
-                }
-                suggestion.append(strongSubjects.get(i));
-            }
-            suggestion.append("等学科有优势，建议重点发展。");
-        }
-
-        // 3. 根据年龄给出建议
-        if (age < 15) {
-            suggestion.append("正处于基础教育阶段，建议打好基础，培养兴趣。");
-        } else if (age < 18) {
-            suggestion.append("正处于高中阶段，建议明确目标，合理规划。");
-        } else if (age < 25) {
-            suggestion.append("正处于高等教育阶段，建议发展专业特长，为就业做准备。");
-        } else {
-            suggestion.append("建议终身学习，不断提升自我。");
+            suggestion.append("\n优势学科包括：").append(String.join("、", strongSubjects))
+                     .append("，建议重点发展这些方向。");
         }
 
         return suggestion.toString();
-    }
-
-    private static int calculateBrightnessEffect(Star star) {
-        Brightness brightness = (star.getBrightness());
-        switch (brightness) {
-            case TEMPLE:
-                return 2;
-            case STRONG:
-                return 1;
-            case GAIN:
-                return -1;
-            case TRAPPED:
-                return -2;
-            default:
-                return 0;
-        }
-    }
-
-    private static Mutagen parseMutagen(String text) {
-        if (text == null || text.trim().isEmpty()) {
-            throw new IllegalArgumentException("化气不能为空");
-        }
-        return Mutagen.fromString(text);
     }
 }

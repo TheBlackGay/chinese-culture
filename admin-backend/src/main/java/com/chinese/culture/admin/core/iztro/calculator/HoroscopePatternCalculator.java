@@ -5,8 +5,11 @@ import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.HoroscopePattern;
 import com.chinese.culture.admin.core.iztro.data.enums.StarType;
 import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
 
 import java.util.*;
+
+import static com.chinese.culture.admin.core.iztro.data.enums.StarName.*;
 
 /**
  * 命盘格局判断器
@@ -76,11 +79,11 @@ public class HoroscopePatternCalculator {
         for (Star star : mingGong.getMajorStars()) {
             hasMajorStar = true;
             switch (star.getName()) {
-                case "紫微":
+                case ZIWEI:
                     addPattern(patterns, HoroscopePattern.ZIWEI_MING, 
                         "紫微星入命，主一生尊贵，具领导才能。");
                     break;
-                case "天府":
+                case TIANFU:
                     addPattern(patterns, HoroscopePattern.TIANFU_MING, 
                         "天府星入命，主一生富贵安稳，财运亨通。");
                     break;
@@ -89,10 +92,10 @@ public class HoroscopePatternCalculator {
         
         // 检查命宫辅星
         for (Star star : mingGong.getMinorStars()) {
-            if ("禄存".equals(star.getName())) {
+            if (star.getName() == LUCUN) {
                 addPattern(patterns, HoroscopePattern.LUCUN_MING, 
                     "禄存星入命，主一生衣禄无忧，官运亨通。");
-            } else if ("文昌".equals(star.getName())) {
+            } else if (star.getName() == WENCHANG) {
                 addPattern(patterns, HoroscopePattern.WENCHANG_MING, 
                     "文昌星入命，主一生文章显达，学识优秀。");
             }
@@ -243,40 +246,40 @@ public class HoroscopePatternCalculator {
     /**
      * 判断是否为奇星
      */
-    private static boolean isNobleMinorStar(String starName) {
-        return "文昌".equals(starName) || 
-               "文曲".equals(starName) || 
-               "左辅".equals(starName) || 
-               "右弼".equals(starName);
+    private static boolean isNobleMinorStar(StarName starName) {
+        return starName == WENCHANG || 
+               starName == WENQU || 
+               starName == ZUOFU || 
+               starName == YOUBI;
     }
     
     /**
      * 判断是否为煞星
      */
-    private static boolean isEvilStar(String starName) {
-        return "火星".equals(starName) || 
-               "铃星".equals(starName) || 
-               "地空".equals(starName) || 
-               "地劫".equals(starName);
+    private static boolean isEvilStar(StarName starName) {
+        return starName == HUOXING || 
+               starName == LINGXING || 
+               starName == DIKONG || 
+               starName == DIJIE;
     }
     
     /**
      * 判断是否为红艳星
      */
-    private static boolean isBeautyStar(String starName) {
-        return "太阳".equals(starName) || 
-               "太阴".equals(starName) || 
-               "天同".equals(starName) || 
-               "天机".equals(starName);
+    private static boolean isBeautyStar(StarName starName) {
+        return starName == TAIYANG || 
+               starName == TAIYIN || 
+               starName == TIANTONG || 
+               starName == TIANJI;
     }
     
     /**
      * 判断是否为富贵星
      */
-    private static boolean isWealthNobleStar(String starName) {
-        return "紫微".equals(starName) || 
-               "天府".equals(starName) || 
-               "武曲".equals(starName) || 
-               "贪狼".equals(starName);
+    private static boolean isWealthNobleStar(StarName starName) {
+        return starName == ZIWEI || 
+               starName == TIANFU || 
+               starName == WUQU || 
+               starName == TANLANG;
     }
 } 

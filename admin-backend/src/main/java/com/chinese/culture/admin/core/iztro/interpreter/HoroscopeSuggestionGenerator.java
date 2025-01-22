@@ -1,8 +1,10 @@
-package com.chinese.culture.admin.core.iztro.calculator;
+package com.chinese.culture.admin.core.iztro.interpreter;
 
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.HoroscopePattern;
+import com.chinese.culture.admin.core.iztro.analyzer.PalaceAuspiciousnessAnalyzer;
+import com.chinese.culture.admin.core.iztro.calculator.StarConvergenceCalculator;
 
 import java.util.*;
 
@@ -91,36 +93,29 @@ public class HoroscopeSuggestionGenerator {
      */
     private static void generatePalaceSuggestions(List<Palace> palaces, 
                                                 List<Map<String, Object>> suggestions) {
-        // 分析重要宫位
+        // 分析所有宫位
         for (Palace palace : palaces) {
-            if (isImportantPalace(palace.getName())) {
-                int score = PalaceAuspiciousnessCalculator.calculateAuspiciousness(palace);
-                String suggestion = getPalaceSuggestion(palace.getName(), score);
-                
+            Map<String, Object> result = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(palace);
+            int score = (int) result.get("score");
+            String level = (String) result.get("level");
+            String suggestion = getPalaceSuggestion(palace.getName(), score, level);
+            
+            if (suggestion != null) {
                 Map<String, Object> suggestionMap = new HashMap<>();
                 suggestionMap.put("type", "宫位建议");
                 suggestionMap.put("content", suggestion);
+                suggestionMap.put("level", level);
                 suggestions.add(suggestionMap);
             }
         }
     }
     
     /**
-     * 判断是否为重要宫位
-     */
-    private static boolean isImportantPalace(String palaceName) {
-        return "命宫".equals(palaceName) || 
-               "身宫".equals(palaceName) || 
-               "财帛".equals(palaceName) || 
-               "官禄".equals(palaceName);
-    }
-    
-    /**
      * 获取宫位建议
      */
-    private static String getPalaceSuggestion(String palaceName, int score) {
+    private static String getPalaceSuggestion(String palaceName, int score, String level) {
         StringBuilder suggestion = new StringBuilder();
-        suggestion.append(palaceName).append("：");
+        suggestion.append(palaceName).append("（").append(level).append("）：");
         
         if (score >= 80) {
             switch (palaceName) {
@@ -135,6 +130,30 @@ public class HoroscopeSuggestionGenerator {
                     break;
                 case "官禄":
                     suggestion.append("事业运佳，宜主动争取晋升机会，扩展人脉。");
+                    break;
+                case "夫妻":
+                    suggestion.append("感情运佳，宜增进感情，规划未来。");
+                    break;
+                case "子女":
+                    suggestion.append("子女运佳，宜关注教育，培养兴趣。");
+                    break;
+                case "迁移":
+                    suggestion.append("行动顺遂，宜把握机会，开拓视野。");
+                    break;
+                case "交友":
+                    suggestion.append("人际运佳，宜扩展人脉，建立关系。");
+                    break;
+                case "田宅":
+                    suggestion.append("居住运佳，宜改善环境，投资房产。");
+                    break;
+                case "福德":
+                    suggestion.append("心情愉悦，宜修身养性，培养兴趣。");
+                    break;
+                case "父母":
+                    suggestion.append("长辈缘佳，宜尽孝道，增进感情。");
+                    break;
+                case "兄弟":
+                    suggestion.append("同辈关系和谐，宜加强交流，互帮互助。");
                     break;
             }
         } else if (score >= 60) {
@@ -151,6 +170,30 @@ public class HoroscopeSuggestionGenerator {
                 case "官禄":
                     suggestion.append("事业平稳，宜踏实工作，积累经验。");
                     break;
+                case "夫妻":
+                    suggestion.append("感情平稳，宜用心经营，保持沟通。");
+                    break;
+                case "子女":
+                    suggestion.append("子女平安，宜关注成长，耐心教导。");
+                    break;
+                case "迁移":
+                    suggestion.append("变动平稳，宜谨慎决策，循序渐进。");
+                    break;
+                case "交友":
+                    suggestion.append("人际平和，宜维护关系，互帮互助。");
+                    break;
+                case "田宅":
+                    suggestion.append("居住稳定，宜维护保养，适度改善。");
+                    break;
+                case "福德":
+                    suggestion.append("心态平和，宜保持平常心，注重修养。");
+                    break;
+                case "父母":
+                    suggestion.append("长辈关系平稳，宜尽孝道，保持联系。");
+                    break;
+                case "兄弟":
+                    suggestion.append("同辈关系平稳，宜互相理解，保持联系。");
+                    break;
             }
         } else {
             switch (palaceName) {
@@ -165,6 +208,30 @@ public class HoroscopeSuggestionGenerator {
                     break;
                 case "官禄":
                     suggestion.append("事业有波折，宜沉稳应对，提升能力。");
+                    break;
+                case "夫妻":
+                    suggestion.append("感情有波折，宜加强沟通，互相理解。");
+                    break;
+                case "子女":
+                    suggestion.append("子女需要关注，宜耐心引导，多加关爱。");
+                    break;
+                case "迁移":
+                    suggestion.append("变动不宜，宜安守本分，等待时机。");
+                    break;
+                case "交友":
+                    suggestion.append("人际有阻，宜谨慎交往，选择朋友。");
+                    break;
+                case "田宅":
+                    suggestion.append("居住有变，宜谨慎决策，避免冒进。");
+                    break;
+                case "福德":
+                    suggestion.append("心情不佳，宜调节心态，保持平和。");
+                    break;
+                case "父母":
+                    suggestion.append("长辈关系需要改善，宜多加关心，增进感情。");
+                    break;
+                case "兄弟":
+                    suggestion.append("同辈关系需要改善，宜多加沟通，增进理解。");
                     break;
             }
         }

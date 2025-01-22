@@ -4,11 +4,7 @@ import com.chinese.culture.admin.core.iztro.calculator.*;
 import com.chinese.culture.admin.core.iztro.data.RawDate;
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
-import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
-import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
-import com.chinese.culture.admin.core.iztro.data.enums.StarType;
-import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
-import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
+import com.chinese.culture.admin.core.iztro.data.enums.*;
 import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
 import com.chinese.culture.admin.core.iztro.interpreter.StarCombinationInterpreter;
 import com.chinese.culture.admin.core.tyme.sixtycycle.EarthBranch;
@@ -134,9 +130,9 @@ public class AstroController {
         for (Palace palace : palaces) {
             EarthlyBranch branch = palace.getEarthlyBranch();
 
-            // 紫微星系
+            // 设置紫微星
             if (branch == ziWeiLocation) {
-                Star ziWei = new Star("紫微", StarType.MAJOR);
+                Star ziWei = new Star(StarName.ZIWEI, StarType.MAJOR);
                 ziWei.setBrightness(BrightnessCalculator.calculateBrightness(ziWei, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, ziWei);
                 if (mutagen != null) {
@@ -145,8 +141,9 @@ public class AstroController {
                 palace.addMajorStar(ziWei);
             }
 
+            // 设置天府星
             if (branch == tianFuLocation) {
-                Star tianFu = new Star("天府", StarType.MAJOR);
+                Star tianFu = new Star(StarName.TIANFU, StarType.MAJOR);
                 tianFu.setBrightness(BrightnessCalculator.calculateBrightness(tianFu, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, tianFu);
                 if (mutagen != null) {
@@ -155,8 +152,9 @@ public class AstroController {
                 palace.addMajorStar(tianFu);
             }
 
+            // 设置天机星
             if (branch == tianJiLocation) {
-                Star tianJi = new Star("天机", StarType.MAJOR);
+                Star tianJi = new Star(StarName.TIANJI, StarType.MAJOR);
                 tianJi.setBrightness(BrightnessCalculator.calculateBrightness(tianJi, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, tianJi);
                 if (mutagen != null) {
@@ -165,9 +163,9 @@ public class AstroController {
                 palace.addMajorStar(tianJi);
             }
 
-            // 日月星系
+            // 设置太阳星
             if (branch == sunLocation) {
-                Star sun = new Star("太阳", StarType.MAJOR);
+                Star sun = new Star(StarName.TAIYANG, StarType.MAJOR);
                 sun.setBrightness(BrightnessCalculator.calculateBrightness(sun, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, sun);
                 if (mutagen != null) {
@@ -176,8 +174,9 @@ public class AstroController {
                 palace.addMajorStar(sun);
             }
 
+            // 设置太阴星
             if (branch == moonLocation) {
-                Star moon = new Star("太阴", StarType.MAJOR);
+                Star moon = new Star(StarName.TAIYIN, StarType.MAJOR);
                 moon.setBrightness(BrightnessCalculator.calculateBrightness(moon, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, moon);
                 if (mutagen != null) {
@@ -186,9 +185,9 @@ public class AstroController {
                 palace.addMajorStar(moon);
             }
 
-            // 天府星系
+            // 设置贪狼星
             if (branch == tanLangLocation) {
-                Star tanLang = new Star("贪狼", StarType.MAJOR);
+                Star tanLang = new Star(StarName.TANLANG, StarType.MAJOR);
                 tanLang.setBrightness(BrightnessCalculator.calculateBrightness(tanLang, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, tanLang);
                 if (mutagen != null) {
@@ -197,8 +196,9 @@ public class AstroController {
                 palace.addMajorStar(tanLang);
             }
 
+            // 设置巨门星
             if (branch == juMenLocation) {
-                Star juMen = new Star("巨门", StarType.MAJOR);
+                Star juMen = new Star(StarName.JUMEN, StarType.MAJOR);
                 juMen.setBrightness(BrightnessCalculator.calculateBrightness(juMen, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, juMen);
                 if (mutagen != null) {
@@ -226,8 +226,10 @@ public class AstroController {
         for (Palace palace : palaces) {
             EarthlyBranch branch = palace.getEarthlyBranch();
 
+            // 设置文昌星
             if (branch == wenChangLocation) {
-                Star wenChang = new Star("文昌", StarType.MINOR);
+                Star wenChang = new Star(StarName.WENCHANG, StarType.MINOR);
+                wenChang.setBrightness(BrightnessCalculator.calculateBrightness(wenChang, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, wenChang);
                 if (mutagen != null) {
                     wenChang.addMutagen(mutagen);
@@ -235,8 +237,10 @@ public class AstroController {
                 palace.addMinorStar(wenChang);
             }
 
+            // 设置文曲星
             if (branch == wenQuLocation) {
-                Star wenQu = new Star("文曲", StarType.MINOR);
+                Star wenQu = new Star(StarName.WENQU, StarType.MINOR);
+                wenQu.setBrightness(BrightnessCalculator.calculateBrightness(wenQu, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, wenQu);
                 if (mutagen != null) {
                     wenQu.addMutagen(mutagen);
@@ -244,8 +248,10 @@ public class AstroController {
                 palace.addMinorStar(wenQu);
             }
 
+            // 设置禄存星
             if (branch == luCunLocation) {
-                Star luCun = new Star("禄存", StarType.MINOR);
+                Star luCun = new Star(StarName.LUCUN, StarType.MINOR);
+                luCun.setBrightness(BrightnessCalculator.calculateBrightness(luCun, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, luCun);
                 if (mutagen != null) {
                     luCun.addMutagen(mutagen);
@@ -282,8 +288,10 @@ public class AstroController {
         for (Palace palace : palaces) {
             EarthlyBranch branch = palace.getEarthlyBranch();
 
+            // 设置火星
             if (branch == huoXingLocation) {
-                Star huoXing = new Star("火星", StarType.ADJECTIVE);
+                Star huoXing = new Star(StarName.HUOXING, StarType.ADJECTIVE);
+                huoXing.setBrightness(BrightnessCalculator.calculateBrightness(huoXing, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, huoXing);
                 if (mutagen != null) {
                     huoXing.addMutagen(mutagen);
@@ -291,8 +299,10 @@ public class AstroController {
                 palace.addAdjectiveStar(huoXing);
             }
 
+            // 设置铃星
             if (branch == lingXingLocation) {
-                Star lingXing = new Star("铃星", StarType.ADJECTIVE);
+                Star lingXing = new Star(StarName.LINGXING, StarType.ADJECTIVE);
+                lingXing.setBrightness(BrightnessCalculator.calculateBrightness(lingXing, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, lingXing);
                 if (mutagen != null) {
                     lingXing.addMutagen(mutagen);
@@ -300,8 +310,10 @@ public class AstroController {
                 palace.addAdjectiveStar(lingXing);
             }
 
+            // 设置地空星
             if (branch == diKongLocation) {
-                Star diKong = new Star("地空", StarType.ADJECTIVE);
+                Star diKong = new Star(StarName.DIKONG, StarType.ADJECTIVE);
+                diKong.setBrightness(BrightnessCalculator.calculateBrightness(diKong, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, diKong);
                 if (mutagen != null) {
                     diKong.addMutagen(mutagen);
@@ -309,8 +321,10 @@ public class AstroController {
                 palace.addAdjectiveStar(diKong);
             }
 
+            // 设置地劫星
             if (branch == diJieLocation) {
-                Star diJie = new Star("地劫", StarType.ADJECTIVE);
+                Star diJie = new Star(StarName.DIJIE, StarType.ADJECTIVE);
+                diJie.setBrightness(BrightnessCalculator.calculateBrightness(diJie, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, diJie);
                 if (mutagen != null) {
                     diJie.addMutagen(mutagen);
@@ -318,8 +332,10 @@ public class AstroController {
                 palace.addAdjectiveStar(diJie);
             }
 
+            // 设置天空星
             if (branch == tianKongLocation) {
-                Star tianKong = new Star("天空", StarType.ADJECTIVE);
+                Star tianKong = new Star(StarName.TIANKONG, StarType.ADJECTIVE);
+                tianKong.setBrightness(BrightnessCalculator.calculateBrightness(tianKong, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, tianKong);
                 if (mutagen != null) {
                     tianKong.addMutagen(mutagen);
@@ -327,8 +343,10 @@ public class AstroController {
                 palace.addAdjectiveStar(tianKong);
             }
 
+            // 设置天刑星
             if (branch == tianXingLocation) {
-                Star tianXing = new Star("天刑", StarType.ADJECTIVE);
+                Star tianXing = new Star(StarName.TIANXING, StarType.ADJECTIVE);
+                tianXing.setBrightness(BrightnessCalculator.calculateBrightness(tianXing, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, tianXing);
                 if (mutagen != null) {
                     tianXing.addMutagen(mutagen);
@@ -336,8 +354,10 @@ public class AstroController {
                 palace.addAdjectiveStar(tianXing);
             }
 
+            // 设置天姚星
             if (branch == tianYaoLocation) {
-                Star tianYao = new Star("天姚", StarType.ADJECTIVE);
+                Star tianYao = new Star(StarName.TIANYAO, StarType.ADJECTIVE);
+                tianYao.setBrightness(BrightnessCalculator.calculateBrightness(tianYao, branch));
                 Mutagen mutagen = MutagenCalculator.getMutagen(yearStem, tianYao);
                 if (mutagen != null) {
                     tianYao.addMutagen(mutagen);

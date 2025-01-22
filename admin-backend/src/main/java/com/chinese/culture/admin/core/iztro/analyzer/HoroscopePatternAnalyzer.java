@@ -1,4 +1,4 @@
-package com.chinese.culture.admin.core.iztro.calculator;
+package com.chinese.culture.admin.core.iztro.analyzer;
 
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
@@ -6,10 +6,13 @@ import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
 
 import java.util.*;
 
+import org.springframework.stereotype.Component;
+
 /**
- * 命盘格局判定器
+ * 命盘格局分析器
  */
-public class HoroscopePatternJudger {
+@Component
+public class HoroscopePatternAnalyzer {
 
     /**
      * 判定命盘格局

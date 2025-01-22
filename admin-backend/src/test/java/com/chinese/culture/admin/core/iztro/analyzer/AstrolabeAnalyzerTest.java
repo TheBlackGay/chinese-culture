@@ -4,6 +4,7 @@ import com.chinese.culture.admin.core.iztro.data.Astrolabe;
 import com.chinese.culture.admin.core.iztro.data.Horoscope;
 import com.chinese.culture.admin.core.iztro.data.Palace;
 import com.chinese.culture.admin.core.iztro.data.Star;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -14,27 +15,32 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AstrolabeAnalyzerTest {
 
-    @Test
-    void analyzeMingZhuPattern() {
-        // 创建测试数据
-        Astrolabe astrolabe = new Astrolabe();
-        List<Palace> palaces = new ArrayList<>();
-        List<Star> stars = new ArrayList<>();
+    private Astrolabe astrolabe;
+    private List<Palace> palaces;
+    private List<Star> stars;
+    private Palace mingGong;
+    private Star ziwei;
+    private Star tianfu;
+
+    @BeforeEach
+    void setUp() {
+        astrolabe = new Astrolabe();
+        palaces = new ArrayList<>();
+        stars = new ArrayList<>();
 
         // 创建命宫
-        Palace mingGong = new Palace();
+        mingGong = new Palace();
         mingGong.setName("命宫");
         mingGong.setIndex(0);
         mingGong.setMing(true);
 
-        // 添加星耀
-        Star ziwei = new Star();
-        ziwei.setName("紫微");
-        Star tianfu = new Star();
-        tianfu.setName("天府");
-        stars.add(ziwei);
-        stars.add(tianfu);
-        mingGong.setStars(Arrays.asList(ziwei, tianfu));
+        // 创建紫微星
+        ziwei = new Star(StarName.ZIWEI, StarType.MAJOR);
+        mingGong.addMajorStar(ziwei);
+        
+        // 创建天府星
+        tianfu = new Star(StarName.TIANFU, StarType.MAJOR);
+        mingGong.addMajorStar(tianfu);
 
         // 添加四化
         mingGong.setMutagens(Arrays.asList("化禄", "化权", "化科"));
@@ -55,7 +61,10 @@ class AstrolabeAnalyzerTest {
         astrolabe.setPalaces(palaces);
         astrolabe.setStars(stars);  // 设置命盘的星耀列表
         astrolabe.setYearStem("甲"); // 设置年干
+    }
 
+    @Test
+    void analyzeMingZhuPattern() {
         // 测试分析结果
         String pattern = AstrolabeAnalyzer.analyzeMingZhuPattern(astrolabe);
         assertNotNull(pattern);

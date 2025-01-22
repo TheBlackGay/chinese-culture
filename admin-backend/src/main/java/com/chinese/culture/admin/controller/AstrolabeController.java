@@ -5,6 +5,7 @@ import com.chinese.culture.admin.core.iztro.data.Astrolabe;
 import com.chinese.culture.admin.core.iztro.data.AstrolabeInterpretation;
 import com.chinese.culture.admin.dto.*;
 import com.chinese.culture.admin.service.AstrolabeService;
+import com.chinese.culture.admin.core.iztro.analyzer.PalaceAuspiciousnessAnalyzer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -60,4 +61,14 @@ public class AstrolabeController {
     public Result<Map<String, List<String>>> analyzePalaceRelations(@Validated @RequestBody PalaceRelationQueryDTO queryDTO) {
         return Result.success(astrolabeService.analyzePalaceRelations(queryDTO));
     }
+
+    // 计算宫位吉凶
+    Map<String, Object> result = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(palace);
+    int score = (int) result.get("score");
+    totalScore += score;
+
+    // 计算平均分并获取等级
+    int averageScore = totalScore / count;
+    Map<String, Object> avgResult = PalaceAuspiciousnessAnalyzer.judgeAuspiciousness(palace);
+    String level = (String) avgResult.get("level");
 } 

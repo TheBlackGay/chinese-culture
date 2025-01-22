@@ -16,7 +16,7 @@ public class Star {
     /**
      * 星耀名称
      */
-    private String name;
+    private StarName name;
 
     /**
      * 所在宫位(1-12)
@@ -26,7 +26,7 @@ public class Star {
     /**
      * 地支
      */
-    private String branch;
+    private EarthlyBranch branch;
 
     /**
      * 亮度(地支)
@@ -59,25 +59,21 @@ public class Star {
     private Palace palace;
 
     public Star() {
-
         this.mutagens = new ArrayList<>();
     }
 
-    public Star(String name) {
-
+    public Star(StarName name) {
         this.name = name;
         this.mutagens = new ArrayList<>();
     }
 
-    public Star(String name, StarType type) {
-
+    public Star(StarName name, StarType type) {
         this.name = name;
         this.type = type;
         this.mutagens = new ArrayList<>();
     }
 
-    public Star(String name, StarType type, Brightness brightness) {
-
+    public Star(StarName name, StarType type, Brightness brightness) {
         this.name = name;
         this.type = type;
         this.brightness = brightness;
@@ -88,7 +84,6 @@ public class Star {
      * 检查是否具有指定亮度
      */
     public boolean hasBrightness(Brightness brightness) {
-
         return this.brightness == brightness;
     }
 
@@ -96,7 +91,6 @@ public class Star {
      * 检查是否具有指定四化
      */
     public boolean hasMutagen(Mutagen mutagen) {
-
         return mutagens.contains(mutagen);
     }
 
@@ -104,23 +98,16 @@ public class Star {
      * 获取所在宫位
      */
     public Optional<Palace> getPalace() {
-
         return Optional.ofNullable(palace);
-    }
-
-    /**
-     * 设置所在宫位
-     */
-    public void setPalace(Palace palace) {
-
-        this.palace = palace;
     }
 
     /**
      * 获取对宫星耀
      */
     public List<Star> getOppositeStars() {
-
+        if (palace == null) {
+            return new ArrayList<>();
+        }
         return palace.getOppositePalace()
                 .map(Palace::getAllStars)
                 .orElse(new ArrayList<>());
@@ -130,7 +117,6 @@ public class Star {
      * 获取三方四正星耀
      */
     public List<Star> getSurroundedStars() {
-
         List<Star> stars = new ArrayList<>();
         palace.getSurroundedPalaces().forEach(p -> stars.addAll(p.getAllStars()));
         return stars;
@@ -140,7 +126,6 @@ public class Star {
      * 检查是否与目标星耀同宫
      */
     public boolean isInSamePalace(Star other) {
-
         return this.position == other.position;
     }
 
@@ -148,9 +133,8 @@ public class Star {
      * 检查是否与目标星耀对宫
      */
     public boolean isOpposite(Star other) {
-
         return palace.getOppositePalace()
-                .map(p -> p.hasStar(other.getName()))
+                .map(p -> p.hasStar(other.getName().getDescription()))
                 .orElse(false);
     }
 
@@ -159,7 +143,6 @@ public class Star {
      * TODO: 实现三合逻辑
      */
     public boolean isTriple(Star other) {
-
         return false;
     }
 
@@ -168,7 +151,6 @@ public class Star {
      * TODO: 实现六合逻辑
      */
     public boolean isSixHarmony(Star other) {
-
         return false;
     }
 
@@ -177,23 +159,13 @@ public class Star {
      * TODO: 实现组合效果判断逻辑
      */
     public String getCombinationEffect(Star other) {
-
         return "";
-    }
-
-    /**
-     * 设置地支
-     */
-    public void setBranch(String branch) {
-
-        this.branch = branch;
     }
 
     /**
      * 获取位置
      */
     public Integer getPosition() {
-
         return position;
     }
 
@@ -201,47 +173,13 @@ public class Star {
      * 设置位置
      */
     public void setPosition(Integer position) {
-
         this.position = position;
-    }
-
-    /**
-     * 获取星耀名称
-     */
-    public String getName() {
-
-        return name;
-    }
-
-    /**
-     * 获取星耀亮度
-     */
-    public Brightness getBrightness() {
-
-        return brightness;
-    }
-
-    /**
-     * 获取星耀类型
-     */
-    public StarType getType() {
-
-        return type;
-    }
-
-    /**
-     * 获取四化列表
-     */
-    public List<Mutagen> getMutagens() {
-
-        return mutagens;
     }
 
     /**
      * 添加四化
      */
     public void addMutagen(Mutagen mutagen) {
-
         if (!mutagens.contains(mutagen)) {
             mutagens.add(mutagen);
         }
@@ -251,7 +189,6 @@ public class Star {
      * 获取四化描述
      */
     public String getMutagenDescription() {
-
         if (mutagens.isEmpty()) {
             return "";
         }
@@ -270,8 +207,7 @@ public class Star {
      * 获取完整描述（包含亮度和四化）
      */
     public String getFullDescription() {
-
-        StringBuilder sb = new StringBuilder(name);
+        StringBuilder sb = new StringBuilder(name.getDescription());
 
         // 添加亮度
         if (brightness != null) {
@@ -286,5 +222,4 @@ public class Star {
 
         return sb.toString();
     }
-
 }

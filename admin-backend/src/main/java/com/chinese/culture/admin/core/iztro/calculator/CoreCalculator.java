@@ -206,7 +206,7 @@ public class CoreCalculator {
         if (genderStr == null || genderStr.trim().isEmpty()) {
             throw new IllegalArgumentException("性别不能为空");
         }
-        return Gender.valueOf(genderStr.toUpperCase());
+        return Gender.fromDescription(genderStr.toUpperCase());
     }
 
     private static HeavenlyStem parseHeavenlyStem(String stemStr) {

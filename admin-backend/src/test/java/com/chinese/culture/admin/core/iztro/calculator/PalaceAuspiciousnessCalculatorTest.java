@@ -5,6 +5,7 @@ import com.chinese.culture.admin.core.iztro.data.Star;
 import com.chinese.culture.admin.core.iztro.data.enums.Mutagen;
 import com.chinese.culture.admin.core.iztro.data.enums.Brightness;
 import com.chinese.culture.admin.core.iztro.data.enums.StarType;
+import com.chinese.culture.admin.core.iztro.data.enums.StarName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,23 +23,20 @@ class PalaceAuspiciousnessCalculatorTest {
     
     @BeforeEach
     void setUp() {
-        // 创建宫位
-        palace = new Palace();
-        palace.setName("命宫");
-        
-        // 创建紫微星
-        purpleStar = new Star("紫微", StarType.MAJOR, Brightness.TEMPLE);
-        purpleStar.addMutagen(Mutagen.LUCKY);
-        
-        // 创建太阳星
-        sunStar = new Star("太阳", StarType.MAJOR, Brightness.STRONG);
-        
-        // 创建火星
-        marsStar = new Star("火星", StarType.ADJECTIVE, Brightness.GAIN);
-        marsStar.addMutagen(Mutagen.WEAK);
-        
-        // 创建铃星
-        bellStar = new Star("铃星", StarType.ADJECTIVE, Brightness.TRAPPED);
+        palace = new Palace(EarthlyBranch.CHEN);
+        purpleStar = new Star(StarName.ZIWEI, StarType.MAJOR, Brightness.TEMPLE);
+        palace.addMajorStar(purpleStar);
+
+        sunStar = new Star(StarName.TAIYANG, StarType.MAJOR, Brightness.STRONG);
+        palace.addMajorStar(sunStar);
+
+        marsStar = new Star(StarName.HUOXING, StarType.ADJECTIVE, Brightness.GAIN);
+        palace.addAdjectiveStar(marsStar);
+
+        bellStar = new Star(StarName.LINGXING, StarType.ADJECTIVE, Brightness.TRAPPED);
+        palace.addAdjectiveStar(bellStar);
+
+        calculator = new PalaceAuspiciousnessCalculator();
     }
     
     @Test

@@ -134,6 +134,25 @@ class AstrolabeInterpreterTest {
             AstrolabeInterpreter.interpretAstrolabe(astrolabe));
     }
     
+    @Test
+    void testInterpretPalace() {
+        // 创建测试数据
+        Palace palace = new Palace(EarthlyBranch.CHEN);
+        palace.setName("命宫");
+        
+        // 添加星耀
+        Star star = new Star(StarName.ZIWEI, StarType.MAJOR);
+        palace.addMajorStar(star);
+        
+        // 添加四化
+        star.addMutagen(Mutagen.LUCKY);
+        
+        // 测试解释结果
+        String interpretation = AstrolabeInterpreter.interpretPalace(palace);
+        assertNotNull(interpretation);
+        assertTrue(interpretation.contains("紫微"));
+    }
+    
     /**
      * 创建测试用命盘数据
      */
@@ -234,8 +253,7 @@ class AstrolabeInterpreterTest {
      * 创建测试用星耀数据
      */
     private Star createStar(String name, List<String> mutagens) {
-        Star star = new Star();
-        star.setName(name);
+        Star star = new Star(StarName.valueOf(name), StarType.MAJOR);
         star.setMutagens(mutagens);
         return star;
     }
