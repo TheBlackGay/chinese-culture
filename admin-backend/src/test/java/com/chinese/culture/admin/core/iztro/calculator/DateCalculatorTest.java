@@ -1,16 +1,15 @@
 package com.chinese.culture.admin.core.iztro.calculator;
 
-import com.chinese.culture.admin.core.iztro.data.RawDate;
-import com.chinese.culture.admin.core.iztro.data.enums.HeavenlyStem;
-import com.chinese.culture.admin.core.iztro.data.enums.EarthlyBranch;
+import com.chinese.culture.admin.common.core.iztro.calculator.DateCalculator;
+import com.chinese.culture.admin.common.core.iztro.data.RawDateBO;
+import com.chinese.culture.admin.common.core.iztro.data.enums.HeavenlyStem;
+import com.chinese.culture.admin.common.core.iztro.data.enums.EarthlyBranch;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,24 +23,24 @@ class DateCalculatorTest {
     @DisplayName("测试阳历转农历")
     void testSolar2Lunar() {
         // 测试普通日期转换
-        RawDate.SolarDate solarDate1 = new RawDate.SolarDate();
+        RawDateBO.SolarDate solarDate1 = new RawDateBO.SolarDate();
         solarDate1.setYear(2024);
         solarDate1.setMonth(1);
         solarDate1.setDay(21);
-        
-        RawDate.LunarDate result1 = calculator.solar2lunar(solarDate1);
+
+        RawDateBO.LunarDate result1 = calculator.solar2lunar(solarDate1);
         assertEquals(2023, result1.getYear());
         assertEquals(12, result1.getMonth());
         assertEquals(11, result1.getDay());
         assertFalse(result1.isLeapMonth());
 
         // 测试闰月日期
-        RawDate.SolarDate solarDate2 = new RawDate.SolarDate();
+        RawDateBO.SolarDate solarDate2 = new RawDateBO.SolarDate();
         solarDate2.setYear(2023);
         solarDate2.setMonth(6);
         solarDate2.setDay(18);
-        
-        RawDate.LunarDate result2 = calculator.solar2lunar(solarDate2);
+
+        RawDateBO.LunarDate result2 = calculator.solar2lunar(solarDate2);
         assertEquals(2023, result2.getYear());
         assertEquals(5, result2.getMonth());
         assertEquals(1, result2.getDay());
@@ -52,25 +51,25 @@ class DateCalculatorTest {
     @DisplayName("测试农历转阳历")
     void testLunar2Solar() {
         // 测试普通日期转换
-        RawDate.LunarDate lunarDate1 = new RawDate.LunarDate();
+        RawDateBO.LunarDate lunarDate1 = new RawDateBO.LunarDate();
         lunarDate1.setYear(2023);
         lunarDate1.setMonth(12);
         lunarDate1.setDay(11);
         lunarDate1.setLeapMonth(false);
-        
-        RawDate.SolarDate result1 = calculator.lunar2solar(lunarDate1);
+
+        RawDateBO.SolarDate result1 = calculator.lunar2solar(lunarDate1);
         assertEquals(2024, result1.getYear());
         assertEquals(1, result1.getMonth());
         assertEquals(21, result1.getDay());
 
         // 测试闰月日期
-        RawDate.LunarDate lunarDate2 = new RawDate.LunarDate();
+        RawDateBO.LunarDate lunarDate2 = new RawDateBO.LunarDate();
         lunarDate2.setYear(2023);
         lunarDate2.setMonth(5);
         lunarDate2.setDay(1);
         lunarDate2.setLeapMonth(true);
-        
-        RawDate.SolarDate result2 = calculator.lunar2solar(lunarDate2);
+
+        RawDateBO.SolarDate result2 = calculator.lunar2solar(lunarDate2);
         assertEquals(2023, result2.getYear());
         assertEquals(6, result2.getMonth());
         assertEquals(18, result2.getDay());
@@ -79,12 +78,12 @@ class DateCalculatorTest {
     @Test
     @DisplayName("测试获取干支纪年日期")
     void testGetChineseDate() {
-        RawDate.SolarDate solarDate = new RawDate.SolarDate();
+        RawDateBO.SolarDate solarDate = new RawDateBO.SolarDate();
         solarDate.setYear(2024);
         solarDate.setMonth(1);
         solarDate.setDay(21);
-        
-        RawDate.ChineseDate result = calculator.getChineseDate(solarDate, 3);
+
+        RawDateBO.ChineseDate result = calculator.getChineseDate(solarDate, 3);
         assertEquals(HeavenlyStem.fromIndex(result.getYearGan()).getDescription(), "癸");
         assertEquals(EarthlyBranch.fromIndex(result.getYearZhi()).getDescription(), "卯");
         assertEquals(HeavenlyStem.fromIndex(result.getMonthGan()).getDescription(), "戊");
@@ -187,18 +186,18 @@ class DateCalculatorTest {
     @DisplayName("测试异常情况")
     void testExceptions() {
         // 测试无效日期
-        RawDate.SolarDate invalidDate = new RawDate.SolarDate();
+        RawDateBO.SolarDate invalidDate = new RawDateBO.SolarDate();
         invalidDate.setYear(2024);
         invalidDate.setMonth(13);
         invalidDate.setDay(1);
-        
-        assertThrows(IllegalArgumentException.class, () -> 
+
+        assertThrows(IllegalArgumentException.class, () ->
             calculator.solar2lunar(invalidDate)
         );
 
         // 测试无效时辰索引
-        assertThrows(IllegalArgumentException.class, () -> 
+        assertThrows(IllegalArgumentException.class, () ->
             calculator.getTimeRange(12)
         );
     }
-} 
+}

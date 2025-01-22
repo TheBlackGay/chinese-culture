@@ -1,6 +1,7 @@
 package com.chinese.culture.admin.core.iztro.analyzer;
 
-import com.chinese.culture.admin.core.iztro.data.Palace;
+import com.chinese.culture.admin.common.core.iztro.analyzer.PalaceRelationAnalyzer;
+import com.chinese.culture.admin.common.core.iztro.data.PalaceBO;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ class PalaceRelationAnalyzerTest {
     @Test
     void testAnalyzePalaceRelations() {
         // 准备测试数据
-        List<Palace> palaces = new ArrayList<>();
+        List<PalaceBO> palaces = new ArrayList<>();
         palaces.add(createPalace("命宫", "寅"));
         palaces.add(createPalace("兄弟", "巳"));
         palaces.add(createPalace("夫妻", "申"));
@@ -33,7 +34,7 @@ class PalaceRelationAnalyzerTest {
     @Test
     void testAnalyzePunishmentRelations() {
         // 准备测试数据
-        List<Palace> palaces = new ArrayList<>();
+        List<PalaceBO> palaces = new ArrayList<>();
         palaces.add(createPalace("命宫", "寅"));
         palaces.add(createPalace("兄弟", "巳"));
         palaces.add(createPalace("夫妻", "申"));
@@ -55,7 +56,7 @@ class PalaceRelationAnalyzerTest {
     @Test
     void testAnalyzeHarmonyRelations() {
         // 准备测试数据
-        List<Palace> palaces = new ArrayList<>();
+        List<PalaceBO> palaces = new ArrayList<>();
         palaces.add(createPalace("命宫", "子"));
         palaces.add(createPalace("兄弟", "丑"));
         palaces.add(createPalace("夫妻", "寅"));
@@ -76,7 +77,7 @@ class PalaceRelationAnalyzerTest {
     @Test
     void testAnalyzeTrineRelations() {
         // 准备测试数据
-        List<Palace> palaces = new ArrayList<>();
+        List<PalaceBO> palaces = new ArrayList<>();
         palaces.add(createPalace("命宫", "寅"));
         palaces.add(createPalace("疾厄", "午"));
         palaces.add(createPalace("财帛", "戌"));
@@ -94,10 +95,10 @@ class PalaceRelationAnalyzerTest {
         assertTrue(trinePalaces.contains("财帛"));
     }
 
-    private Palace createPalace(String name, String branch) {
-        Palace palace = new Palace();
+    private PalaceBO createPalace(String name, String branch) {
+        PalaceBO palace = new PalaceBO();
         palace.setName(name);
         palace.setBranch(branch);
         return palace;
     }
-} 
+}

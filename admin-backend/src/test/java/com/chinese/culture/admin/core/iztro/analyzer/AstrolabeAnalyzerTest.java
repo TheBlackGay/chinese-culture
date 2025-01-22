@@ -1,9 +1,12 @@
 package com.chinese.culture.admin.core.iztro.analyzer;
 
-import com.chinese.culture.admin.core.iztro.data.Astrolabe;
-import com.chinese.culture.admin.core.iztro.data.Horoscope;
-import com.chinese.culture.admin.core.iztro.data.Palace;
-import com.chinese.culture.admin.core.iztro.data.Star;
+import com.chinese.culture.admin.common.core.iztro.analyzer.AstrolabeAnalyzer;
+import com.chinese.culture.admin.common.core.iztro.data.AstrolabeBO;
+import com.chinese.culture.admin.common.core.iztro.data.HoroscopeBO;
+import com.chinese.culture.admin.common.core.iztro.data.PalaceBO;
+import com.chinese.culture.admin.common.core.iztro.data.StarBO;
+import com.chinese.culture.admin.common.core.iztro.data.enums.StarName;
+import com.chinese.culture.admin.common.core.iztro.data.enums.StarType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,31 +18,31 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AstrolabeAnalyzerTest {
 
-    private Astrolabe astrolabe;
-    private List<Palace> palaces;
-    private List<Star> stars;
-    private Palace mingGong;
-    private Star ziwei;
-    private Star tianfu;
+    private AstrolabeBO astrolabe;
+    private List<PalaceBO> palaces;
+    private List<StarBO> stars;
+    private PalaceBO mingGong;
+    private StarBO ziwei;
+    private StarBO tianfu;
 
     @BeforeEach
     void setUp() {
-        astrolabe = new Astrolabe();
+        astrolabe = new AstrolabeBO();
         palaces = new ArrayList<>();
         stars = new ArrayList<>();
 
         // 创建命宫
-        mingGong = new Palace();
+        mingGong = new PalaceBO();
         mingGong.setName("命宫");
         mingGong.setIndex(0);
-        mingGong.setMing(true);
+        mingGong.setMingGong(true);
 
         // 创建紫微星
-        ziwei = new Star(StarName.ZIWEI, StarType.MAJOR);
+        ziwei = new StarBO(StarName.ZIWEI, StarType.MAJOR);
         mingGong.addMajorStar(ziwei);
-        
+
         // 创建天府星
-        tianfu = new Star(StarName.TIANFU, StarType.MAJOR);
+        tianfu = new StarBO(StarName.TIANFU, StarType.MAJOR);
         mingGong.addMajorStar(tianfu);
 
         // 添加四化
@@ -50,7 +53,7 @@ class AstrolabeAnalyzerTest {
 
         // 补充其他宫位到12个
         for (int i = 1; i < 12; i++) {
-            Palace palace = new Palace();
+            PalaceBO palace = new PalaceBO();
             palace.setName("宫位" + i);
             palace.setIndex(i);
             palace.setStars(new ArrayList<>());
@@ -75,8 +78,8 @@ class AstrolabeAnalyzerTest {
     @Test
     void analyzeDecadalFortune() {
         // 创建测试数据
-        Horoscope horoscope = new Horoscope();
-        Horoscope.DecadalHoroscope decadal = new Horoscope.DecadalHoroscope();
+        HoroscopeBO horoscope = new HoroscopeBO();
+        HoroscopeBO.DecadalHoroscope decadal = new HoroscopeBO.DecadalHoroscope();
         decadal.setStartAge(20);
         decadal.setEndAge(29);
         decadal.setHeavenlyStem("甲");
@@ -97,8 +100,8 @@ class AstrolabeAnalyzerTest {
     @Test
     void analyzeYearlyFortune() {
         // 创建测试数据
-        Horoscope horoscope = new Horoscope();
-        Horoscope.YearlyHoroscope yearly = new Horoscope.YearlyHoroscope();
+        HoroscopeBO horoscope = new HoroscopeBO();
+        HoroscopeBO.YearlyHoroscope yearly = new HoroscopeBO.YearlyHoroscope();
         yearly.setAge(2024);
         yearly.setHeavenlyStem("甲");
         yearly.setEarthlyBranch("辰");
