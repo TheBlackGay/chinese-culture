@@ -28,15 +28,15 @@ public class StemBranchUtils {
     };
 
     private static final String[][] DAY_HOUR_STEMS = {
-        // 甲己日
+        // 甲己日起丙
         {"丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁"},
-        // 乙庚日
+        // 乙庚日起戊
         {"戊", "己", "庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁", "戊", "己"},
-        // 丙辛日
+        // 丙辛日起庚
         {"庚", "辛", "壬", "癸", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛"},
-        // 丁壬日
+        // 丁壬日起壬
         {"壬", "癸", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"},
-        // 戊癸日
+        // 戊癸日起甲
         {"甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸", "甲", "乙"}
     };
 
@@ -157,11 +157,11 @@ public class StemBranchUtils {
         
         // 处理子时跨日的情况
         if (hour >= 23) {
-            // 23:00-24:00 属于当天的子时
+            // 23:00-24:00 属于下一天的子时
+            effectiveDate = date.plusDays(1);
             hour = 23;
         } else if (hour < 1) {
-            // 00:00-01:00 属于前一天的子时
-            effectiveDate = date.minusDays(1);
+            // 00:00-01:00 属于当天的子时
             hour = 23;
         }
         
@@ -174,23 +174,23 @@ public class StemBranchUtils {
         switch (dayStem) {
             case "甲":
             case "己":
-                dayGroup = 0;
+                dayGroup = 0; // 起丙
                 break;
             case "乙":
             case "庚":
-                dayGroup = 1;
+                dayGroup = 1; // 起戊
                 break;
             case "丙":
             case "辛":
-                dayGroup = 2;
+                dayGroup = 2; // 起庚
                 break;
             case "丁":
             case "壬":
-                dayGroup = 3;
+                dayGroup = 3; // 起壬
                 break;
             case "戊":
             case "癸":
-                dayGroup = 4;
+                dayGroup = 4; // 起甲
                 break;
             default:
                 throw new IllegalArgumentException("Invalid day stem: " + dayStem);
@@ -198,15 +198,67 @@ public class StemBranchUtils {
         
         // 计算时辰地支序号：子时为0，丑时为1，寅时为2，...
         int hourBranchIndex;
-        if (hour == 23) {
+        if (hour == 23 || hour == 0) {
             hourBranchIndex = 0; // 子时
         } else {
             hourBranchIndex = ((hour + 1) / 2) % 12;
         }
         
-        // 获取时辰天干和地支
-        String hourStem = DAY_HOUR_STEMS[dayGroup][hourBranchIndex];
+        // 获取时辰地支
         String hourBranch = BRANCHES[hourBranchIndex];
+        
+        // 获取时辰天干
+        String hourStem;
+        if (hourBranchIndex == 0) {
+            // 子时天干特殊处理
+            switch (dayGroup) {
+                case 0: // 甲己日起丙
+                    hourStem = "丙";
+                    break;
+                case 1: // 乙庚日起戊
+                    hourStem = "戊";
+                    break;
+                case 2: // 丙辛日起庚
+                    hourStem = "庚";
+                    break;
+                case 3: // 丁壬日起壬
+                    hourStem = "壬";
+                    break;
+                case 4: // 戊癸日起甲
+                    hourStem = "甲";
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid day group: " + dayGroup);
+            }
+        } else {
+            // 其他时辰按照规则推算
+            int stemIndex;
+            switch (dayGroup) {
+                case 0: // 甲己日起丙
+                    stemIndex = 2;
+                    break;
+                case 1: // 乙庚日起戊
+                    stemIndex = 4;
+                    break;
+                case 2: // 丙辛日起庚
+                    stemIndex = 6;
+                    break;
+                case 3: // 丁壬日起壬
+                    stemIndex = 8;
+                    break;
+                case 4: // 戊癸日起甲
+                    stemIndex = 0;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid day group: " + dayGroup);
+            }
+            stemIndex = (stemIndex + hourBranchIndex) % 10;
+            hourStem = getHeavenStem(stemIndex);
+        }
+        
+        System.out.println("Date: " + effectiveDate + ", Hour: " + hour + ", DayStem: " + dayStem + 
+                         ", DayGroup: " + dayGroup + ", HourBranchIndex: " + hourBranchIndex + 
+                         ", Result: " + hourStem + hourBranch);
         
         return hourStem + hourBranch;
     }
