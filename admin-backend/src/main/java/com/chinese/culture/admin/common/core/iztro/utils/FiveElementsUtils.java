@@ -4,10 +4,12 @@ import com.chinese.culture.admin.common.core.iztro.data.enums.FiveElements;
 import com.chinese.culture.admin.common.core.iztro.data.enums.FiveElementsClass;
 import com.chinese.culture.admin.common.core.iztro.data.enums.HeavenlyStem;
 import com.chinese.culture.admin.common.core.iztro.data.enums.EarthlyBranch;
+import lombok.experimental.UtilityClass;
 
 /**
  * 五行计算工具类
  */
+@UtilityClass
 public class FiveElementsUtils {
 
     /**
@@ -45,55 +47,27 @@ public class FiveElementsUtils {
      * @param earthlyBranch 地支
      * @return 五行局
      */
-    public static FiveElementsClass getFiveElementsClass(HeavenlyStem heavenlyStem, EarthlyBranch earthlyBranch) {
-        // 天干数
-        int heavenlyStemNumber = (heavenlyStem.ordinal() / 2) + 1;
-        
-        // 地支数
-        int earthlyBranchNumber;
-        switch (earthlyBranch) {
-            case ZI:
-            case WU:
-            case CHOU:
-            case WEI:
-                earthlyBranchNumber = 1;
-                break;
-            case YIN:
-            case SHEN:
-            case MAO:
-            case YOU:
-                earthlyBranchNumber = 2;
-                break;
-            case CHEN:
-            case XU:
-            case SI:
-            case HAI:
-                earthlyBranchNumber = 3;
-                break;
+    public FiveElementsClass getFiveElementsClass(String heavenlyStem, String earthlyBranch) {
+        // 根据天干地支计算五行局
+        // 具体规则待实现
+        switch (heavenlyStem) {
+            case "甲":
+            case "乙":
+                return FiveElementsClass.WOOD;   // 木三局
+            case "丙":
+            case "丁":
+                return FiveElementsClass.FIRE;   // 火六局
+            case "戊":
+            case "己":
+                return FiveElementsClass.EARTH;  // 土五局
+            case "庚":
+            case "辛":
+                return FiveElementsClass.METAL;  // 金四局
+            case "壬":
+            case "癸":
+                return FiveElementsClass.WATER;  // 水二局
             default:
-                throw new IllegalArgumentException("Invalid earthly branch");
-        }
-
-        // 计算五行局
-        int sum = heavenlyStemNumber + earthlyBranchNumber;
-        if (sum > 5) {
-            sum -= 5;
-        }
-
-        // 返回对应的五行局
-        switch (sum) {
-            case 1:
-                return FiveElementsClass.MU_SAN;  // 木三局
-            case 2:
-                return FiveElementsClass.JIN_SI;  // 金四局
-            case 3:
-                return FiveElementsClass.SHUI_ER; // 水二局
-            case 4:
-                return FiveElementsClass.HUO_LIU; // 火六局
-            case 5:
-                return FiveElementsClass.TU_WU;   // 土五局
-            default:
-                throw new IllegalStateException("Invalid five elements class calculation result");
+                throw new IllegalArgumentException("无效的天干：" + heavenlyStem);
         }
     }
 

@@ -69,7 +69,7 @@ public class PalaceUtils {
         if (isLeapMonth) {
             lunarMonth = CalendarUtils.fixLunarMonth(birthTime);
         }
-        
+
         // 检查是否是节气日
         String solarTerm = LunarUtils.getSolarTerm(birthTime.toLocalDate());
         if (solarTerm != null) {
@@ -88,10 +88,6 @@ public class PalaceUtils {
             // 立冬、小雪：十二月
             // 大雪、冬至：一月
             switch (solarTerm) {
-                case "大雪":
-                case "冬至":
-                    lunarMonth = 1;
-                    break;
                 case "小寒":
                 case "大寒":
                     lunarMonth = 2;
@@ -136,40 +132,39 @@ public class PalaceUtils {
                 case "小雪":
                     lunarMonth = 12;
                     break;
+                case "大雪":
+                case "冬至":
+                    lunarMonth = 1;
+                    break;
             }
         }
-        
-        // 获取时辰地支
-        EarthlyBranch hourBranch = CalendarUtils.getHourEarthlyBranch(birthTime);
-        int timeIndex = hourBranch.ordinal();
-        
-        // 从寅宫开始
-        int firstIndex = EarthlyBranch.YIN.ordinal();
-        
-        // 计算生月对应的地支索引
-        // 正月对应寅宫，二月对应卯宫，以此类推
-        int monthBranchIndex = lunarMonth - 1;
+
+        // 获取时辰地支索引
+        int timeIndex = CalendarUtils.getHourEarthlyBranch(birthTime).ordinal();
+
+        // 计算月支索引，以寅宫为0
+        int monthBranchIndex = (lunarMonth + 2) % 12;
 
         // 计算命宫索引：
         // 1. 从月支开始
         // 2. 逆时针数到时支（逆时针数就是减去时辰数）
         int soulIndex = fixIndex(monthBranchIndex - timeIndex);
-        
+
         // 计算身宫索引：
         // 1. 从月支开始
         // 2. 顺时针数到时支（顺时针数就是加上时辰数）
         int bodyIndex = fixIndex(monthBranchIndex + timeIndex);
-        
+
         // 获取年干支以确定寅宫天干
         HeavenlyStem yearStem = CalendarUtils.getYearHeavenlyStem(birthTime);
         HeavenlyStem startStem = TIGER_RULE.get(yearStem);
-        
-        // 计算命宫天干：起始天干加上命宫索引
+
+        // 计算命宫天干：从寅宫天干开始，顺数到命宫位置
         int soulStemIndex = fixIndex(startStem.ordinal() + soulIndex, 10);
         HeavenlyStem soulStem = HeavenlyStem.values()[soulStemIndex];
 
         // 计算命宫地支：命宫索引对应的地支
-        EarthlyBranch soulBranch = EarthlyBranch.values()[fixIndex(soulIndex)];
+        EarthlyBranch soulBranch = EarthlyBranch.values()[fixIndex(soulIndex + FIRST_INDEX)];
 
         return SoulAndBodyBO.builder()
                 .soulIndex(soulIndex)
@@ -178,10 +173,10 @@ public class PalaceUtils {
                 .earthlyBranchOfSoul(soulBranch)
                 .build();
     }
-    
+
     /**
      * 修正索引，使其在指定范围内循环
-     * 
+     *
      * @param index 原始索引
      * @param size 循环大小，默认为12(地支)
      * @return 修正后的索引
@@ -190,7 +185,7 @@ public class PalaceUtils {
         size = (size <= 0) ? 12 : size;
         return ((index % size) + size) % size;
     }
-    
+
     /**
      * 修正索引，使其在地支范围内循环(0-11)
      */
@@ -203,15 +198,15 @@ public class PalaceUtils {
      */
     public static List<PalaceBO> arrangePalaces(SoulAndBodyBO soulAndBody) {
         List<PalaceBO> palaces = new ArrayList<>(12);
-        
+
         // 获取命宫的天干地支
         HeavenlyStem soulStem = soulAndBody.getHeavenlyStemOfSoul();
         EarthlyBranch soulBranch = soulAndBody.getEarthlyBranchOfSoul();
-        
+
         // 计算起始索引
         int currentIndex = soulBranch.ordinal();
         int startStemIndex = soulStem.ordinal();
-        
+
         // 按照兄弟、夫妻、子女、财帛、疾厄、迁移、交友、官禄、田宅、福德、命宫、父母的顺序排列
         PalaceName[] palaceOrder = {
             PalaceName.XIONG_DI, PalaceName.FU_QI, PalaceName.ZI_NV,
@@ -219,7 +214,7 @@ public class PalaceUtils {
             PalaceName.JIAO_YOU, PalaceName.GUAN_LU, PalaceName.TIAN_ZHE,
             PalaceName.FU_DE, PalaceName.MING_GONG, PalaceName.FU_MU
         };
-        
+
         for (int i = 0; i < 12; i++) {
             // 计算当前宫位的地支索引
             int branchIndex = fixIndex(currentIndex + i);
@@ -241,7 +236,7 @@ public class PalaceUtils {
             System.out.println("Palace " + i + ": " + palaceOrder[i] + ", Branch: " + currentBranch);
             palaces.add(palace);
         }
-        
+
         return palaces;
     }
 
@@ -254,19 +249,19 @@ public class PalaceUtils {
         if (targetPalace == null || allPalaces == null || allPalaces.isEmpty()) {
             return null;
         }
-        
+
         int targetIndex = targetPalace.getIndex();
-        
+
         // 对宫：相隔六个地支
         int oppositeIndex = fixIndex(targetIndex + 6);
         PalaceBO oppositePalace = findPalaceByIndex(allPalaces, oppositeIndex);
-        
+
         // 三合：相隔四个地支
         int wealthIndex = fixIndex(targetIndex + 4);
         int careerIndex = fixIndex(targetIndex + 8);
         PalaceBO wealthPalace = findPalaceByIndex(allPalaces, wealthIndex);
         PalaceBO careerPalace = findPalaceByIndex(allPalaces, careerIndex);
-        
+
         return SurroundedPalacesBO.builder()
                 .target(targetPalace)
                 .opposite(oppositePalace)
@@ -296,34 +291,34 @@ public class PalaceUtils {
         if (palace1 == null || palace2 == null || palace3 == null) {
             return false;
         }
-        
+
         EarthlyBranch branch1 = palace1.getEarthlyBranch();
         EarthlyBranch branch2 = palace2.getEarthlyBranch();
         EarthlyBranch branch3 = palace3.getEarthlyBranch();
-        
+
         // 如果有相同的地支，则不构成三合
         if (branch1 == branch2 || branch2 == branch3 || branch1 == branch3) {
             return false;
         }
-        
+
         // 寅午戌三合火
         if (isTriangleGroup(branch1, branch2, branch3,
                 EarthlyBranch.YIN, EarthlyBranch.WU, EarthlyBranch.XU)) {
             return true;
         }
-        
+
         // 巳酉丑三合金
         if (isTriangleGroup(branch1, branch2, branch3,
                 EarthlyBranch.SI, EarthlyBranch.YOU, EarthlyBranch.CHOU)) {
             return true;
         }
-        
+
         // 亥卯未三合木
         if (isTriangleGroup(branch1, branch2, branch3,
                 EarthlyBranch.HAI, EarthlyBranch.MAO, EarthlyBranch.WEI)) {
             return true;
         }
-        
+
         // 申子辰三合水
         return isTriangleGroup(branch1, branch2, branch3,
                 EarthlyBranch.SHEN, EarthlyBranch.ZI, EarthlyBranch.CHEN);
@@ -338,7 +333,7 @@ public class PalaceUtils {
         if (b1 == b2) {
             return false;
         }
-        
+
         // 检查两个地支是否都在指定的三合组中
         return (b1 == g1 || b1 == g2 || b1 == g3) &&
                 (b2 == g1 || b2 == g2 || b2 == g3);
@@ -353,7 +348,7 @@ public class PalaceUtils {
         if (b1 == b2 || b2 == b3 || b1 == b3) {
             return false;
         }
-        
+
         // 检查是否包含所有指定的地支
         return (b1 == g1 || b1 == g2 || b1 == g3) &&
                 (b2 == g1 || b2 == g2 || b2 == g3) &&
@@ -386,4 +381,4 @@ public class PalaceUtils {
                 (branch1 == EarthlyBranch.WU && branch2 == EarthlyBranch.WEI) ||
                 (branch1 == EarthlyBranch.WEI && branch2 == EarthlyBranch.WU);
     }
-} 
+}

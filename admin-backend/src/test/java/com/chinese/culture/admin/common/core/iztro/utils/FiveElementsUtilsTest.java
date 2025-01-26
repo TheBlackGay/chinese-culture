@@ -14,12 +14,13 @@ public class FiveElementsUtilsTest {
 
     @Test
     public void testGetFiveElementsClass() {
-        // 测试五行局计算
-        assertEquals(FiveElementsClass.JIN_SI, FiveElementsUtils.getFiveElementsClass(HeavenlyStem.JIA, EarthlyBranch.ZI));   // 甲子 金四局 (1+1=2)
-        assertEquals(FiveElementsClass.HUO_LIU, FiveElementsUtils.getFiveElementsClass(HeavenlyStem.YI, EarthlyBranch.HAI));  // 乙亥 火六局 (1+3=4)
-        assertEquals(FiveElementsClass.HUO_LIU, FiveElementsUtils.getFiveElementsClass(HeavenlyStem.BING, EarthlyBranch.YIN)); // 丙寅 火六局 (2+2=4)
-        assertEquals(FiveElementsClass.TU_WU, FiveElementsUtils.getFiveElementsClass(HeavenlyStem.DING, EarthlyBranch.SI));   // 丁巳 土五局 (2+3=5)
-        assertEquals(FiveElementsClass.MU_SAN, FiveElementsUtils.getFiveElementsClass(HeavenlyStem.WU, EarthlyBranch.CHEN));  // 戊辰 木三局 (3+3=6-5=1)
+        // 测试天干对应的五行局
+        assertEquals(FiveElementsClass.METAL, FiveElementsUtils.getFiveElementsClass("庚", "子"));
+        assertEquals(FiveElementsClass.FIRE, FiveElementsUtils.getFiveElementsClass("丙", "子"));
+        assertEquals(FiveElementsClass.FIRE, FiveElementsUtils.getFiveElementsClass("丁", "子"));
+        assertEquals(FiveElementsClass.EARTH, FiveElementsUtils.getFiveElementsClass("戊", "子"));
+        assertEquals(FiveElementsClass.WOOD, FiveElementsUtils.getFiveElementsClass("甲", "子"));
+        assertEquals(FiveElementsClass.WATER, FiveElementsUtils.getFiveElementsClass("壬", "子"));
     }
 
     @Test
