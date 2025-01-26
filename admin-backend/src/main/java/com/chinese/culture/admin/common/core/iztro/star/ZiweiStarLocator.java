@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 /**
  * 紫微星定位
@@ -50,7 +49,14 @@ public class ZiweiStarLocator {
         return fixIndex(index, 12);
     }
 
-    public StarBO getStartIndex(String solarDateStr, int timeIndex, boolean fixLeap) {
+    /**
+     * 这个方法是获取紫微星的信息
+     * @param solarDateStr
+     * @param timeIndex
+     * @param fixLeap
+     * @return
+     */
+    public StarBO getZiweiStarPosition(String solarDateStr, int timeIndex, boolean fixLeap) {
 
         // 获取命主身主
         LocalDateTime dateTime = LocalDateTime.parse(solarDateStr + "T00:00:00");
@@ -117,7 +123,7 @@ public class ZiweiStarLocator {
                 .build();
     }
 
-    public int getStartIndex(LocalDateTime solarDate, int timeIndex) {
+    public int getZiweiStarPosition(LocalDateTime solarDate, int timeIndex) {
         // 获取命宫和身宫
         SoulAndBodyBO soulAndBody = PalaceUtils.getSoulAndBody(solarDate, false);
 
