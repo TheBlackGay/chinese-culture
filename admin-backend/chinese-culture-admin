@@ -1,0 +1,11 @@
+2025-01-22 18:11:03.833 [main] INFO  c.c.c.a.common.core.iztro.utils.PalaceUtilsTest - Starting PalaceUtilsTest using Java 17.0.10 on zhongjiafeng.local with PID 22957 (started by zhongjiafeng in /Users/zhongjiafeng/Desktop/5000_Project/github/chinese-culture/admin-backend)
+2025-01-22 18:11:03.834 [main] DEBUG c.c.c.a.common.core.iztro.utils.PalaceUtilsTest - Running with Spring Boot v2.7.0, Spring v5.3.20
+2025-01-22 18:11:03.834 [main] INFO  c.c.c.a.common.core.iztro.utils.PalaceUtilsTest - The following 1 profile is active: "dev"
+2025-01-22 18:11:03.849 [main] DEBUG o.s.w.context.support.GenericWebApplicationContext - Refreshing org.springframework.web.context.support.GenericWebApplicationContext@1eef9aef
+2025-01-22 18:11:04.586 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 7 mappings in 'requestMappingHandlerMapping'
+2025-01-22 18:11:04.772 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-01-22 18:11:04.798 [main] DEBUG o.s.web.servlet.handler.SimpleUrlHandlerMapping - Patterns [/swagger-ui/] in 'viewControllerHandlerMapping'
+2025-01-22 18:11:04.811 [main] DEBUG o.s.web.servlet.handler.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**, /swagger-ui/**] in 'resourceHandlerMapping'
+2025-01-22 18:11:04.817 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-01-22 18:11:04.895 [main] INFO  c.c.c.a.common.core.iztro.utils.PalaceUtilsTest - Started PalaceUtilsTest in 1.218 seconds (JVM running for 1.673)
+2025-01-22 18:11:05.314 [SpringApplicationShutdownHook] DEBUG o.s.w.context.support.GenericWebApplicationContext - Closing org.springframework.web.context.support.GenericWebApplicationContext@1eef9aef, started on Wed Jan 22 18:11:03 CST 2025

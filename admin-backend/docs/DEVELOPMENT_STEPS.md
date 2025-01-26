@@ -3,20 +3,20 @@
 ## 一、基础数据计算层
 
 ### 1.1 工具类开发
-- [ ] 农历日期转换工具类 (LunarUtils.java)
+- [x] 农历日期转换工具类 (LunarUtils.java)
   - 阳历转农历
   - 农历转阳历
   - 节气计算
   - 时辰转换
 
-- [ ] 天干地支计算工具类 (StemBranchUtils.java)
+- [x] 天干地支计算工具类 (StemBranchUtils.java)
   - 年干支计算
   - 月干支计算
   - 日干支计算
   - 时干支计算
   - 五虎遁计算
 
-- [ ] 五行计算工具类 (FiveElementsUtils.java)
+- [x] 五行计算工具类 (FiveElementsUtils.java)
   - 五行局计算
   - 五行生克关系判断
   - 五行属性计算
