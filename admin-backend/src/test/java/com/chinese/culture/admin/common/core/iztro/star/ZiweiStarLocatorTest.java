@@ -12,6 +12,9 @@ class ZiweiStarLocatorTest {
 
     private final ZiweiStarLocator locator = new ZiweiStarLocator();
 
+    /**
+     * 测试通过 20250126 22:50
+     */
     @Test
     public void testCalculatePosition_Example1() {
         // 例一：2024.1.27 0:30 出生 男 金四局，在卯安紫微 -- 已校准
@@ -23,6 +26,9 @@ class ZiweiStarLocatorTest {
         assertEquals(1, star.getPosition(), "紫微星应该在卯位（索引1）");
     }
 
+    /**
+     * 测试通过 20250126 22:50
+     */
     @Test
     public void testCalculatePosition_Example2() {
         // 例二：2024.1.13 0:30日出生金四局，男，在丑安紫微 -- 已校准
@@ -33,6 +39,9 @@ class ZiweiStarLocatorTest {
         assertEquals(11, star.getPosition(), "紫微星应该在丑位（索引11）");
     }
 
+    /**
+     * 测试通过 20250126 22:50
+     */
     @Test
     public void testCalculatePosition_Example3() {
         // 例三：2024.1.15 0:30 日出生金四局，在子安紫微 -- 已校准
@@ -43,28 +52,37 @@ class ZiweiStarLocatorTest {
         assertEquals(10, star.getPosition(), "紫微星应该在子位（索引10）");
     }
 
+    /**
+     * 测试通过 20250126 22:50
+     */
     @Test
     public void testCalculatePosition_LateZiHour() {
-        // 测试晚子时的情况
+        // 测试晚子时的情况，2024.1.15 23:30 日出生金四局，在巳安紫微 -- 已校准
         LocalDate date = LocalDate.of(2024, 1, 15);
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         StarBO star = locator.getStartIndex(dateStr, 12, false);
 
-        // 由于是晚子时，日数会加1，变成28日
-        assertEquals(10, star.getPosition());
+        // 由于是晚子时，日数会加1，变成16日
+        assertEquals(3, star.getPosition());
     }
 
+    /**
+     * 测试通过 20250126 22:50
+     */
     @Test
     public void testCalculatePosition_CrossMonth() {
-        // 测试跨月的情况
+        // 测试跨月的情况，2024.1.30 23:30 日出生金四局，在辰安紫微 -- 已校准
         LocalDate date = LocalDate.of(2024, 1, 30);
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         StarBO star = locator.getStartIndex(dateStr, 12, false);
 
         // 由于是晚子时且是月末，日数会变成1
-        assertEquals(0, star.getPosition());
+        assertEquals(2, star.getPosition());
     }
 
+    /**
+     * 测试通过 20250126 22:50
+     */
     @Test
     public void testRealCase1_1994_12_08() {
         // 阳历1994年12月8日 9点05分出生
@@ -79,12 +97,12 @@ class ZiweiStarLocatorTest {
 
     @Test
     public void testRealCase2_1999_04_18() {
-        // 阳历1999年4月18日 12点30分出生
+        // 阳历1999年4月18日 12点30分出生，
         // 农历己卯年三月初三日 午时
-        // 五行局：火六局（原注释错误写成木三局）
+        // 五行局：火六局
         LocalDate date = LocalDate.of(1999, 4, 18);
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-        StarBO star = locator.getStartIndex(dateStr, 2, false);
+        StarBO star = locator.getStartIndex(dateStr, 6, false);
 
         assertEquals(10, star.getPosition(), "紫微星应该在亥位（索引10）");
     }
