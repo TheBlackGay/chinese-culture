@@ -95,6 +95,9 @@ class ZiweiStarLocatorTest {
         assertEquals(5, star.getPosition(), "紫微星应该在未位（索引5）");
     }
 
+    /**
+     * 测试通过 20250126 23:15
+     */
     @Test
     public void testRealCase2_1999_04_18() {
         // 阳历1999年4月18日 12点30分出生，
@@ -104,24 +107,27 @@ class ZiweiStarLocatorTest {
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         StarBO star = locator.getStartIndex(dateStr, 6, false);
 
-        assertEquals(10, star.getPosition(), "紫微星应该在亥位（索引10）");
+        assertEquals(9, star.getPosition(), "紫微星应该在亥位（索引9）");
     }
 
+    /**
+     * 测试通过 20250126 23:15
+     */
     @Test
     public void testRealCase3_2024_11_15() {
-        // 阳历2024年11月15日 03:30 命宫在酉
+        // 阳历2024年11月15日 03:30 命宫在酉，紫微在辰
         // 五行局：金四局
         LocalDate date = LocalDate.of(2024, 11, 15);
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         StarBO star = locator.getStartIndex(dateStr, 2, false);
 
         // 验证紫微星位置
-        assertEquals(6, star.getPosition(), "紫微星应该在申位（索引6）");
+        assertEquals(2, star.getPosition(), "紫微星应该在辰位（索引2）");
     }
 
     @Test
     public void testRealCase4_1997_02_05() {
-        // 1997年02月05日 05:18 命宫在戌
+        // 1997年02月05日 05:18 命宫在戌，
         LocalDate date = LocalDate.of(1997, 2, 5);
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         StarBO star = locator.getStartIndex(dateStr, 3, false);

@@ -37,37 +37,90 @@ public class FiveElementsUtils {
      * 
      * 计算方法：
      * 干支数相加，超过5者减去5，以差论之。
-     * - 若差为1则五行属木
-     * - 若差为2则五行属金
-     * - 若差为3则五行属水
-     * - 若差为4则五行属火
-     * - 若差为5则五行属土
+     * - 若差为1则五行属木(三局)
+     * - 若差为2则五行属金(四局)
+     * - 若差为3则五行属水(二局)
+     * - 若差为4则五行属火(六局)
+     * - 若差为5则五行属土(五局)
      * 
      * @param heavenlyStem 天干
      * @param earthlyBranch 地支
      * @return 五行局
      */
     public FiveElementsClass getFiveElementsClass(String heavenlyStem, String earthlyBranch) {
-        // 根据天干地支计算五行局
-        // 具体规则待实现
+        // 计算天干数
+        int stemNumber;
         switch (heavenlyStem) {
             case "甲":
             case "乙":
-                return FiveElementsClass.WOOD;   // 木三局
+                stemNumber = 1;
+                break;
             case "丙":
             case "丁":
-                return FiveElementsClass.FIRE;   // 火六局
+                stemNumber = 2;
+                break;
             case "戊":
             case "己":
-                return FiveElementsClass.EARTH;  // 土五局
+                stemNumber = 3;
+                break;
             case "庚":
             case "辛":
-                return FiveElementsClass.METAL;  // 金四局
+                stemNumber = 4;
+                break;
             case "壬":
             case "癸":
-                return FiveElementsClass.WATER;  // 水二局
+                stemNumber = 5;
+                break;
             default:
                 throw new IllegalArgumentException("无效的天干：" + heavenlyStem);
+        }
+
+        // 计算地支数
+        int branchNumber;
+        switch (earthlyBranch) {
+            case "子":
+            case "午":
+            case "丑":
+            case "未":
+                branchNumber = 1;
+                break;
+            case "寅":
+            case "申":
+            case "卯":
+            case "酉":
+                branchNumber = 2;
+                break;
+            case "辰":
+            case "戌":
+            case "巳":
+            case "亥":
+                branchNumber = 3;
+                break;
+            default:
+                throw new IllegalArgumentException("无效的地支：" + earthlyBranch);
+        }
+
+        // 计算和数
+        int sum = stemNumber + branchNumber;
+        // 如果和数大于5，则减去5
+        while (sum > 5) {
+            sum -= 5;
+        }
+
+        // 根据差数确定五行局
+        switch (sum) {
+            case 1:
+                return FiveElementsClass.WOOD;   // 木三局
+            case 2:
+                return FiveElementsClass.METAL;  // 金四局
+            case 3:
+                return FiveElementsClass.WATER;  // 水二局
+            case 4:
+                return FiveElementsClass.FIRE;   // 火六局
+            case 5:
+                return FiveElementsClass.EARTH;  // 土五局
+            default:
+                throw new IllegalStateException("无效的五行局计算结果：" + sum);
         }
     }
 

@@ -51,6 +51,7 @@ public class ZiweiStarLocator {
     }
 
     public StarBO getStartIndex(String solarDateStr, int timeIndex, boolean fixLeap) {
+
         // 获取命主身主
         LocalDateTime dateTime = LocalDateTime.parse(solarDateStr + "T00:00:00");
         SoulAndBodyBO soulAndBody = PalaceUtils.getSoulAndBody(dateTime, fixLeap);
@@ -91,25 +92,20 @@ public class ZiweiStarLocator {
             remainder = divisor % fiveElements.getValue();
         } while (remainder != 0);
 
-        // 将商除以12取余数
-        quotient = quotient % 12;
+        // 计算紫微星位置
+        int ziweiIndex = 0; // 从寅宫(0)开始
 
-        // 以商减一（因为需要从0开始）作为起始位置
-        int ziweiIndex = quotient - 1;
+        // 根据商数顺时针数
+        ziweiIndex = fixIndex(ziweiIndex + quotient - 1);
 
+        // 根据偏移量调整
         if (offset % 2 == 0) {
-            // 若循环次数为偶数，则索引顺时针数到循环数
-            ziweiIndex += offset;
+            // 偶数顺时针
+            ziweiIndex = fixIndex(ziweiIndex + offset);
         } else {
-            // 若循环次数为奇数，则索引逆时针数到循环数
-            ziweiIndex -= offset;
+            // 奇数逆时针
+            ziweiIndex = fixIndex(ziweiIndex - offset);
         }
-
-        // 修正索引范围
-        ziweiIndex = fixIndex(ziweiIndex);
-
-        // 天府星位置与紫微星相对
-        int tianfuIndex = fixIndex(12 - ziweiIndex);
 
         return StarBO.builder()
                 .name(StarName.ZI_WEI_MAJ)
