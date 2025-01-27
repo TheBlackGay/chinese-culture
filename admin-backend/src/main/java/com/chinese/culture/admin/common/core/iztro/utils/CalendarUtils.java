@@ -52,16 +52,54 @@ public class CalendarUtils {
     public static EarthlyBranch getHourEarthlyBranch(LocalDateTime dateTime) {
         int hour = dateTime.getHour();
         
-        // 子时特殊处理：23点和0点都是子时
+        // 子时：23:00-00:59
         if (hour == 23 || hour == 0) {
-            return EarthlyBranch.ZI;  // 子时
+            return EarthlyBranch.ZI;
         }
-        
-        // 其他时辰：每两个小时为一个时辰
-        int branchIndex = (hour + 1) / 2;
-        
-        // 时辰顺序：子(0)、丑(1)、寅(2)、卯(3)、辰(4)、巳(5)、午(6)、未(7)、申(8)、酉(9)、戌(10)、亥(11)
-        return EarthlyBranch.values()[branchIndex];
+        // 丑时：01:00-02:59
+        else if (hour >= 1 && hour < 3) {
+            return EarthlyBranch.CHOU;
+        }
+        // 寅时：03:00-04:59
+        else if (hour >= 3 && hour < 5) {
+            return EarthlyBranch.YIN;
+        }
+        // 卯时：05:00-06:59
+        else if (hour >= 5 && hour < 7) {
+            return EarthlyBranch.MAO;
+        }
+        // 辰时：07:00-08:59
+        else if (hour >= 7 && hour < 9) {
+            return EarthlyBranch.CHEN;
+        }
+        // 巳时：09:00-10:59
+        else if (hour >= 9 && hour < 11) {
+            return EarthlyBranch.SI;
+        }
+        // 午时：11:00-12:59
+        else if (hour >= 11 && hour < 13) {
+            return EarthlyBranch.WU;
+        }
+        // 未时：13:00-14:59
+        else if (hour >= 13 && hour < 15) {
+            return EarthlyBranch.WEI;
+        }
+        // 申时：15:00-16:59
+        else if (hour >= 15 && hour < 17) {
+            return EarthlyBranch.SHEN;
+        }
+        // 酉时：17:00-18:59
+        else if (hour >= 17 && hour < 19) {
+            return EarthlyBranch.YOU;
+        }
+        // 戌时：19:00-20:59
+        else if (hour >= 19 && hour < 21) {
+            return EarthlyBranch.XU;
+        }
+        // 亥时：21:00-22:59
+        else {
+            return EarthlyBranch.HAI;
+        }
     }
 
     /**

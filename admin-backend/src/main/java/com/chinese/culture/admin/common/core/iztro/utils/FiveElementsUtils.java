@@ -6,11 +6,31 @@ import com.chinese.culture.admin.common.core.iztro.data.enums.HeavenlyStem;
 import com.chinese.culture.admin.common.core.iztro.data.enums.EarthlyBranch;
 import lombok.experimental.UtilityClass;
 
+import java.util.Map;
+
+import static java.util.Map.entry;
+
 /**
  * 五行计算工具类
  */
 @UtilityClass
 public class FiveElementsUtils {
+
+    // 天干权重表
+    private static final Map<String, Integer> STEM_WEIGHTS = Map.ofEntries(
+            entry("甲", 1), entry("乙", 1),
+            entry("丙", 2), entry("丁", 2),
+            entry("戊", 3), entry("己", 3),
+            entry("庚", 4), entry("辛", 4),
+            entry("壬", 5), entry("癸", 5)
+    );
+
+    // 地支权重表
+    private static final Map<String, Integer> BRANCH_WEIGHTS = Map.ofEntries(
+            entry("子", 1), entry("丑", 1), entry("午", 1), entry("未", 1),
+            entry("寅", 2), entry("卯", 2), entry("申", 2), entry("酉", 2),
+            entry("辰", 3), entry("巳", 3), entry("戌", 3), entry("亥", 3)
+    );
 
     /**
      * 获取五行局
@@ -24,16 +44,14 @@ public class FiveElementsUtils {
      * 1、五行取数：木1 金2 水3 火4 土5
      * 
      * 天干取数：
-     * - 甲乙 ——> 1
-     * - 丙丁 ——> 2
-     * - 戊己 ——> 3
-     * - 庚辛 ——> 4
-     * - 壬癸 ——> 5
+     * - 甲乙丙丁 -> 1
+     * - 戊己庚辛 -> 2
+     * - 壬癸 -> 3
      * 
      * 地支取数：
-     * - 子午丑未 ——> 1
-     * - 寅申卯酉 ——> 2
-     * - 辰戌巳亥 ——> 3
+     * - 子丑午未 -> 1
+     * - 寅卯申酉 -> 2
+     * - 辰巳戌亥 -> 3
      * 
      * 计算方法：
      * 干支数相加，超过5者减去5，以差论之。
@@ -103,9 +121,7 @@ public class FiveElementsUtils {
         // 计算和数
         int sum = stemNumber + branchNumber;
         // 如果和数大于5，则减去5
-        while (sum > 5) {
-            sum -= 5;
-        }
+        sum = (sum - 1) % 5 + 1; // 保持取值范围1-5
 
         // 根据差数确定五行局
         switch (sum) {
