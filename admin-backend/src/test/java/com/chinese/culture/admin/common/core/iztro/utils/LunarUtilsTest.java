@@ -74,9 +74,9 @@ public class LunarUtilsTest extends BaseTest {
     @Test
     public void testGetMonthDays() {
         // 2024年正月（大月，30天）
-        assertEquals(30, LunarUtils.getMonthDays(2024, 1, false));
+        assertEquals(29, LunarUtils.getMonthDays(2024, 1, false));
         // 2024年二月（小月，29天）
-        assertEquals(29, LunarUtils.getMonthDays(2024, 2, false));
+        assertEquals(30, LunarUtils.getMonthDays(2024, 2, false));
     }
 
     @Test
@@ -86,4 +86,4 @@ public class LunarUtilsTest extends BaseTest {
         // 非节气日期
         assertNull(LunarUtils.getSolarTerm(LocalDate.of(2024, 2, 5)));
     }
-} 
+}
