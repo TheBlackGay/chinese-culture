@@ -17,13 +17,14 @@ class ZiweiStarLocatorTest {
      */
     @Test
     public void testCalculatePosition_Example1() {
-        // 例一：2024.1.27 0:30 出生 男 金四局，在卯安紫微 -- 已校准
+        // 例一：2024.1.27 0:30 出生 男 金四局，在卯安紫微，紫微星旺 -- 已校准
         LocalDate date = LocalDate.of(2024, 1, 27);
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         StarBO star = locator.getZiweiStarPosition(dateStr, 0, false);
 
         // 验证紫微星位置
         assertEquals(1, star.getPosition(), "紫微星应该在卯位（索引1）");
+        assertEquals("旺", star.getBrightness().getChinese(), "紫微星应该旺");
     }
 
     /**
@@ -31,12 +32,13 @@ class ZiweiStarLocatorTest {
      */
     @Test
     public void testCalculatePosition_Example2() {
-        // 例二：2024.1.13 0:30日出生金四局，男，在丑安紫微 -- 已校准
+        // 例二：2024.1.13 0:30日出生金四局，男，在丑安紫微，紫微星庙 -- 已校准
         LocalDate date = LocalDate.of(2024, 1, 13);
         String dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
         StarBO star = locator.getZiweiStarPosition(dateStr, 0, false);
 
         assertEquals(11, star.getPosition(), "紫微星应该在丑位（索引11）");
+        assertEquals("庙", star.getBrightness().getChinese(), "紫微星应该庙");
     }
 
     /**
