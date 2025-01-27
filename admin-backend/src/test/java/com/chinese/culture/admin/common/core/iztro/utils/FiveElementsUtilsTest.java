@@ -15,12 +15,12 @@ public class FiveElementsUtilsTest {
     @Test
     public void testGetFiveElementsClass() {
         // 测试天干对应的五行局
-        assertEquals(FiveElementsClass.METAL, FiveElementsUtils.getFiveElementsClass("庚", "子"));
-        assertEquals(FiveElementsClass.FIRE, FiveElementsUtils.getFiveElementsClass("丙", "子"));
-        assertEquals(FiveElementsClass.FIRE, FiveElementsUtils.getFiveElementsClass("丁", "子"));
-        assertEquals(FiveElementsClass.EARTH, FiveElementsUtils.getFiveElementsClass("戊", "子"));
-        assertEquals(FiveElementsClass.WOOD, FiveElementsUtils.getFiveElementsClass("甲", "子"));
-        assertEquals(FiveElementsClass.WATER, FiveElementsUtils.getFiveElementsClass("壬", "子"));
+        assertEquals(FiveElementsClass.EARTH, FiveElementsUtils.getFiveElementsClass("庚", "子"));
+        assertEquals(FiveElementsClass.WATER, FiveElementsUtils.getFiveElementsClass("丙", "子"));
+        assertEquals(FiveElementsClass.WATER, FiveElementsUtils.getFiveElementsClass("丁", "子"));
+        assertEquals(FiveElementsClass.FIRE, FiveElementsUtils.getFiveElementsClass("戊", "子"));
+        assertEquals(FiveElementsClass.METAL, FiveElementsUtils.getFiveElementsClass("甲", "子"));
+        assertEquals(FiveElementsClass.WOOD, FiveElementsUtils.getFiveElementsClass("壬", "子"));
     }
 
     @Test
@@ -82,4 +82,4 @@ public class FiveElementsUtilsTest {
         assertFalse(FiveElementsUtils.isRestrain(FiveElements.WOOD, FiveElements.FIRE));  // 木生火
         assertFalse(FiveElementsUtils.isRestrain(FiveElements.WOOD, FiveElements.WATER)); // 水生木
     }
-} 
+}
