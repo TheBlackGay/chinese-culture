@@ -113,13 +113,33 @@ public class ZiweiStarLocator {
             ziweiIndex = fixIndex(ziweiIndex - offset);
         }
 
+        // 计算紫微星亮度
+        // 紫微星在各宫位的亮度,从寅宫开始顺序排列
+        Brightness[] brightnessArray = new Brightness[] {
+            Brightness.WANG,  // 寅
+            Brightness.WANG,  // 卯
+            Brightness.DE,    // 辰
+            Brightness.WANG,  // 巳
+            Brightness.MIAO,  // 午
+            Brightness.MIAO,  // 未
+            Brightness.WANG,  // 申
+            Brightness.WANG,  // 酉
+            Brightness.DE,    // 戌
+            Brightness.WANG,  // 亥
+            Brightness.PING,  // 子
+            Brightness.MIAO   // 丑
+        };
+        
+        // 直接根据宫位索引获取亮度
+        Brightness brightness = brightnessArray[ziweiIndex];
+
         return StarBO.builder()
                 .name(StarName.ZI_WEI_MAJ)
                 .type(StarType.MAJOR)
                 .scope(Scope.ORIGIN)
                 .position(ziweiIndex)
                 .element(FiveElements.valueOf(fiveElements.name()))
-                .brightness(Brightness.WANG)
+                .brightness(brightness)
                 .build();
     }
 
