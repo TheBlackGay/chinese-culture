@@ -164,14 +164,21 @@ public class LunarUtils {
     }
 
     /**
-     * 获取节气名称
-     * @param date 阳历日期
-     * @return 节气名称，如果不是节气日期则返回null
+     * 获取节气
+     * @param date 日期
+     * @return 节气名称，如果不是节气日则返回null
      */
     public static String getSolarTerm(LocalDate date) {
         SolarDay solarDay = SolarDay.fromYmd(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
-        SolarTerm term = solarDay.getTerm();
-        return term != null ? term.getName() : null;
+        
+        // 遍历所有可能的节气索引（0-23）
+        for (int i = 0; i < 24; i++) {
+            SolarTerm term = SolarTerm.fromIndex(date.getYear(), i);
+            if (term.getJulianDay().getSolarDay().equals(solarDay)) {
+                return term.getName();
+            }
+        }
+        return null;
     }
 
     /**
