@@ -5,13 +5,31 @@ import type { ColumnsType } from 'antd/es/table';
 import type { Palace } from '@/types/iztro';
 import './index.less';
 
+// 定义通用的Cell类型
+interface CellData {
+  key: string;
+  value: string;
+  type: 'decadal' | 'year' | 'month' | 'day' | 'hour';
+  [key: string]: any; // 允许其他任意属性
+}
+
+// 定义表格行数据类型
+interface TableRowData {
+  key: string;
+  label: string;
+  type: 'decadal' | 'year' | 'month' | 'day' | 'hour';
+  data: CellData[];
+  canPrevPage: boolean;
+  canNextPage: boolean;
+}
+
 interface HoroscopeSelectorProps {
   startYear: number;
   currentYear: number;
   mingGongData?: Palace;  // 命宫数据
   palaces?: Palace[];     // 所有宫位数据
   onTimeChange: (params: {
-    decadal?: object;
+    decadal?: number | object;
     year?: number;
     month?: number;
     day?: number;
@@ -92,7 +110,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     Array.from({ length }, (_, i) => i + offset);
 
   // 生成大限数据
-  const getDecadalData = (numbers: number[]) => {
+  const getDecadalData = (numbers: number[]): CellData[] => {
     const { startAge, endAge } = getMingGongAgeRange();
     const maxDecadalIndex = 12;
 
@@ -123,7 +141,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         startAge: decadalStartAge,
         endAge: decadalEndAge
       };
-    }).filter(Boolean);
+    }).filter(Boolean) as CellData[];
   };
 
   // 根据年龄获取对应的年份
@@ -140,7 +158,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   };
 
   // 生成流年数据
-  const getYearData = (numbers: number[]) => {
+  const getYearData = (numbers: number[]): CellData[] => {
     // 如果没有选择大限，返回空数组
     if (selectedTime.decadal === undefined) return [];
 
@@ -170,7 +188,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
           type: 'year',
           yearValue: year
         };
-      });
+      }) as CellData[];
     }
 
     // 其他大限使用分页
@@ -185,11 +203,11 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         type: 'year',
         yearValue: year
       };
-    }).filter(Boolean);
+    }).filter(Boolean) as CellData[];
   };
 
   // 生成流月数据
-  const getMonthData = (numbers: number[]) => {
+  const getMonthData = (numbers: number[]): CellData[] => {
     if (!selectedTime.year) return [];
 
     return numbers.map(num => {
@@ -201,11 +219,11 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         type: 'month',
         monthValue: month
       };
-    }).filter(Boolean);
+    }).filter(Boolean) as CellData[];
   };
 
   // 生成流日数据
-  const getDayData = (numbers: number[]) => {
+  const getDayData = (numbers: number[]): CellData[][] => {
     if (!selectedTime.year || !selectedTime.month) return [[]];
 
     // 计算选中月份的天数
@@ -213,7 +231,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
 
     // 将天数按照每10天分组
     const groups = Math.ceil(daysInMonth / 10);
-    const result = [];
+    const result: CellData[][] = [];
 
     for (let i = 0; i < groups; i++) {
       const startDay = i * 10 + 1;
@@ -242,7 +260,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
             return {
               key: `day-${day}`,
               value: dayText,
-              type: 'day',
+              type: 'day' as const,
               dayValue: day
             };
           }
@@ -255,7 +273,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   };
 
   // 生成流时数据
-  const getHourData = () => {
+  const getHourData = (): CellData[] => {
     const timeNames = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
     const offset = pageOffsets.hour * 10;
     const currentPageTimes = timeNames.slice(offset, offset + 10);
@@ -263,7 +281,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     return currentPageTimes.map((name, index) => ({
       key: `hour-${index + offset}`,
       value: `${name}时`,
-      type: 'hour',
+      type: 'hour' as const,
       hourValue: index + offset
     }));
   };
@@ -280,21 +298,6 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   const handleCellClick = (record: any) => {
     const newSelectedTime = { ...selectedTime };
     
-    // 打印原始记录数据
-    console.log('点击的单元格数据:', {
-      type: record.type,
-      value: record.value,
-      decadalValue: record.decadalValue,
-      startAge: record.startAge,
-      endAge: record.endAge,
-      heavenlyStem: record.heavenlyStem,
-      earthlyBranch: record.earthlyBranch,
-      yearValue: record.yearValue,
-      monthValue: record.monthValue,
-      dayValue: record.dayValue,
-      hourValue: record.hourValue
-    });
-    
     switch (record.type) {
       case 'decadal':
         console.log('选择大限:', {
@@ -303,11 +306,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
           endAge: record.endAge
         });
         
-        newSelectedTime.decadal = {
-          index: record.decadalValue,
-          startYear: startYear + record.startAge,
-          endYear: startYear + record.endAge
-        };
+        // 只传递大限索引，在父组件中转换为完整对象
+        newSelectedTime.decadal = record.decadalValue;
 
         delete newSelectedTime.year;
         delete newSelectedTime.month;
@@ -357,11 +357,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     }
     
     // 打印传递给父组件的数据
-    console.log('传递给父组件的运限数据:', {
-      ...newSelectedTime,
-      currentTime: new Date().toISOString(),
-      componentName: 'HoroscopeSelector'
-    });
+    console.log('传递给父组件的运限数据:', newSelectedTime);
     
     setSelectedTime(newSelectedTime);
     onTimeChange(newSelectedTime);
@@ -386,7 +382,7 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
   };
 
   // 生成表格数据
-  const getTableData = () => {
+  const getTableData = (): TableRowData[] => {
     const decadalNumbers = getPageNumbers(pageOffsets.decadal);
     const yearNumbers = getPageNumbers(pageOffsets.year);
     const monthNumbers = getPageNumbers(pageOffsets.month);
@@ -396,12 +392,12 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
     const maxDecadalIndex = 30;
 
     // 基础表格数据只包含大限
-    const tableData = [
+    const tableData: TableRowData[] = [
       {
         key: 'decadal',
         label: '大限',
-        type: 'decadal',
-        data: getDecadalData(decadalNumbers),
+        type: 'decadal' as const,
+        data: getDecadalData(decadalNumbers) as CellData[],
         canPrevPage: pageOffsets.decadal > 0,
         canNextPage: (pageOffsets.decadal + 1) * 10 <= maxDecadalIndex
       }
@@ -421,8 +417,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       tableData.push({
         key: 'year',
         label: '流年',
-        type: 'year',
-        data: yearData,
+        type: 'year' as const,
+        data: yearData as CellData[],
         canPrevPage: pageOffsets.year > 0,
         canNextPage: selectedTime.decadal !== undefined && pageOffsets.year < maxYearPages - 1
       });
@@ -433,8 +429,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       tableData.push({
         key: 'month',
         label: '流月',
-        type: 'month',
-        data: getMonthData(monthNumbers),
+        type: 'month' as const,
+        data: getMonthData(monthNumbers) as CellData[],
         canPrevPage: pageOffsets.month > 0,
         canNextPage: (pageOffsets.month + 1) * 10 < 12
       });
@@ -449,8 +445,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
         ...getDayData(dayNumbers).map((row, index) => ({
           key: `day-${index}`,
           label: '流日',
-          type: 'day',
-          data: row,
+          type: 'day' as const,
+          data: row as CellData[],
           canPrevPage: pageOffsets.day > 0,
           canNextPage: pageOffsets.day < maxDayPages - 1
         }))
@@ -462,8 +458,8 @@ const HoroscopeSelector: React.FC<HoroscopeSelectorProps> = ({
       tableData.push({
         key: 'hour',
         label: '流时',
-        type: 'hour',
-        data: getHourData(),
+        type: 'hour' as const,
+        data: getHourData() as CellData[],
         canPrevPage: pageOffsets.hour > 0,
         canNextPage: (pageOffsets.hour + 1) * 10 < 12
       });

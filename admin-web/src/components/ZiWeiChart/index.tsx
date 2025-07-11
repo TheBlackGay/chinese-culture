@@ -1,15 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card, Button, Tooltip, message } from 'antd';
+import { Card, Button, Tooltip, message, Form, Select } from 'antd';
 import type { Star, Palace, ZiWeiResult } from '@/types/iztro';
 import { calculateZiWei } from '@/services/ziwei';
 import HoroscopeSelector from '../HoroscopeSelector';
 import classNames from 'classnames';
 import './index.less';
+import dayjs from 'dayjs';
 
 interface ZiWeiChartProps {
   data: ZiWeiResult;
   onTimeChange?: (params: {
-    decadal?: number;
+    decadal?: any;
     year?: number;
     month?: number;
     day?: number;
@@ -224,30 +225,40 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     );
   };
 
-  // 计算三方四正
-  const getThreeAndFourPalaces = (palace: string) => {
-    const palaceIndex = data.palaces.findIndex(p => p.type === palace);
-    if (palaceIndex === -1) return null;
-
-    return {
-      // 三方：本宫前4位和后4位的宫位
-      threeWays: [
-        data.palaces[(palaceIndex + 4) % 12].type,
-        data.palaces[(palaceIndex + 8) % 12].type
-      ],
-      // 四正：只取对宫（相隔6个宫位）
-      fourCorrect: [
-        data.palaces[(palaceIndex + 6) % 12].type, // 对宫
-      ]
-    };
-  };
-
   // 判断宫位是否在三方四正中
   const isInThreeAndFour = (palaceType: string) => {
     if (!selectedPalace) return false;
     const result = getThreeAndFourPalaces(selectedPalace);
     if (!result) return false;
     return [...result.threeWays, ...result.fourCorrect].includes(palaceType);
+  };
+
+  // 计算三方四正
+  const getThreeAndFourPalaces = (palace: string) => {
+    // 先查找宫位索引，同时支持使用type或name查找
+    const palaceIndex = data.palaces.findIndex(p => 
+      (p.type && p.type === palace) || (p.name && p.name === palace)
+    );
+    
+    if (palaceIndex === -1) return null;
+
+    // 获取三方四正宫位的type或name
+    const getGongType = (index: number): string => {
+      const p = data.palaces[index];
+      return p.type || p.name;
+    };
+
+    return {
+      // 三方：本宫前4位和后4位的宫位
+      threeWays: [
+        getGongType((palaceIndex + 4) % 12),
+        getGongType((palaceIndex + 8) % 12)
+      ],
+      // 四正：只取对宫（相隔6个宫位）
+      fourCorrect: [
+        getGongType((palaceIndex + 6) % 12) // 对宫
+      ]
+    };
   };
 
   // 渲染星耀
@@ -260,11 +271,21 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     const isPurpleStar = purpleStars.includes(star.name);
     const isOrangeStar = orangeStars.includes(star.name);
 
+    // 确定星耀类型，兼容不同格式的数据源
+    let starType = 'other';
+    if (star.type) {
+      if (star.type === 'major' || star.type === '主星') {
+        starType = 'major';
+      } else if (star.type === 'soft' || star.type === 'minor' || star.type === '辅星') {
+        starType = 'minor';
+      }
+    }
+
     const starClass = isPurpleStar
       ? 'star star-purple'
       : isOrangeStar
       ? 'star star-orange'
-      : `star star-${star.type === '主星' ? 'major' : star.type === '辅星' ? 'minor' : 'other'}`;
+      : `star star-${starType}`;
 
     // 获取亮度的中文显示
     const getBrightnessText = (brightness?: string) => {
@@ -284,12 +305,9 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     // 构建星耀描述
     const description = [
       star.description,
-      star.transformation && `四化: ${star.transformation}化 (来源: ${star.transformation.source})`,
+      star.transformation && `四化: ${star.transformation}化`,
       star.brightness && `星耀强度: ${star.brightness}`
     ].filter(Boolean).join('\n');
-
-    // 打印星耀数据，用于调试
-    console.log('Rendering star:', { star, hasTransformation: !!star.transformation });
 
     return (
       <span key={star.name} className={starClass} title={description}>
@@ -302,7 +320,7 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
         {star.transformation && (
           <small
             className={`star-transform transform-${star.transformation}`}
-            title={`来源: ${star.transformation}`}
+            title={`四化: ${star.transformation}`}
           >
             {star.transformation}
           </small>
@@ -321,12 +339,12 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
 
   // 渲染宫位
   const renderPalace = (palace: Palace, index: number) => {
-    const isSelected = palace.type === selectedPalace;
-    const isRelated = isInThreeAndFour(palace.type);
+    const palaceType = palace.type || palace.name;
+    const isSelected = palaceType === selectedPalace;
+    const isRelated = isInThreeAndFour(palaceType);
 
-    // 处理大限星耀
-    const decadalStars = palace.decadal?.stars || [];
-    const allStars = [...(palace.stars || []), ...decadalStars];
+    // 确保stars数组存在
+    const allStars = palace.stars || [];
 
     return (
       <div
@@ -335,11 +353,11 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
           'palace-selected': isSelected,
           'palace-related': isRelated
         })}
-        onClick={() => setSelectedPalace(palace.type)}
+        onClick={() => setSelectedPalace(palaceType)}
       >
         <div className="palace-content" style={{ transform: `rotate(${-chartRotation}deg)` }}>
           <div className="palace-header">
-            <span className="palace-name">{palace.type}</span>
+            <span className="palace-name">{palace.name}</span>
           </div>
           <div className="palace-body">
             <div className="palace-stars">
@@ -350,15 +368,6 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
                 <div className="decadal-range">
                   {palace.decadal.range[0]}～{palace.decadal.range[1]}岁
                 </div>
-                {palace.decadal.stars && palace.decadal.stars.length > 0 && (
-                  <div className="decadal-stars">
-                    {palace.decadal.stars.map(star => (
-                      <span key={star.name} className="decadal-star">
-                        {star.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
             )}
             {palace.ages && palace.ages.length > 0 && (
@@ -370,15 +379,6 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
             {palace.changsheng12 && (
               <div className="changsheng12" title="长生十二神">
                 {palace.changsheng12}
-              </div>
-            )}
-            {palace.horoscope?.stars && palace.horoscope.stars.length > 0 && (
-              <div className="horoscope-stars">
-                {palace.horoscope.stars.map((star, index) => (
-                  <span key={`${star.name}-${index}`} className={`horoscope-star horoscope-star-${star.scope}`}>
-                    {star.name}
-                  </span>
-                ))}
               </div>
             )}
             {palace.boshi12 && (
@@ -417,6 +417,72 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
     );
   }
 
+  // 调试输出数据结构
+  console.log('命盘数据:', {
+    solarDate: data?.solarDate,
+    lunarDate: data?.lunarDate,
+    gender: data?.gender,
+    palacesLength: data?.palaces?.length,
+    firstPalace: data?.palaces && data?.palaces.length > 0 ? data.palaces[0] : null
+  });
+
+  // 检查数据是否完整
+  if (!data || !data.palaces || data.palaces.length === 0) {
+    return (
+      <Card className="chart-container">
+        <div style={{ textAlign: 'center', padding: '20px', color: '#fff' }}>
+          命盘数据不完整，请重新计算
+        </div>
+      </Card>
+    );
+  }
+  
+  // 预处理宫位数据，确保每个宫位都有type属性和stars数组
+  data.palaces.forEach(palace => {
+    // 1. 确保palace.type存在，使用name字段
+    if (!palace.type) {
+      (palace as any).type = palace.name;
+    }
+    
+    // 2. 如果没有stars数组但有主星/辅星/杂耀数组，合并它们
+    if (!palace.stars) {
+      const palaceAny = palace as any;
+      const allStars: Star[] = [];
+      
+      // 处理主星
+      if (palaceAny.majorStars && Array.isArray(palaceAny.majorStars)) {
+        palaceAny.majorStars.forEach((star: any) => {
+          allStars.push({
+            ...star,
+            type: star.type || 'major'
+          });
+        });
+      }
+      
+      // 处理辅星
+      if (palaceAny.minorStars && Array.isArray(palaceAny.minorStars)) {
+        palaceAny.minorStars.forEach((star: any) => {
+          allStars.push({
+            ...star,
+            type: star.type || 'soft'
+          });
+        });
+      }
+      
+      // 处理杂耀
+      if (palaceAny.adjectiveStars && Array.isArray(palaceAny.adjectiveStars)) {
+        palaceAny.adjectiveStars.forEach((star: any) => {
+          allStars.push({
+            ...star,
+            type: star.type || 'adjective'
+          });
+        });
+      }
+      
+      palaceAny.stars = allStars;
+    }
+  });
+
   // 处理旋转
   // const handleRotate = () => {
   //   setChartRotation((prev) => (prev + 90) % 360);
@@ -426,118 +492,99 @@ const ZiWeiChart: React.FC<ZiWeiChartProps> = ({ data, onTimeChange }) => {
   const renderCenterInfo = () => {
     return (
       <div className="center-info">
-        <div>阳历：{data.solarDate}</div>
-        <div>农历：{data.lunarDate}</div>
-        <div>时辰：{data.time}</div>
-        <div>时辰范围：{data.timeRange}</div>
-        <div>星座：{data.sign}</div>
-        <div>生肖：{data.zodiac}</div>
-        <div>性别：{data.gender}</div>
-        <div>命主：{data.soul}</div>
-        <div>身主：{data.body}</div>
-        <div>五行局：{data.fiveElementsClass}</div>
+        <div>阳历：{data.solarDate || '未知'}</div>
+        <div>农历：{data.lunarDate || '未知'}</div>
+        <div>时辰：{data.time || '未知'}</div>
+        <div>时辰范围：{data.timeRange || '未知'}</div>
+        <div>星座：{data.sign || '未知'}</div>
+        <div>生肖：{data.zodiac || '未知'}</div>
+        <div>性别：{data.gender || '未知'}</div>
+        <div>命主：{data.soul || '未知'}</div>
+        <div>身主：{data.body || '未知'}</div>
+        <div>五行局：{data.fiveElementsClass || '未知'}</div>
       </div>
     );
   };
 
-  // 地支时间转换为小时数
+  // 时辰转换成小时
   const zhiToHour = (zhi: string): number => {
-    const zhiHourMap: { [key: string]: number } = {
-      '子时': 0,  // 23:00-00:59
-      '丑时': 2,  // 01:00-02:59
-      '寅时': 4,  // 03:00-04:59
-      '卯时': 6,  // 05:00-06:59
-      '辰时': 8,  // 07:00-08:59
-      '巳时': 10, // 09:00-10:59
-      '午时': 12, // 11:00-12:59
-      '未时': 14, // 13:00-14:59
-      '申时': 16, // 15:00-16:59
-      '酉时': 18, // 17:00-18:59
-      '戌时': 20, // 19:00-20:59
-      '亥时': 22  // 21:00-22:59
+    const zhiMap: Record<string, number> = {
+      '子': 0, '丑': 2, '寅': 4, '卯': 6, '辰': 8, '巳': 10,
+      '午': 12, '未': 14, '申': 16, '酉': 18, '戌': 20, '亥': 22
     };
-    // 移除可能的"时"字
-    const cleanZhi = zhi.replace('时', '');
-    return zhiHourMap[`${cleanZhi}时`] ?? 0;
+    return zhiMap[zhi] ?? 0;
   };
 
   return (
-    <div className="ziwei-chart-container">
-      <div className="ziwei-chart">
-        <Card className="chart-container">
-          <div className="chart-header">
-            <div>紫微斗数开发中，可能有不准</div>
-          </div>
-          <div className="chart-wrapper">
-            <div
-              ref={chartRef}
-              className="chart-body"
-              style={{ transform: `rotate(${chartRotation}deg)` }}
-            >
-              {data.palaces?.map((palace, index) => renderPalace(palace, index))}
-            </div>
-            {renderConnectionLines()}
-            {renderCenterInfo()}
-          </div>
-        </Card>
+    <Card className="chart-container">
+      <div className="debug-note" style={{ position: 'absolute', top: '5px', left: '5px', color: '#ff6b6b', fontSize: '12px' }}>
+        紫微斗数开发中，可能有不准
       </div>
-      {onTimeChange && (
-        <div className="horoscope-selector-container">
-          <HoroscopeSelector
-            startYear={parseInt(data.solarDate.split('-')[0])}
-            currentYear={new Date().getFullYear()}
-            onTimeChange={async (params) => {
-              try {
-                // 检查必要的数据是否存在
-                if (!data || !data.solarDate || !data.time) {
-                  console.error('缺少必要的数据:', { data });
-                  message.error('缺少必要的数据，无法计算运限');
-                  return;
-                }
 
-                // 解析出生日期
-                const [birthYear, birthMonth, birthDay] = data.solarDate.split('-').map(Number);
-                if (!birthYear || !birthMonth || !birthDay) {
-                  console.error('出生日期格式错误:', data.solarDate);
-                  message.error('出生日期格式错误');
-                  return;
-                }
-
-                // 将地支时间转换为小时数
-                const birthHour = zhiToHour(data.time);
-                console.log('运限计算参数:', {
-                  birthYear,
-                  birthMonth,
-                  birthDay,
-                  birthHour,
-                  gender: data.gender === '男' ? 'male' : 'female',
-                  horoscopeParams: params
-                });
-
-                // 调用紫微斗数运限计算接口
-                const horoscope = await calculateZiWei(
-                  birthYear,
-                  birthMonth,
-                  birthDay,
-                  birthHour,
-                  data.gender === '男' ? 'male' : 'female',
-                  params
-                );
-
-                if (onTimeChange) {
-                  onTimeChange(params);
-                }
-              } catch (error) {
-                console.error('计算运限失败:', error);
-                message.error('计算运限失败');
-              }
-            }}
-            mingGongData={data.palaces.find(p => p.type === '命宫')}
-            palaces={data.palaces}
-          />
+      <div className="chart" style={{ transform: `rotate(${chartRotation}deg)` }}>
+        {/* 渲染12宫 */}
+        {data.palaces?.map((palace, index) => renderPalace(palace, index))}
+        
+        {/* 渲染连接线 */}
+        <div className="center-container">
+          {/* 里面的正方形 */}
+          <div className="center-square"></div>
+          {renderCenterInfo()}
         </div>
-      )}
-    </div>
+      </div>
+
+      {/* 命盘选择器 */}
+      <div className="horoscope-selector" style={{ marginTop: '20px' }}>
+        <Form layout="inline">
+          <Form.Item label="时辰">
+            <Select
+              style={{ width: 80 }}
+              defaultValue={data.time || '子'}
+              onChange={(value) => {
+                try {
+                  if (!data.solarDate) {
+                    message.error('没有日期数据，无法重新计算');
+                    return;
+                  }
+                  
+                  // 解析当前日期
+                  const currentDate = data.solarDate ? dayjs(data.solarDate, 'YYYY-MM-DD') : dayjs();
+                  
+                  // 合并日期和时辰
+                  const hour = zhiToHour(value);
+                  const dateTime = currentDate.hour(hour).minute(0).second(0);
+                  
+                  // 重新计算命盘
+                  onTimeChange && onTimeChange({
+                    year: dateTime.year(),
+                    month: dateTime.month() + 1, // dayjs的月份从0开始
+                    day: dateTime.date(),
+                    hour: dateTime.hour()
+                  });
+                } catch (error) {
+                  console.error('计算命盘时出错:', error);
+                  message.error('计算命盘时出错，请检查日期格式');
+                }
+              }}
+              options={[
+                { value: '子', label: '子时 (23:00-01:00)' },
+                { value: '丑', label: '丑时 (01:00-03:00)' },
+                { value: '寅', label: '寅时 (03:00-05:00)' },
+                { value: '卯', label: '卯时 (05:00-07:00)' },
+                { value: '辰', label: '辰时 (07:00-09:00)' },
+                { value: '巳', label: '巳时 (09:00-11:00)' },
+                { value: '午', label: '午时 (11:00-13:00)' },
+                { value: '未', label: '未时 (13:00-15:00)' },
+                { value: '申', label: '申时 (15:00-17:00)' },
+                { value: '酉', label: '酉时 (17:00-19:00)' },
+                { value: '戌', label: '戌时 (19:00-21:00)' },
+                { value: '亥', label: '亥时 (21:00-23:00)' }
+              ]}
+            />
+          </Form.Item>
+        </Form>
+      </div>
+    </Card>
   );
 };
 

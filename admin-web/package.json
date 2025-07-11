@@ -21,6 +21,7 @@
     "@ant-design/pro-components": "^2.4.4",
     "@umijs/max": "^4.4.4",
     "antd": "^5.4.0",
+    "axios": "^1.6.7",
     "dayjs": "^1.11.13",
     "iztro": "^2.4.4",
     "lunar-typescript": "^1.7.6"

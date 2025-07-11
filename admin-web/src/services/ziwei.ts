@@ -1,20 +1,13 @@
-import type { Star, Palace, ZiWeiResult } from '@/types/iztro';
-import * as iztro from 'iztro';
-import type {
-  HeavenlyStemName,
-  EarthlyBranchName,
-  StarName,
-  Brightness,
-  FiveElementsClassName,
-  GenderName,
-  Mutagen
-} from 'iztro/lib/i18n';
+import type { Star, Palace, ZiWeiResult, HoroscopeItem } from '@/types/iztro';
+import { fetchAstroData, fetchHoroscopeData } from './api';
+import type { Scope } from '@/types/iztro';
 import { MAJOR_STARS, MINOR_STARS, OTHER_STARS } from '@/constants/ziwei-stars';
+import { message } from 'antd';
 
 // 将小时转换为时辰序号(0-11)
 function getTimeIndex(hour: number): number {
   // 23:00-00:59 子时 (0)
-  if (hour >= 23 || hour < 1) return 0;
+  if (hour >= 0 || hour < 1) return 0;
   // 01:00-02:59 丑时 (1)
   if (hour >= 1 && hour < 3) return 1;
   // 03:00-04:59 寅时 (2)
@@ -36,7 +29,9 @@ function getTimeIndex(hour: number): number {
   // 19:00-20:59 戌时 (10)
   if (hour >= 19 && hour < 21) return 10;
   // 21:00-22:59 亥时 (11)
-  return 11;
+  if (hour >= 21 && hour < 23) return 11;
+  // 21:00-22:59 亥时 (11)
+  return 12;
 }
 
 // 获取宫位类型
@@ -50,17 +45,14 @@ function getPalaceType(index: number): string {
 }
 
 // 获取星耀信息
-function getStarInfo(name: string): Star | null {
+function getStarInfo(name: string): Partial<Star> | null {
   const starData = MAJOR_STARS[name] || MINOR_STARS[name] || OTHER_STARS[name];
   if (!starData) return null;
 
   return {
     name,
     type: starData.type,
-    category: starData.category,
-    wuxing: starData.wuxing,
-    description: starData.description,
-    scope: 'origin' // 默认为本命星耀
+    description: starData.description
   };
 }
 
@@ -93,6 +85,69 @@ function processStars(stars: any[], type: '主星' | '辅星' | '杂耀'): Star[
   }).filter((star): star is Star => star !== null);
 }
 
+// 将API返回的星盘数据转换为前端需要的格式
+function transformApiDataToZiWeiResult(apiData: any): ZiWeiResult {
+
+  // 转换宫位数据
+  const palaces: Palace[] = apiData.palaces.map((palace: any) => {
+    // 合并主星、辅星和杂耀
+    const allStars = [
+      ...(palace.majorStars || []),
+      ...(palace.minorStars || []),
+      ...(palace.adjectiveStars || [])
+    ];
+
+    return {
+      name: palace.name,
+      type: palace.name as any, // 转换宫位类型
+      position: palace.index,
+      heavenlyStem: palace.heavenlyStem,
+      earthlyBranch: palace.earthlyBranch,
+      isBodyPalace: palace.isBodyPalace,
+      isOriginalPalace: palace.isOriginalPalace,
+      stars: allStars.map(star => ({
+        name: star.name,
+        type: star.type,
+        brightness: star.brightness || undefined,
+        description: getStarInfo(star.name)?.description,
+        transformation: star.mutagen || undefined,
+        scope: star.scope || 'origin'
+      })),
+      changsheng12: palace.changsheng12,
+      boshi12: palace.boshi12,
+      suiqian12: palace.suiqian12,
+      jiangqian12: palace.jiangqian12,
+      decadal: palace.decadal,
+      ages: palace.ages || []
+    };
+  });
+
+  // 构建返回结果
+  return {
+    solarDate: apiData.solarDate,
+    lunarDate: apiData.lunarDate,
+    gender: apiData.gender,
+    time: apiData.time,
+    timeRange: apiData.timeRange,
+    sign: apiData.sign,
+    zodiac: apiData.zodiac,
+    palaces,
+    soul: apiData.soul,
+    body: apiData.body,
+    fiveElementsClass: apiData.fiveElementsClass,
+    centerInfo: {
+      birthTime: apiData.time,
+      clockTime: apiData.timeRange,
+      lunarBirthDay: apiData.lunarDate,
+      fate: apiData.soul,
+      bodyFate: apiData.body,
+      fiveElements: apiData.fiveElementsClass,
+      startAge: apiData.startAge?.toString() || "",
+      direction: apiData.flowDirection || ""
+    }
+  };
+}
+
 /**
  * 计算紫微斗数
  * @param birthYear 出生年份
@@ -103,7 +158,7 @@ function processStars(stars: any[], type: '主星' | '辅星' | '杂耀'): Star[
  * @param horoscopeParams 运限参数
  * @returns 紫微斗数星盘数据
  */
-export const calculateZiWei = (
+export const calculateZiWei = async (
   birthYear: number,
   birthMonth: number,
   birthDay: number,
@@ -120,529 +175,111 @@ export const calculateZiWei = (
     day?: number;
     hour?: number;
   }
-): ZiWeiResult => {
+): Promise<ZiWeiResult> => {
   try {
-    // 初始化宫位数组
-    let tempPalaces: Palace[] = new Array(12);
-    let palaces: Palace[] = new Array(12);
-
     // 计算时辰
     const timeIndex = getTimeIndex(birthHour);
 
     // 格式化日期，确保月和日是两位数
     const formattedMonth = String(birthMonth).padStart(2, '0');
     const formattedDay = String(birthDay).padStart(2, '0');
+    const birthDate = `${birthYear}-${formattedMonth}-${formattedDay}`;
 
-    // 使用 iztro 的 bySolar 方法计算命盘
-    const horoscope = iztro.astro.bySolar(
-      `${birthYear}-${formattedMonth}-${formattedDay}`,
+    // 性别转换
+    const genderText = gender === 'male' ? '男' : '女';
+
+    // 调用API获取命盘数据
+    const apiData = await fetchAstroData(
+      birthDate,
       timeIndex,
-      gender === 'male' ? '男' : '女',
-      true
+      genderText,
+      true,
+      'zh-CN'
     );
+
+    // 转换API返回的数据为前端需要的格式
+    let result = transformApiDataToZiWeiResult(apiData);
 
     // 如果有运限参数，计算运限
     if (horoscopeParams) {
       try {
-        // 格式化运限日期
-        const horoscopeDate = new Date();
-        const formattedHoroscopeDate = `${horoscopeDate.getFullYear()}-${String(horoscopeDate.getMonth() + 1).padStart(2, '0')}-${String(horoscopeDate.getDate()).padStart(2, '0')}`;
-
-        // 获取大限运限
-        // const horoscopeInstance = astro.astrolabeBySolarDate(
-        //   `${birthYear}-${formattedMonth}-${formattedDay}`,
-        //   timeIndex,
-        //   gender === 'male' ? '男' : '女',
-        //   true
-        // );
-
-        let decadalHoroscope = undefined;
+        let horoscopeDate = '';
+        let horoscopeTimeIndex = 6; // 默认午时
 
         if (horoscopeParams.hour !== undefined) {
-
-          // 说明有年、月、日、时
-          decadalHoroscope = horoscope.horoscope(
-              `${horoscopeParams.year}-${horoscopeParams.month}-${horoscopeParams.day}`,  // 使用大限开始年份的6月1日
-              horoscopeParams.hour  // 时辰
-          );
-
-        }else if (horoscopeParams.day !== undefined) {
-
-          // 说明没有时辰，为了统一结构，添加默认的时辰
-          decadalHoroscope = horoscope.horoscope(
-              `${horoscopeParams.year}-${horoscopeParams.month}-${horoscopeParams.day}`,  // 使用大限开始年份的6月1日
-              6  // 时辰
-          );
-
-        }else if (horoscopeParams.month !== undefined) {
-
-          // 说明没有时辰、日，为了统一结构，添加默认的时辰、日
-          decadalHoroscope = horoscope.horoscope(
-              `${horoscopeParams.year}-${horoscopeParams.month}-01`,  // 使用大限开始年份的6月1日
-              6  // 时辰
-          );
-
-        }else if (horoscopeParams.year !== undefined) {
-
-          // 说明没有时辰、日、月，为了统一结构，添加默认的时辰、日、月
-          decadalHoroscope = horoscope.horoscope(
-              `${horoscopeParams.year}-06-01`,  // 使用大限开始年份的6月1日
-              6  // 时辰
-          );
-
-        }else if (horoscopeParams.decadal !== undefined) {
-
-          // 说明没有时辰、日、月、年，为了统一结构，添加默认的时辰、日、月、年
-          decadalHoroscope = horoscope.horoscope(
-            `${horoscopeParams.decadal.startYear}-06-01`,  // 使用大限开始年份的6月1日
-            horoscopeParams.hour  // 大限宫位
-          );
-
+          // 有年月日时
+          horoscopeDate = `${horoscopeParams.year}-${String(horoscopeParams.month).padStart(2, '0')}-${String(horoscopeParams.day).padStart(2, '0')}`;
+          horoscopeTimeIndex = horoscopeParams.hour;
+        } else if (horoscopeParams.day !== undefined) {
+          // 有年月日
+          horoscopeDate = `${horoscopeParams.year}-${String(horoscopeParams.month).padStart(2, '0')}-${String(horoscopeParams.day).padStart(2, '0')}`;
+        } else if (horoscopeParams.month !== undefined) {
+          // 有年月
+          horoscopeDate = `${horoscopeParams.year}-${String(horoscopeParams.month).padStart(2, '0')}-01`;
+        } else if (horoscopeParams.year !== undefined) {
+          // 只有年
+          horoscopeDate = `${horoscopeParams.year}-06-01`;
+        } else if (horoscopeParams.decadal !== undefined) {
+          // 有大限
+          horoscopeDate = `${horoscopeParams.decadal.startYear}-06-01`;
         }
 
-        // 更新宫位信息，添加大限数据
-        // horoscope.palaces = horoscope.palaces.map(palace => ({
-        //   ...palace,
-        //   decadal: {
-        //     heavenlyStem: decadalHoroscope.heavenlyStem,
-        //     earthlyBranch: decadalHoroscope.earthlyBranch,
-        //     range: [horoscopeParams.decadal.startYear - birthYear, horoscopeParams.decadal.endYear - birthYear]  // 使用传递的年龄范围
-        //   }
-        // }));
+        if (horoscopeDate) {
+          // 调用API获取运限数据
+          const horoscopeData = await fetchHoroscopeData(
+            birthDate,
+            timeIndex,
+            genderText,
+            horoscopeDate,
+            horoscopeTimeIndex
+          );
 
-        // 打印运限计算结果
-        // console.log('运限计算结果:',{
-        //   "decadal":decadalHoroscope?.decadal
-        // });
-
-        //solarDate
-        // lunarDate
-        // decadal
-        // age
-        // yearly
-        // monthly
-        // daily
-        // hourly
-        console.log('运限计算结果:', {
-          solarDate: decadalHoroscope?.solarDate,
-          lunarDate: decadalHoroscope?.lunarDate,
-          decadal: decadalHoroscope?.decadal,
-          age: decadalHoroscope?.age,
-          yearly: decadalHoroscope?.yearly,
-          monthly: decadalHoroscope?.monthly,
-          daily: decadalHoroscope?.daily,
-          hourly: decadalHoroscope?.hourly
-        });
-
-        if (decadalHoroscope) {
-          console.log('运限星耀数据:', {
-            decadalStars: decadalHoroscope.decadal?.stars,
-            yearlyStars: decadalHoroscope.yearly?.stars,
-            monthlyStars: decadalHoroscope.monthly?.stars,
-            dailyStars: decadalHoroscope.daily?.stars,
-            hourlyStars: decadalHoroscope.hourly?.stars
-          });
-
-          // 运限数据已经是对象，不需要 JSON.parse
-          const horoscopeData = {
-            decadal: decadalHoroscope.decadal || { stars: [] },
-            yearly: decadalHoroscope.yearly || { stars: [] },
-            monthly: decadalHoroscope.monthly || { stars: [] },
-            daily: decadalHoroscope.daily || { stars: [] },
-            hourly: decadalHoroscope.hourly || { stars: [] }
-          };
-
-          console.log('处理后的运限数据:', horoscopeData);
-
-          // 更新宫位信息，添加运限数据
-          tempPalaces = tempPalaces.map((palace, index) => {
-            if (!palace) {
-              console.warn(`Palace at index ${index} is undefined`);
-              return palace;
-            }
-
-            // 获取各个运限在该宫位的星耀
-            const horoscopeStars = {
-              decadal: Array.isArray(horoscopeData.decadal?.stars?.[index]) ? horoscopeData.decadal.stars[index] : [],
-              yearly: Array.isArray(horoscopeData.yearly?.stars?.[index]) ? horoscopeData.yearly.stars[index] : [],
-              monthly: Array.isArray(horoscopeData.monthly?.stars?.[index]) ? horoscopeData.monthly.stars[index] : [],
-              daily: Array.isArray(horoscopeData.daily?.stars?.[index]) ? horoscopeData.daily.stars[index] : [],
-              hourly: Array.isArray(horoscopeData.hourly?.stars?.[index]) ? horoscopeData.hourly.stars[index] : []
+          // 处理运限数据
+          if (horoscopeData) {
+            result = {
+              ...result,
+              decadal: processHoroscope(horoscopeData.decadal, 'decadal'),
+              yearly: processHoroscope(horoscopeData.yearly, 'yearly'),
+              monthly: processHoroscope(horoscopeData.monthly, 'monthly'),
+              daily: processHoroscope(horoscopeData.daily, 'daily'),
+              hourly: processHoroscope(horoscopeData.hourly, 'hourly'),
             };
-
-            console.log(`宫位 ${index} 的运限星耀:`, horoscopeStars);
-
-            // 合并所有运限星耀，并确保每个星耀都有正确的scope
-            const allHoroscopeStars = [
-              ...(Array.isArray(horoscopeStars.decadal) ? horoscopeStars.decadal.map(star => ({ ...star, scope: 'decadal' })) : []),
-              ...(Array.isArray(horoscopeStars.yearly) ? horoscopeStars.yearly.map(star => ({ ...star, scope: 'yearly' })) : []),
-              ...(Array.isArray(horoscopeStars.monthly) ? horoscopeStars.monthly.map(star => ({ ...star, scope: 'monthly' })) : []),
-              ...(Array.isArray(horoscopeStars.daily) ? horoscopeStars.daily.map(star => ({ ...star, scope: 'daily' })) : []),
-              ...(Array.isArray(horoscopeStars.hourly) ? horoscopeStars.hourly.map(star => ({ ...star, scope: 'hourly' })) : [])
-            ];
-
-            // 处理四化星
-            const stars = (palace.stars || []).map(star => {
-              if (!star) return star;
-
-              const horoscopeMutagen = [
-                horoscopeData.decadal,
-                horoscopeData.yearly,
-                horoscopeData.monthly,
-                horoscopeData.daily,
-                horoscopeData.hourly
-              ].find(h => h?.mutagen?.includes?.(star.name))?.mutagen?.find(m => m === star.name);
-
-              return horoscopeMutagen ? {
-                ...star,
-                horoscopeMutagen
-              } : star;
-            });
-
-            return {
-              ...palace,
-              stars: stars || [],
-              horoscope: {
-                stars: allHoroscopeStars
-              }
-            };
-          });
-
-          console.log('更新后的宫位数据:', tempPalaces);
-        }
-
-      } catch (error) {
-        console.error('计算运限失败:', error);
-        throw error;
-      }
-    }
-
-    console.log('Input params:', {
-      date: `${birthYear}-${formattedMonth}-${formattedDay}`,
-      timeIndex,
-      gender: gender === 'male' ? '男' : '女'
-    });
-
-    // 打印 horoscope 对象的方法和属性
-    console.log('horoscope methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(horoscope)));
-    console.log('horoscope properties:', Object.keys(horoscope));
-
-    // 尝试调用所有可能的方法
-    const methodsToTry = [
-      'getStartAge',
-      'getFlowDirection',
-      'getAge',
-      'getDirection',
-      'getStartYear',
-      'getFlowYear',
-      'getDecadalAge',
-      'getDecadalDirection'
-    ];
-
-    methodsToTry.forEach(method => {
-      try {
-        if (typeof (horoscope as any)[method] === 'function') {
-          console.log(`${method} result:`, (horoscope as any)[method]());
+          }
         }
       } catch (error) {
-        console.warn(`调用 ${method} 失败:`, error);
+        console.error('运限计算出错:', error);
+        message.error('运限计算失败，请重试');
       }
-    });
-
-    // 尝试直接获取起运年龄和流年方向
-    try {
-      console.log('getStartAge:', typeof horoscope.getStartAge, horoscope.getStartAge?.());
-      console.log('getFlowDirection:', typeof horoscope.getFlowDirection, horoscope.getFlowDirection?.());
-    } catch (error) {
-      console.warn('获取起运年龄和流年方向失败:', error);
     }
 
-    // 获取宫位数据
-    // let tempPalaces: Palace[] = new Array(12);
-    // let palaces: Palace[] = new Array(12);
-
-    // 1. 先获取所有宫位数据
-    for (let i = 0; i < 12; i++) {
-      const palace = horoscope.palace(i);
-
-      if (!palace) {
-        console.warn(`Missing palace data for index ${i}`);
-        continue;
-      }
-
-      // 打印原始宫位数据，特别关注四化信息
-      console.log(`Palace ${i} raw data:`, palace);
-      console.log(`Palace ${i} stars:`, palace.majorStars);
-      console.log(`Palace ${i} suiqian12:`, palace.suiqian12);
-      console.log(`Palace ${i} jiangqian12:`, palace.jiangqian12);
-
-      // 创建宫位对象
-      const simplePalace = {
-        index: palace.index,
-        name: palace.name,
-        isBodyPalace: palace.isBodyPalace || false,
-        isOriginalPalace: palace.isOriginalPalace || false,
-        heavenlyStem: palace.heavenlyStem,
-        earthlyBranch: palace.earthlyBranch,
-        majorStars: palace.majorStars?.map(star => ({
-          ...star,
-          transformation: star.mutagen
-        })) || [],
-        minorStars: palace.minorStars?.map(star => ({
-          ...star,
-          transformation: star.mutagen
-        })) || [],
-        adjectiveStars: palace.adjectiveStars?.map(star => ({
-          ...star,
-          transformation: star.mutagen
-        })) || [],
-        changsheng12: palace.changsheng12,
-        boshi12: palace.boshi12,
-        suiqian12: palace.suiqian12,  // 岁前十二神
-        jiangqian12: palace.jiangqian12,  // 将前十二神
-        decadal: palace.decadal,
-        ages: palace.ages
-      };
-
-      // 处理各类星耀
-      const majorStars = processStars(simplePalace.majorStars, '主星');
-      const minorStars = processStars(simplePalace.minorStars, '辅星');
-      const adjectiveStars = processStars(simplePalace.adjectiveStars, '杂耀');
-
-      // 打印处理后的星耀数据
-      console.log(`Palace ${i} processed stars:`, { majorStars, minorStars, adjectiveStars });
-
-      // 合并所有星耀
-      const stars = [...majorStars, ...minorStars, ...adjectiveStars];
-
-      // 先把宫位数据存储到临时数组
-      tempPalaces[i] = {
-        name: simplePalace.name,
-        type: simplePalace.name as PalaceType,
-        position: i + 1,
-        heavenlyStem: simplePalace.heavenlyStem,
-        earthlyBranch: simplePalace.earthlyBranch,
-        isBodyPalace: simplePalace.isBodyPalace,
-        isOriginalPalace: simplePalace.isOriginalPalace,
-        stars,
-        // transformations: Object.entries(simplePalace.transformations).map(([star, trans]) =>
-        //   `${star}${(trans as any).type}化xxx`
-        // ),
-        changsheng12: simplePalace.changsheng12,
-        boshi12: simplePalace.boshi12,
-        suiqian12: palace.suiqian12,  // 岁前十二神
-        jiangqian12: palace.jiangqian12,  // 将前十二神
-        decadal: simplePalace.decadal,
-        ages: simplePalace.ages
-      };
-    }
-
-    // 2. 定义地支的显示位置（4x4布局）
-    const branchToDisplayPosition: { [key: string]: { row: number; col: number; position: number } } = {
-      '寅': { row: 3, col: 0, position: 3 },  // 左下角
-      '卯': { row: 2, col: 0, position: 4 },
-      '辰': { row: 1, col: 0, position: 5 },
-      '巳': { row: 0, col: 0, position: 6 },  // 左上角
-      '午': { row: 0, col: 1, position: 7 },
-      '未': { row: 0, col: 2, position: 8 },
-      '申': { row: 0, col: 3, position: 9 },  // 右上角
-      '酉': { row: 1, col: 3, position: 10 },
-      '戌': { row: 2, col: 3, position: 11 },
-      '亥': { row: 3, col: 3, position: 12 }, // 右下角
-      '子': { row: 3, col: 2, position: 1 },
-      '丑': { row: 3, col: 1, position: 2 }
-    };
-
-    // 3. 根据地支重新排列宫位
-    for (let i = 0; i < 12; i++) {
-      const palace = tempPalaces[i];
-      if (!palace) continue;
-
-      // 获取显示位置和序号
-      const displayInfo = branchToDisplayPosition[palace.earthlyBranch];
-
-      // 放到对应位置
-      palaces[i] = {
-        ...palace,
-        position: displayInfo.position,  // 使用地支对应的序号
-        displayPosition: {
-          row: displayInfo.row,
-          col: displayInfo.col
-        }
-      };
-    }
-
-    // 4. 按照位置序号排序
-    palaces.sort((a, b) => {
-      if (!a || !b) return 0;
-      return a.position - b.position;
-    });
-
-    console.log('final palaces:', palaces);
-
-    // 获取当前运限信息
-    const horoscopeInfo = horoscope.horoscope();
-
-    // 尝试从 horoscope 对象获取
-    console.log('Raw horoscope data:', horoscopeInfo);
-
-    // 获取起运年龄和流年方向
-    let startAge = horoscope.getStartAge?.() || '未知';
-    let direction = horoscope.getFlowDirection?.() || '顺行';
-
-    // 获取大限数据
-    const decadalInfo = {
-      index: horoscopeInfo.decadal?.index,
-      heavenlyStem: horoscopeInfo.decadal?.heavenlyStem,
-      earthlyBranch: horoscopeInfo.decadal?.earthlyBranch,
-      age: horoscopeInfo.decadal?.age,
-      // 根据五行局数计算起运年龄
-      startAge: (() => {
-        const fiveElementsToAge: { [key: string]: number } = {
-          '水二局': 2,
-          '水六局': 6,
-          '金四局': 4,
-          '金九局': 9,
-          '火六局': 6,
-          '火七局': 7,
-          '木三局': 3,
-          '木八局': 8,
-          '土五局': 5,
-          '土十局': 10
-        };
-        const baseAge = fiveElementsToAge[horoscope.fiveElementsClass] || 0;
-        return baseAge + (horoscopeInfo.decadal?.index || 0) * 10;
-      })(),
-      endAge: (() => {
-        const fiveElementsToAge: { [key: string]: number } = {
-          '水二局': 2,
-          '水六局': 6,
-          '金四局': 4,
-          '金九局': 9,
-          '火六局': 6,
-          '火七局': 7,
-          '木三局': 3,
-          '木八局': 8,
-          '土五局': 5,
-          '土十局': 10
-        };
-        const baseAge = fiveElementsToAge[horoscope.fiveElementsClass] || 0;
-        return baseAge + (horoscopeInfo.decadal?.index || 0) * 10 + 9;
-      })(),
-      palaceNames: horoscopeInfo.decadal?.palaceNames || [],
-      mutagen: horoscopeInfo.decadal?.mutagen || [],
-      stars: horoscopeInfo.decadal?.stars || [],
-      position: horoscopeInfo.decadal?.position,
-      flowDirection: direction,
-      flowYear: horoscopeInfo.decadal?.flowYear,
-      direction: direction
-    };
-
-    console.log('Decadal info:', decadalInfo);
-
-    // 处理运限信息
-    function processHoroscope(horoscopeItem: any, scope: Scope): HoroscopeItem | undefined {
-      if (!horoscopeItem) return undefined;
-
-      // 如果是大限数据，使用我们之前处理好的数据
-      if (scope === 'decadal') {
-        return decadalInfo;
-      }
-
-      return {
-        index: horoscopeItem.index || 0,
-        heavenlyStem: horoscopeItem.heavenlyStem || '',
-        earthlyBranch: horoscopeItem.earthlyBranch || '',
-        age: horoscopeItem.age,
-        startAge: horoscopeItem.startAge,
-        endAge: horoscopeItem.endAge,
-        palaceNames: horoscopeItem.palaceNames || [],
-        mutagen: horoscopeItem.mutagen || [],
-        stars: Array.isArray(horoscopeItem.stars)
-          ? horoscopeItem.stars.map((starGroup: any[]) =>
-              Array.isArray(starGroup)
-                ? starGroup.map(star => ({
-                    name: star.name || '',
-                    type: star.type || '杂耀',
-                    category: star.category || '中性',
-                    wuxing: star.wuxing || '土',
-                    description: star.description || '',
-                    brightness: star.brightness,
-                    scope
-                  }))
-                : []
-            )
-          : [],
-        position: horoscopeItem.position,
-        flowDirection: horoscopeItem.flowDirection,
-        flowYear: horoscopeItem.flowYear,
-        direction: horoscopeItem.direction
-      };
-    }
-
-    // 处理宫位信息时，只提取需要的属性
-    const processedPalaces = horoscope.palaces.map(palace => ({
-      heavenlyStem: palace.heavenlyStem,
-      earthlyBranch: palace.earthlyBranch,
-      name: palace.name,
-      index: palace.index,
-      isBodyPalace: palace.isBodyPalace || false,
-      isOriginalPalace: palace.isOriginalPalace || false,
-      majorStars: palace.majorStars || [],
-      minorStars: palace.minorStars || [],
-      adjectiveStars: palace.adjectiveStars || [],
-      changsheng12: palace.changsheng12,
-      boshi12: palace.boshi12,
-      suiqian12: palace.suiqian12 || '',  // 岁前十二神
-      jiangqian12: palace.jiangqian12 || '',  // 将前十二神
-      decadal: palace.decadal,
-      ages: palace.ages
-    }));
-
-    return {
-      // 基本信息
-      solarDate: horoscope.solarDate,
-      lunarDate: horoscope.lunarDate,
-      gender: gender === 'male' ? '男' : '女',
-      time: horoscope.time,
-      timeRange: horoscope.timeRange,
-      sign: horoscope.sign,
-      zodiac: horoscope.zodiac,
-
-      // 命盘信息
-      palaces,
-
-      // 命主身主
-      soul: horoscope.soul,
-      body: horoscope.body,
-
-      // 五行局
-      fiveElementsClass: horoscope.fiveElementsClass,
-
-      // 中宫信息
-      centerInfo: {
-        birthTime: `${birthYear}-${String(birthMonth).padStart(2, '0')}-${String(birthDay).padStart(2, '0')} ${birthHour}:00`,
-        clockTime: `${birthHour}:00`,
-        lunarBirthDay: horoscope.lunarDate,
-        fate: horoscope.soul,
-        bodyFate: horoscope.body,
-        fiveElements: horoscope.fiveElementsClass,
-        startAge: startAge === '未知' ? '未知' : `${startAge}岁`,
-        direction: direction === '顺行' ? '顺行' : '逆行',
-      },
-
-      // 运限信息
-      decadal: processHoroscope(horoscopeInfo.decadal, 'decadal'),
-      yearly: processHoroscope(horoscopeInfo.yearly, 'yearly'),
-      monthly: processHoroscope(horoscopeInfo.monthly, 'monthly'),
-      daily: processHoroscope(horoscopeInfo.daily, 'daily'),
-      hourly: processHoroscope(horoscopeInfo.hourly, 'hourly')
-    };
+    return result;
   } catch (error) {
-    console.error('计算紫微斗数出错:', error);
+    console.error('紫微斗数计算出错:', error);
+    message.error('紫微斗数计算失败，请重试');
     throw error;
   }
 };
+
+// 处理运限数据
+function processHoroscope(horoscopeItem: any, scope: Scope): HoroscopeItem | undefined {
+  if (!horoscopeItem) return undefined;
+
+  return {
+    index: horoscopeItem.position || 0,
+    heavenlyStem: horoscopeItem.heavenlyStem || '',
+    earthlyBranch: horoscopeItem.earthlyBranch || '',
+    age: horoscopeItem.age,
+    startAge: horoscopeItem.startAge,
+    endAge: horoscopeItem.endAge,
+    palaceNames: horoscopeItem.palaceNames || [],
+    mutagen: horoscopeItem.mutagen || [],
+    stars: horoscopeItem.stars || [],
+    position: horoscopeItem.position,
+    flowDirection: horoscopeItem.flowDirection,
+    flowYear: horoscopeItem.flowYear,
+    direction: horoscopeItem.direction
+  };
+}
 
 // 测试用例
 function test() {
